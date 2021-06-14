@@ -1,8 +1,10 @@
 #include <Arduino.h>
 
-// CONSTANTES
+/* ------------------ CONSTANTES ------------------ */
+
 // Led
 #define PIN_LED 4
+
 // Sensor distancia
 #define TRIG_PIN 13
 #define ECHO_PIN 14
@@ -10,14 +12,17 @@
 #define TIEMPO_PULSO_US 10
 #define VALOR_CORRECCION_ONDA 2
 #define VELOCIDAD_SONIDO_CM 0.0344
+
 // Delay
 #define TIEMPO_MILIS 1000
+
 // Comunicacion con el serial
 #define VEL_TRANSMISION 9600
-// VARIABLES GLOBALES
+
+/* ------------------ VARIABLES GLOBALES ------------------ */
 int ledEstado = LOW;
 
-//FUNCIONES
+/* ------------------ FUNCIONES ------------------ */
 long calcularDistancia();
 
 void setup() {
@@ -29,7 +34,7 @@ void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
-  // Establecer el pin en low
+  // Establecer el estado del led en low
   ledEstado = LOW;
 }
 
@@ -42,7 +47,7 @@ void loop() {
 
   // Obtenemos la distancia del objeto
   long distancia = calcularDistancia();
- Serial.println("La distancia es");
+  Serial.println("La distancia es");
   Serial.println(distancia);
 
   // Esperamos un tiempo
