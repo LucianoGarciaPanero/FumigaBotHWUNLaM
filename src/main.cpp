@@ -19,11 +19,14 @@
 // Comunicacion con el serial
 #define VEL_TRANSMISION 9600
 
+// Dominio del problema
+#define UMBRAL_MAXIMO_DETECCION_CM 20
+
 /* ------------------ VARIABLES GLOBALES ------------------ */
 int ledEstado = LOW;
 
 /* ------------------ FUNCIONES ------------------ */
-long calcularDistancia();
+long calcularDistancia(int, int);
 
 void setup() {
   // Inicializar serial
@@ -39,36 +42,34 @@ void setup() {
 }
 
 void loop() {
-  // Cambiar el estado del led
-  ledEstado = !ledEstado;
-
-  // Actualizar el pin
-  digitalWrite(PIN_LED, ledEstado);
-
   // Obtenemos la distancia del objeto
-  long distancia = calcularDistancia();
-  Serial.println("La distancia es");
-  Serial.println(distancia);
+  long distancia = calcularDistancia(TRIG_PIN, ECHO_PIN);
 
+  // Verificación de la distancia del objeto
+  if(distancia <= UMBRAL_MAXIMO_DETECCION_CM){
+    ledEstado = HIGH;
+  } else {
+    ledEstado = LOW;
+  }
+  digitalWrite(PIN_LED, ledEstado);
+  
   // Esperamos un tiempo
   delay(TIEMPO_MILIS);
 }
 
-long calcularDistancia() {
+long calcularDistancia(int trig_pin, int echo_pin) {
   
   // Inicializando el pin del trigger
-  digitalWrite(TRIG_PIN, LOW);
+  digitalWrite(trig_pin, LOW);
   delayMicroseconds(TIEMPO_ASEGURAR_NIVEL_BAJO_US);
   
   // Comenzar a transmitir
-  digitalWrite(TRIG_PIN, HIGH);
+  digitalWrite(trig_pin, HIGH);
   delayMicroseconds(TIEMPO_PULSO_US);
-  digitalWrite(TRIG_PIN, LOW);
+  digitalWrite(trig_pin, LOW);
 
   // Lectura del tiempo que estuvo en high
-  long duracion = pulseIn(ECHO_PIN, HIGH);
-  Serial.println("La duracion es");
-  Serial.println(duracion);
+  long duracion = pulseIn(echo_pin, HIGH);
 
   // Calculamos la distancia del objeto
   return (duracion / VALOR_CORRECCION_ONDA) * VELOCIDAD_SONIDO_CM;
