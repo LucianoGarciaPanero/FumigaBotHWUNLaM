@@ -4,7 +4,7 @@
 #include "sensores.h"
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
-int ledEstado = LOW;
+int ledEstado;
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
@@ -19,7 +19,7 @@ void setup() {
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
 
-  // Establecer el estado del led en low
+  // Inicializar variables globales
   ledEstado = LOW;
 }
 
