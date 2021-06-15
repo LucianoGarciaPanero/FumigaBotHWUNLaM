@@ -1,4 +1,5 @@
 #include "./sensores.h"
+#include <Arduino.h>
 
 long obtenerDistancia(int trig_pin, int echo_pin) {
   

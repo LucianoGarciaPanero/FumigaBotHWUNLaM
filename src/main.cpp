@@ -1,7 +1,7 @@
 
 #include <Arduino.h>
-#include <sensores.h>
 #include "config.h"
+#include "sensores.h"
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 int ledEstado = LOW;
@@ -12,8 +12,8 @@ void setup() {
   
   // Inicializar pines
   pinMode(PIN_LED, OUTPUT);
-  pinMode(TRIG_PIN, OUTPUT);
-  pinMode(ECHO_PIN, INPUT);
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECHO, INPUT);
 
   // Establecer el estado del led en low
   ledEstado = LOW;
@@ -21,10 +21,10 @@ void setup() {
 
 void loop() {
   // Obtenemos la distancia del objeto
-  long distancia = calcularDistancia(PIN_TRIG, PIN_ECHO);
+  long distancia = obtenerDistancia(PIN_TRIG, PIN_ECHO);
 
   // Verificación de la distancia del objeto
-  if(distancia <= UMBRAL_MAXIMO_DETECCION_CM){
+  if(distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM){
     ledEstado = HIGH;
   } else {
     ledEstado = LOW;
