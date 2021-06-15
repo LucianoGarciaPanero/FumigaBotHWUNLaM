@@ -17,7 +17,7 @@ int ledEstado;
 #define EVT_OBJETO_DETECTADO    2
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
-int generarEvento();
+int generarEvento(void);
 
 /* ------------------ CÓDIGO ------------------ */
 void setup() {
@@ -34,18 +34,35 @@ void setup() {
 }
 
 void loop() {
-  // Obtenemos la distancia del objeto
-  long distancia = obtenerDistancia(PIN_TRIG, PIN_ECHO);
-
-  // Verificación de la distancia del objeto
-  if(distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM) {
-    ledEstado = HIGH;
-  } else {
-    ledEstado = LOW;
-  }
-  digitalWrite(PIN_LED, ledEstado);
+  
+  
+  
   
   // Esperamos un tiempo
   delay(TIEMPO_MILIS);
 }
 
+/* ------------------ DEFINICIÓN FUNCIONES ------------------ */
+
+/*
+* Genera un evento a partir de analizar los sensores.
+* Si un objeto es menor al umbral de distancia entonces genera un evento
+* objeto detectado, en caso contraro objeto no detectado.
+*/
+int generarEvento(void){
+
+  // Inicializamos las variables a usar
+  int evento = EVT_CONTINUE;
+ 
+  // Obtenemos la distancia del objeto
+  long distancia = obtenerDistancia(PIN_TRIG, PIN_ECHO);
+
+  // Verificación de la distancia del objeto
+  if(distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM) {
+    evento = EVT_OBJETO_DETECTADO;
+  } else {
+    evento = EVT_OBJETO_NO_DETECTADO;
+  }
+
+  return evento;
+}
