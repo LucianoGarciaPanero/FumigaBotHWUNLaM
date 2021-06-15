@@ -21,6 +21,9 @@
 void doInit(void);
 int generarEvento(void);
 void maquinaEstados(int, int);
+void stInactivo(int);
+void stEsperandoDeteccion(int);
+void stObjetoDetectado(int);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 int estado;
@@ -88,9 +91,77 @@ int generarEvento(void){
 
 /*
 * Es la implementación de una máquina de estados. 
-* Dado un estado y un evento modifica establece el nuevo estado.
+* Dado un estado y un evento, establece el nuevo estado.
 */
 
 void maquinaEstados(int estado, int evento){
+  
+  // Segun el estado en el que nos encontramos llamamos a una función
+  switch(estado) {
 
+    case ST_INACTIVO:
+      stInactivo(evento);
+      break;
+
+    case ST_ESPERANDO_DETECCION:
+      stEsperandoDeteccion(evento);
+      break;
+    
+    case ST_OBJETO_DETECTADO:
+      stObjetoDetectado(evento);
+      break;
+    
+    default:
+      break;
+  }
+
+  // Generamos el evento para la siguiente pasada
+  evento = generarEvento();
+}
+
+/*
+* Implementación de cada uno de lso estados de la máquina de estados.
+*/
+
+void stInactivo(int evento){
+  switch(evento){
+
+    case EVT_CONTINUE:
+      estado = ST_ESPERANDO_DETECCION;
+      break;
+
+    default:
+      break;
+  }
+}
+
+void stEsperandoDeteccion(int evento){
+  switch(evento){
+
+    case EVT_OBJETO_NO_DETECTADO:
+      estado = ST_ESPERANDO_DETECCION;
+      break;
+
+    case EVT_OBJETO_DETECTADO:
+      estado = ST_OBJETO_DETECTADO;
+      break;
+    
+    default:
+      break;
+  }
+}
+
+void stObjetoDetectado(int evento){
+  switch(evento){
+
+    case EVT_OBJETO_NO_DETECTADO:
+      estado = ST_ESPERANDO_DETECCION;
+      break;
+
+    case EVT_OBJETO_DETECTADO:
+      estado = ST_OBJETO_DETECTADO;
+      break;
+    
+    default:
+      break;
 }
