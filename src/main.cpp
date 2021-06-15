@@ -9,7 +9,7 @@
 #define ST_INACTIVO             0
 #define ST_ESPERANDO_DETECCION  1
 #define ST_OBJETO_DETECTADO     2   
-
+                                                                                                                            
 /* ------------------ EVENTOS ------------------ */
 
 #define EVT_CONTINUE            0
@@ -180,4 +180,5 @@ void stObjetoDetectado(int evento){
     
     default:
       break;
+  }
 }
