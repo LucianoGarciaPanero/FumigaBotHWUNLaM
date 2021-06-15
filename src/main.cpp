@@ -20,7 +20,7 @@
 
 void doInit(void);
 int generarEvento(void);
-void maquinaEstados(int);
+void maquinaEstados(int, int);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 int estado;
@@ -33,8 +33,7 @@ void setup() {
 }
 
 void loop() {
-
-  
+  maquinaEstados(estado, evento);
 }
 
 /* ------------------ DEFINICIÓN FUNCIONES ------------------ */
@@ -85,4 +84,13 @@ int generarEvento(void){
   }
 
   return evento;
+}
+
+/*
+* Es la implementación de una máquina de estados. 
+* Dado un estado y un evento modifica establece el nuevo estado.
+*/
+
+void maquinaEstados(int estado, int evento){
+
 }
