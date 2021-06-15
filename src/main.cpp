@@ -139,10 +139,18 @@ void stEsperandoDeteccion(int evento){
   switch(evento){
 
     case EVT_OBJETO_NO_DETECTADO:
+      // Apagamos LED
+      digitalWrite(PIN_LED, LOW);
+
+      // Cambiamos de estado
       estado = ST_ESPERANDO_DETECCION;
       break;
 
     case EVT_OBJETO_DETECTADO:
+      // Encendemos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
       estado = ST_OBJETO_DETECTADO;
       break;
     
@@ -155,10 +163,18 @@ void stObjetoDetectado(int evento){
   switch(evento){
 
     case EVT_OBJETO_NO_DETECTADO:
+      // Apagamos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
       estado = ST_ESPERANDO_DETECCION;
       break;
 
     case EVT_OBJETO_DETECTADO:
+      // Encendemos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
       estado = ST_OBJETO_DETECTADO;
       break;
     
