@@ -4,7 +4,6 @@
 #include "sensores.h"
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
-int ledEstado;
 
 /* ------------------ ESTADOS ------------------ */
 #define ST_INACTIVO             0
@@ -17,20 +16,12 @@ int ledEstado;
 #define EVT_OBJETO_DETECTADO    2
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
+void doInit(void);
 int generarEvento(void);
 
 /* ------------------ CÓDIGO ------------------ */
 void setup() {
-  // Inicializar serial
-  Serial.begin(VEL_TRANSMISION);
-  
-  // Inicializar pines
-  pinMode(PIN_LED, OUTPUT);
-  pinMode(PIN_TRIG, OUTPUT);
-  pinMode(PIN_ECHO, INPUT);
-
-  // Inicializar variables globales
-  ledEstado = LOW;
+  doInit();
 }
 
 void loop() {
@@ -45,10 +36,29 @@ void loop() {
 /* ------------------ DEFINICIÓN FUNCIONES ------------------ */
 
 /*
+* Inicializa los pines en los modos correctos y las variables necesarias
+*/
+
+void doInit(){
+  
+  // Inicializar pines sensor ultrasonido
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECHO, INPUT);
+
+  // Inicializar pin LED
+  pinMode(PIN_LED, OUTPUT);
+  
+  // Inicializar serial
+  Serial.begin(VEL_TRANSMISION);
+}
+
+
+/*
 * Genera un evento a partir de analizar los sensores.
 * Si un objeto es menor al umbral de distancia entonces genera un evento
 * objeto detectado, en caso contraro objeto no detectado.
 */
+
 int generarEvento(void){
 
   // Inicializamos las variables a usar
