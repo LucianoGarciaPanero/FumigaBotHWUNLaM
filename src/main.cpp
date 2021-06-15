@@ -6,8 +6,18 @@
 /* ------------------ VARIABLES GLOBALES ------------------ */
 int ledEstado;
 
-/* ------------------ DECLARACIÓN FUNCIONES ------------------ */
+/* ------------------ ESTADOS ------------------ */
+#define ST_INACTIVO             0
+#define ST_ESPERANDO_DETECCION  1
+#define ST_OBJETO_DETECTADO     2   
 
+/* ------------------ EVENTOS ------------------ */
+#define EVT_CONTINUE            0
+#define EVT_OBJETO_NO_DETECTADO 1
+#define EVT_OBJETO_DETECTADO    2
+
+/* ------------------ DECLARACIÓN FUNCIONES ------------------ */
+int generarEvento();
 
 /* ------------------ CÓDIGO ------------------ */
 void setup() {
