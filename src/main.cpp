@@ -1,4 +1,4 @@
-
+/* ------------------ BIBLIOTECAS ------------------ */
 #include <Arduino.h>
 #include "config.h"
 #include "sensores.h"
@@ -6,6 +6,10 @@
 /* ------------------ VARIABLES GLOBALES ------------------ */
 int ledEstado = LOW;
 
+/* ------------------ DECLARACIÓN FUNCIONES ------------------ */
+
+
+/* ------------------ CÓDIGO ------------------ */
 void setup() {
   // Inicializar serial
   Serial.begin(VEL_TRANSMISION);
@@ -24,7 +28,7 @@ void loop() {
   long distancia = obtenerDistancia(PIN_TRIG, PIN_ECHO);
 
   // Verificación de la distancia del objeto
-  if(distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM){
+  if(distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM) {
     ledEstado = HIGH;
   } else {
     ledEstado = LOW;
