@@ -1,12 +1,8 @@
 #include <unity.h>
-#include <ArduinoFake.h>
 #include "sensores.h"
-
-using namespace fakeit;
 
 void test_siempre_verdadero(void){
     TEST_ASSERT_EQUAL(0, 0);
-    When(Method(ArduinoFake(), delay)).AlwaysReturn();
 }
 
 int main(int argc, char **argv) {
