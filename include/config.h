@@ -2,7 +2,7 @@
 // LED
 #define PIN_LED 4
 
-// Sensor Ultrasonid
+// Sensor Ultrasonido
 #define PIN_TRIG 13
 #define PIN_ECHO 14
 

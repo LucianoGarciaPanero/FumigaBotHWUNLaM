@@ -26,6 +26,7 @@ void stEsperandoDeteccion(int);
 void stObjetoDetectado(int);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
+
 int estado;
 int evento;
 
