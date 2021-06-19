@@ -19,7 +19,7 @@
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
 void doInit(void);
-int generarEvento(void);
+int generarEvento(int);
 void maquinaEstados(int, int);
 void stInactivo(int);
 void stEsperandoDeteccion(int);
@@ -72,18 +72,15 @@ void doInit(){
 * objeto detectado, en caso contraro objeto no detectado.
 */
 
-int generarEvento(void){
+int generarEvento(long distancia){
 
   // Inicializamos las variables a usar
   int evento = EVT_CONTINUE;
  
-  // Obtenemos la distancia del objeto
-  long distancia = obtenerDistancia(PIN_TRIG, PIN_ECHO);
-
   // Verificación de la distancia del objeto
-  if(distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM) {
-    evento = EVT_OBJETO_DETECTADO;
-  } else {
+  if(distancia > UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM || distancia <= 0) {
+    evento = EVT_OBJETO_NO_DETECTADO;
+  } else if(distancia > 0 && distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM) {
     evento = EVT_OBJETO_NO_DETECTADO;
   }
 
@@ -117,7 +114,7 @@ void maquinaEstados(int estado, int evento){
   }
 
   // Generamos el evento para la siguiente pasada
-  evento = generarEvento();
+  evento = generarEvento(obtenerDistancia(PIN_TRIG, PIN_ECHO));
 }
 
 /*
