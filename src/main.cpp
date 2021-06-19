@@ -21,10 +21,10 @@
 
 void doInit(void);
 void generarEvento(void);
-void maquinaEstados(int, int);
-void stInactivo(int);
-void stEsperandoDeteccion(int);
-void stObjetoDetectado(int);
+void maquinaEstados(void);
+void stInactivo(void);
+void stEsperandoDeteccion(void);
+void stObjetoDetectado(void);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
@@ -38,7 +38,7 @@ void setup() {
 }
 
 void loop() {
-  maquinaEstados(glbEstado, glbEvento);
+  maquinaEstados();
 
   // Este sleep es solo para visualizar mejor el LED.
   // Hay que borrarlo
@@ -99,21 +99,21 @@ void generarEvento(void) {
 * Dado un estado y un evento, establece el nuevo estado.
 */
 
-void maquinaEstados(int estado, int evento){
+void maquinaEstados(){
   
   // Segun el estado en el que nos encontramos llamamos a una función
-  switch(estado) {
+  switch(glbEstado) {
 
     case ST_INACTIVO:
-      stInactivo(evento);
+      stInactivo();
       break;
 
     case ST_ESPERANDO_DETECCION:
-      stEsperandoDeteccion(evento);
+      stEsperandoDeteccion();
       break;
     
     case ST_OBJETO_DETECTADO:
-      stObjetoDetectado(evento);
+      stObjetoDetectado();
       break;
     
     default:
@@ -128,8 +128,8 @@ void maquinaEstados(int estado, int evento){
 * Implementación de cada uno de lso estados de la máquina de estados.
 */
 
-void stInactivo(int evento){
-  switch(evento){
+void stInactivo(){
+  switch(glbEvento){
 
     case EVT_CONTINUE:
       glbEstado = ST_ESPERANDO_DETECCION;
@@ -140,8 +140,8 @@ void stInactivo(int evento){
   }
 }
 
-void stEsperandoDeteccion(int evento){
-  switch(evento){
+void stEsperandoDeteccion(){
+  switch(glbEvento){
 
     case EVT_OBJETO_NO_DETECTADO:
       // Apagamos LED
@@ -164,8 +164,8 @@ void stEsperandoDeteccion(int evento){
   }
 }
 
-void stObjetoDetectado(int evento){
-  switch(evento){
+void stObjetoDetectado(){
+  switch(glbEvento){
 
     case EVT_OBJETO_NO_DETECTADO:
       // Apagamos el LED
