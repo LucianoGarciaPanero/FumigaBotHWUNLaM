@@ -4,10 +4,7 @@
 
 using namespace fakeit;
 
-
-// test/test_main.cpp
-void testObtenerDistancia(void)
-{
+void testObtenerDistancia(void) {
     //ARRANGE
 
     When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
@@ -17,7 +14,6 @@ void testObtenerDistancia(void)
 
     //ACT
     long currentDistance = obtenerDistancia(1,2);
-
 
     //ASSERT
     Verify(Method(ArduinoFake(), digitalWrite)).Exactly(3_Times);

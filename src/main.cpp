@@ -2,6 +2,8 @@
 
 #include <Arduino.h>
 #include <config.h>
+#include <WiFi.h>
+
 #include <sensores.h>
 #include <utilitarias.h>
 
