@@ -13,3 +13,4 @@
 
 // Dominio del problema
 #define UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM 20
+#define UMBRAL_MINIMA_DISTANCIA_OBJETO_CM 1

@@ -1,4 +1,5 @@
 /* -------- SENSOR ULTRASONIDO --------  */
+
 // Valores dominio
 #define TIEMPO_ASEGURAR_NIVEL_BAJO_US 2
 #define TIEMPO_PULSO_US 10

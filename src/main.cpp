@@ -1,4 +1,30 @@
-#include <main.h>
+/* ------------------ BIBLIOTECAS ------------------ */
+
+#include <Arduino.h>
+#include <config.h>
+#include <sensores.h>
+#include <utilitarias.h>
+
+/* ------------------ ESTADOS ------------------ */
+
+#define ST_INACTIVO             0
+#define ST_ESPERANDO_DETECCION  1
+#define ST_OBJETO_DETECTADO     2   
+                                                                                                                            
+/* ------------------ EVENTOS ------------------ */
+
+#define EVT_CONTINUE            0
+#define EVT_OBJETO_NO_DETECTADO 1
+#define EVT_OBJETO_DETECTADO    2
+
+/* ------------------ DECLARACIÓN FUNCIONES ------------------ */
+
+void doInit(void);
+int generarEvento(long);
+void maquinaEstados(int, int);
+void stInactivo(int);
+void stEsperandoDeteccion(int);
+void stObjetoDetectado(int);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
@@ -47,19 +73,16 @@ void doInit(){
 * objeto detectado, en caso contraro objeto no detectado.
 */
 
-int generarEvento(long distancia){
+int generarEvento(long distancia) {
 
-  // Inicializamos las variables a usar
-  int evento = EVT_CONTINUE;
- 
-  // Verificación de la distancia del objeto
-  if(distancia > UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM || distancia <= 0) {
-    evento = EVT_OBJETO_NO_DETECTADO;
-  } else if(distancia > 0 && distancia <= UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM) {
-    evento = EVT_OBJETO_NO_DETECTADO;
+  // Verificamos en que parte del rango esta
+  int resultado = estaDentroRango(UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, distancia);
+
+  if(resultado == DENTRO_RANGO) {
+    return EVT_OBJETO_DETECTADO;
+  } else if(resultado == FUERA_RANGO) {
+    return EVT_OBJETO_NO_DETECTADO;
   }
-
-  return evento;
 }
 
 /*
