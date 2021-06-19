@@ -20,7 +20,7 @@
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
 void doInit(void);
-int generarEvento(long);
+void generarEvento(void);
 void maquinaEstados(int, int);
 void stInactivo(int);
 void stEsperandoDeteccion(int);
@@ -28,8 +28,8 @@ void stObjetoDetectado(int);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
-int estado;
-int evento;
+int glbEstado;
+int glbEvento;
 
 /* ------------------ CÓDIGO ------------------ */
 
@@ -38,7 +38,11 @@ void setup() {
 }
 
 void loop() {
-  maquinaEstados(estado, evento);
+  maquinaEstados(glbEstado, glbEvento);
+
+  // Este sleep es solo para visualizar mejor el LED.
+  // Hay que borrarlo
+  sleep(2);
 }
 
 /* ------------------ DEFINICIÓN FUNCIONES ------------------ */
@@ -60,28 +64,33 @@ void doInit(){
   Serial.begin(VEL_TRANSMISION);
 
   // Inicializar estado
-  estado = ST_INACTIVO;
+  glbEstado = ST_INACTIVO;
 
   // Inicializar evento
-  evento = EVT_CONTINUE;
+  glbEvento = EVT_CONTINUE;
 }
 
 
 /*
 * Genera un evento a partir de analizar los sensores.
-* Si un objeto es menor al umbral de distancia entonces genera un evento
+* Si un objeto se encuentra den intervalo genera un evento
 * objeto detectado, en caso contraro objeto no detectado.
 */
 
-int generarEvento(long distancia) {
-
+void generarEvento(void) {
+  
   // Verificamos en que parte del rango esta
-  int resultado = estaDentroRango(UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, distancia);
+  bool resultado = estaDentroRango(
+    UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, 
+    UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, 
+    obtenerDistancia(PIN_TRIG, PIN_ECHO)
+    );
 
-  if(resultado == DENTRO_RANGO) {
-    return EVT_OBJETO_DETECTADO;
-  } else if(resultado == FUERA_RANGO) {
-    return EVT_OBJETO_NO_DETECTADO;
+  // De acuerdo al valor devolvemos el evento correspondiente
+  if(resultado) {
+    glbEvento = EVT_OBJETO_DETECTADO;
+  } else {
+    glbEvento = EVT_OBJETO_NO_DETECTADO;
   }
 }
 
@@ -112,7 +121,7 @@ void maquinaEstados(int estado, int evento){
   }
 
   // Generamos el evento para la siguiente pasada
-  evento = generarEvento(obtenerDistancia(PIN_TRIG, PIN_ECHO));
+  generarEvento();
 }
 
 /*
@@ -123,7 +132,7 @@ void stInactivo(int evento){
   switch(evento){
 
     case EVT_CONTINUE:
-      estado = ST_ESPERANDO_DETECCION;
+      glbEstado = ST_ESPERANDO_DETECCION;
       break;
 
     default:
@@ -139,7 +148,7 @@ void stEsperandoDeteccion(int evento){
       digitalWrite(PIN_LED, LOW);
 
       // Cambiamos de estado
-      estado = ST_ESPERANDO_DETECCION;
+      glbEstado = ST_ESPERANDO_DETECCION;
       break;
 
     case EVT_OBJETO_DETECTADO:
@@ -147,7 +156,7 @@ void stEsperandoDeteccion(int evento){
       digitalWrite(PIN_LED, HIGH);
 
       // Cambiamos de estado
-      estado = ST_OBJETO_DETECTADO;
+      glbEstado = ST_OBJETO_DETECTADO;
       break;
     
     default:
@@ -163,7 +172,7 @@ void stObjetoDetectado(int evento){
       digitalWrite(PIN_LED, HIGH);
 
       // Cambiamos de estado
-      estado = ST_ESPERANDO_DETECCION;
+      glbEstado = ST_ESPERANDO_DETECCION;
       break;
 
     case EVT_OBJETO_DETECTADO:
@@ -171,7 +180,7 @@ void stObjetoDetectado(int evento){
       digitalWrite(PIN_LED, HIGH);
 
       // Cambiamos de estado
-      estado = ST_OBJETO_DETECTADO;
+      glbEstado = ST_OBJETO_DETECTADO;
       break;
     
     default:
