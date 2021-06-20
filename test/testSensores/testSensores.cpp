@@ -5,8 +5,8 @@
 using namespace fakeit;
 
 void testObtenerDistancia(void) {
+    
     //ARRANGE
-
     When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
     When(Method(ArduinoFake(), delayMicroseconds)).AlwaysReturn();
     When(Method(ArduinoFake(), pulseIn)).AlwaysReturn(1000);
@@ -18,7 +18,6 @@ void testObtenerDistancia(void) {
     //ASSERT
     Verify(Method(ArduinoFake(), digitalWrite)).Exactly(3_Times);
     Verify(Method(ArduinoFake(), delayMicroseconds)).Exactly(2_Times);
-
 
     TEST_ASSERT_EQUAL(expectedDistance, currentDistance);
 }

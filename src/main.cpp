@@ -10,14 +10,14 @@
 /* ------------------ ESTADOS ------------------ */
 
 #define ST_INACTIVO             0
-#define ST_ESPERANDO_DETECCION  1
+#define ST_OBJETO_NO_DETECTADO  1
 #define ST_OBJETO_DETECTADO     2   
                                                                                                                             
 /* ------------------ EVENTOS ------------------ */
 
-#define EVT_CONTINUE            0
-#define EVT_OBJETO_NO_DETECTADO 1
-#define EVT_OBJETO_DETECTADO    2
+#define EVT_CONTINUAR           0
+#define EVT_OBJETO_FUERA_RANGO  1
+#define EVT_OBJETO_DENTRO_RANGO 2
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
@@ -25,7 +25,7 @@ void doInit(void);
 void generarEvento(void);
 void maquinaEstados(void);
 void stInactivo(void);
-void stEsperandoDeteccion(void);
+void stObjetoNoDetectado(void);
 void stObjetoDetectado(void);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
@@ -44,7 +44,7 @@ void loop() {
 
   // Este sleep es solo para visualizar mejor el LED.
   // Hay que borrarlo
-  sleep(2);
+  //sleep(2);
 }
 
 /* ------------------ DEFINICIÓN FUNCIONES ------------------ */
@@ -69,7 +69,7 @@ void doInit(){
   glbEstado = ST_INACTIVO;
 
   // Inicializar evento
-  glbEvento = EVT_CONTINUE;
+  glbEvento = EVT_CONTINUAR;
 }
 
 
@@ -90,9 +90,9 @@ void generarEvento(void) {
 
   // De acuerdo al valor devolvemos el evento correspondiente
   if(resultado) {
-    glbEvento = EVT_OBJETO_DETECTADO;
+    glbEvento = EVT_OBJETO_DENTRO_RANGO;
   } else {
-    glbEvento = EVT_OBJETO_NO_DETECTADO;
+    glbEvento = EVT_OBJETO_FUERA_RANGO;
   }
 }
 
@@ -110,8 +110,8 @@ void maquinaEstados(){
       stInactivo();
       break;
 
-    case ST_ESPERANDO_DETECCION:
-      stEsperandoDeteccion();
+    case ST_OBJETO_NO_DETECTADO:
+      stObjetoNoDetectado();
       break;
     
     case ST_OBJETO_DETECTADO:
@@ -127,14 +127,14 @@ void maquinaEstados(){
 }
 
 /*
-* Implementación de cada uno de lso estados de la máquina de estados.
+* Implementación de cada uno de los estados de la máquina de estados.
 */
 
 void stInactivo(){
   switch(glbEvento){
 
-    case EVT_CONTINUE:
-      glbEstado = ST_ESPERANDO_DETECCION;
+    case EVT_CONTINUAR:
+      glbEstado = ST_OBJETO_NO_DETECTADO;
       break;
 
     default:
@@ -142,18 +142,18 @@ void stInactivo(){
   }
 }
 
-void stEsperandoDeteccion(){
+void stObjetoNoDetectado(){
   switch(glbEvento){
 
-    case EVT_OBJETO_NO_DETECTADO:
+    case EVT_OBJETO_FUERA_RANGO:
       // Apagamos LED
       digitalWrite(PIN_LED, LOW);
 
       // Cambiamos de estado
-      glbEstado = ST_ESPERANDO_DETECCION;
+      glbEstado = ST_OBJETO_NO_DETECTADO;
       break;
 
-    case EVT_OBJETO_DETECTADO:
+    case EVT_OBJETO_DENTRO_RANGO:
       // Encendemos el LED
       digitalWrite(PIN_LED, HIGH);
 
@@ -169,15 +169,15 @@ void stEsperandoDeteccion(){
 void stObjetoDetectado(){
   switch(glbEvento){
 
-    case EVT_OBJETO_NO_DETECTADO:
+    case EVT_OBJETO_FUERA_RANGO:
       // Apagamos el LED
       digitalWrite(PIN_LED, HIGH);
 
       // Cambiamos de estado
-      glbEstado = ST_ESPERANDO_DETECCION;
+      glbEstado = ST_OBJETO_NO_DETECTADO;
       break;
 
-    case EVT_OBJETO_DETECTADO:
+    case EVT_OBJETO_DENTRO_RANGO:
       // Encendemos el LED
       digitalWrite(PIN_LED, HIGH);
 
