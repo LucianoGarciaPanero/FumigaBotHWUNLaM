@@ -5,6 +5,7 @@
 // Sensor Ultrasonido
 #define PIN_TRIG 13
 #define PIN_ECHO 14
+#define CANT_SENSORES_DISTANCIA 1
 
 /* -------- OTROS --------  */
 
