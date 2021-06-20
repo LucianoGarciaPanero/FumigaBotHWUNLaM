@@ -1,3 +1,8 @@
+#include <config.h>
+#include <sensores.h>
+#include <utilitarias.h>
+#include <WiFi.h>
+
 /* ------------------ ESTADOS ------------------ */
 
 // Estados MdE general
@@ -28,7 +33,10 @@
 void doInitMdE(void);
 void generarEvento(void);
 void maquinaEstados(void);
+
+
 void maquinaEstadosSensoresDistancia(void);
+int generarEventoSensorDistancia(int, int);
 
 // Estados MdE general
 void stInactivo(void);
@@ -36,17 +44,24 @@ void stRealizandoConexionWifi(void);
 void stConectandoWifi(void);
 
 // Estados MdE sensores distancia
-void stObjetoNoDetectado(void);
-void stObjetoDetectado(void);
+void stObjetoNoDetectado(int);
+void stObjetoDetectado(int);
+
+/* ------------------ ESTRUCTURAS ------------------ */
+
+typedef struct {
+    long distancia;
+    int pinTrig;
+    int pinEcho;
+    int estado;
+    int evento;
+} stSensorDistancia;
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
 int glbEstado;
 int glbEvento;
 
-typedef struct {
-    int pinTirg;
-    int pinEcho;
-    int estado;
-    int evento;
-} stSensorDistancia;
+stSensorDistancia sensores[CANT_SENSORES_DISTANCIA];
+int pinesEcho[CANT_SENSORES_DISTANCIA];
+int pinesTrig[CANT_SENSORES_DISTANCIA];

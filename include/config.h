@@ -3,8 +3,8 @@
 #define PIN_LED 4
 
 // Sensor Ultrasonido
-#define PIN_TRIG 13
-#define PIN_ECHO 14
+#define PIN_TRIG_0 13
+#define PIN_ECHO_0 14
 #define CANT_SENSORES_DISTANCIA 1
 
 /* -------- OTROS --------  */
