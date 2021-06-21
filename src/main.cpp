@@ -1,10 +1,4 @@
-#include <Arduino.h>
-#include <config.h>
-#include <maquinaEstados.h>
-
-/* ------------------ DECLARACIÓN FUNCIONES ------------------ */
-
-void doInit(void);
+#include <main.h>
 
 /* ------------------ CÓDIGO ------------------ */
 
@@ -27,8 +21,239 @@ void doInit(){
   // Inicializamos pin LED
   pinMode(PIN_LED, OUTPUT);
 
-  // Inicialización MdE general.
-  doInitMdEGeneral();
+  // Inicialización pines sensores distancia
+  for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
+    
+    // Inicialización pines
+    sensores[i].pinEcho = pinesEcho[i];
+    sensores[i].pinTrig = pinesTrig[i];
+      
+    pinMode(sensores[i].pinEcho, INPUT);
+    pinMode(sensores[i].pinTrig, OUTPUT);
+  }
 
-  Serial.begin(VEL_TRANSMISION);
+  // Inicialización MdE
+  doInitMdEGeneral();
+}
+
+/*
+* Inicializa los estados correspondientes con la MdE general.
+*/
+
+void doInitMdEGeneral(void){
+    
+  // Inicializamos estados generales
+  glbEstado = ST_INACTIVO;
+  glbEstado = EVT_CONTINUAR;
+
+  // Inicialización MdE sensores
+  doInitMdESesonres();
+}
+
+/*
+* Inicializa los estados correspondientes con la MdE de los sensores.
+*/
+
+void doInitMdESesonres() {
+  
+    // Inicializamos los estados
+    for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
+      sensores[i].estado = ST_OBJETO_DETECTADO;
+      sensores[i].evento = EVT_OBJETO_FUERA_RANGO;
+    }
+}
+
+void generarEventoMdEGeneral(void) {
+
+  switch(glbEstado) {
+    case ST_REALIZANDO_CONEXION_WIFI:
+      glbEvento = EVT_CONEXION_EXITOSA;
+      break;
+    case ST_CONECTADO_WIFI:
+      glbEvento = EVT_COMENZAR_DETECCION;
+      break;
+
+    default:
+      break;
+  }
+}
+
+/*
+* Genera un evento a partir de analizar los sensores.
+* Si un objeto se encuentra den intervalo genera un evento
+* objeto detectado, en caso contraro objeto no detectado.
+*/
+
+int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
+  
+  // Verificamos en que parte del rango esta
+  bool resultado = estaDentroRango(
+    UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, 
+    UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, 
+    obtenerDistancia(pinTrig, pinEcho)
+    );
+
+  // De acuerdo al valor devolvemos el evento correspondiente
+  if(resultado) {
+    return EVT_OBJETO_DENTRO_RANGO;
+  } else {
+    return EVT_OBJETO_FUERA_RANGO;
+  }
+}
+
+/*
+* Es la implementación de una máquina de estados. 
+* Dado un estado y un evento, establece el nuevo estado.
+*/
+
+void maquinaEstadosGeneral() {
+    
+    // Segun el estado en el que nos encontramos llamamos a una función
+    switch(glbEstado) {
+        
+        case ST_INACTIVO:
+            stInactivo();
+            break;
+
+        case ST_REALIZANDO_CONEXION_WIFI:
+            stRealizandoConexionWifi();
+            break;
+
+        case ST_CONECTADO_WIFI:
+            stConectandoWifi();
+            break;
+
+        case ST_DETECTANDO_OBJETO:
+            for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
+              maquinaEstadosSensoresDistancia(i);
+            }
+            break;
+
+        default:
+            break;
+    }
+
+  // Generamos el evento para la siguiente pasada
+  generarEventoMdEGeneral();
+}
+
+/*
+* Implementación de cada uno de los estados de la máquina de estados.
+*/
+
+void stInactivo(){
+  switch(glbEvento){
+
+    case EVT_CONTINUAR:
+      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      break;
+
+    default:
+      break;
+  }
+}
+
+void stRealizandoConexionWifi(void) {
+  switch(glbEvento){
+    
+    case EVT_ACABA_TIEMPO:
+      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      break;
+
+    case EVT_CONEXION_EXITOSA:
+      glbEstado = ST_CONECTADO_WIFI;
+      break;
+    
+    default:
+      break;
+  }
+}
+
+void stConectandoWifi(void) {
+
+  switch(glbEvento) {
+
+  case EVT_DESCONEXION:
+    glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+    break;
+
+  case EVT_COMENZAR_DETECCION:
+    glbEstado = ST_DETECTANDO_OBJETO;
+    break;
+
+  default:
+    break;
+  }
+}
+
+/*
+*  Implementación MdE para sensores de distancia
+*/
+
+void maquinaEstadosSensoresDistancia(int nro) {
+
+    switch(sensores[nro].estado) {
+      case ST_OBJETO_NO_DETECTADO:
+        stObjetoNoDetectado(nro);
+        break;
+
+      case ST_OBJETO_DETECTADO:
+        stObjetoDetectado(nro);
+        break;
+    
+      default:
+        break;
+      }
+    
+    // Generación evento para próxima pasada
+    sensores[nro].evento = generarEventoMdESensorDistancia(sensores[nro].pinTrig, sensores[nro].pinEcho);
+  }
+
+
+void stObjetoNoDetectado(int nro){
+  switch(sensores[nro].evento){
+
+    case EVT_OBJETO_FUERA_RANGO:
+      // Apagamos LED
+      digitalWrite(PIN_LED, LOW);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
+      break;
+
+    case EVT_OBJETO_DENTRO_RANGO:
+      // Encendemos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_DETECTADO;
+      break;
+    
+    default:
+      break;
+  }
+}
+
+void stObjetoDetectado(int nro){
+  switch(sensores[nro].evento){
+
+    case EVT_OBJETO_FUERA_RANGO:
+      // Apagamos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
+      break;
+
+    case EVT_OBJETO_DENTRO_RANGO:
+      // Encendemos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_DETECTADO;
+      break;
+    
+    default:
+      break;
+  }
 }

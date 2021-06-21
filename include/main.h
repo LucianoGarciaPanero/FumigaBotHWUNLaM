@@ -1,3 +1,8 @@
+#include <Arduino.h>
+#include <sensores.h>
+#include <utilitarias.h>
+#include <config.h>
+
 /* ------------------ ESTADOS ------------------ */
 
 // Estados MdE general
@@ -25,6 +30,8 @@
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
+void doInit(void);
+
 // MdE general
 void generarEventoMdEGeneral(void);
 void doInitMdEGeneral(void);
@@ -51,3 +58,12 @@ typedef struct {
     int estado;
     int evento;
 } stSensorDistancia;
+
+/* ------------------ VARIABLES GLOBALES ------------------ */
+
+stSensorDistancia sensores[CANT_SENSORES_DISTANCIA];
+int pinesEcho[CANT_SENSORES_DISTANCIA] = PINES_ECHO;
+int pinesTrig[CANT_SENSORES_DISTANCIA] = PINES_TRIG;
+
+int glbEstado;
+int glbEvento;
