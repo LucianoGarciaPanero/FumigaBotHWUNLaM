@@ -10,7 +10,7 @@ void loop() {
   maquinaEstadosGeneral();
 }
 
-/* ------------------ DEFINICIÓN FUNCIONES ------------------ */
+/* ------------------ SECCIÓN INIT ------------------ */
 
 /*
 * Inicializa los pines en los modos correctos y las variables necesarias
@@ -63,6 +63,8 @@ void doInitMdESesonres() {
     }
 }
 
+/* ------------------ SECCIÓN GENERAR EVENTO ------------------ */
+
 void generarEventoMdEGeneral(void) {
 
   switch(glbEstado) {
@@ -101,10 +103,7 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   }
 }
 
-/*
-* Es la implementación de una máquina de estados. 
-* Dado un estado y un evento, establece el nuevo estado.
-*/
+/* ------------------ SECCIÓN MdE GENERAL ------------------ */
 
 void maquinaEstadosGeneral() {
     
@@ -186,9 +185,7 @@ void stConectandoWifi(void) {
   }
 }
 
-/*
-*  Implementación MdE para sensores de distancia
-*/
+/* ------------------ SECCIÓN MdE SENSORES DISTANCIA ------------------ */
 
 void maquinaEstadosSensoresDistancia(int nro) {
 
@@ -209,6 +206,9 @@ void maquinaEstadosSensoresDistancia(int nro) {
     sensores[nro].evento = generarEventoMdESensorDistancia(sensores[nro].pinTrig, sensores[nro].pinEcho);
   }
 
+/*
+* Implementación de cada uno de los estados de la máquina de estados.
+*/
 
 void stObjetoNoDetectado(int nro){
   switch(sensores[nro].evento){
