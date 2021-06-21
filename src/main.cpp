@@ -8,6 +8,8 @@ void setup() {
 
 void loop() {
   maquinaEstadosGeneral();
+  // BORRAR
+  sleep(1);
 }
 
 /* ------------------ SECCIÓN INIT ------------------ */
@@ -34,6 +36,9 @@ void doInit(){
 
   // Inicialización MdE
   doInitMdEGeneral();
+
+  // BORRAR
+  Serial.begin(VEL_TRANSMISION);
 }
 
 /*
@@ -65,18 +70,31 @@ void doInitMdESesonres() {
 
 /* ------------------ SECCIÓN GENERAR EVENTO ------------------ */
 
+
+
 void generarEventoMdEGeneral(void) {
 
-  switch(glbEstado) {
-    case ST_REALIZANDO_CONEXION_WIFI:
-      glbEvento = EVT_CONEXION_EXITOSA;
-      break;
-    case ST_CONECTADO_WIFI:
-      glbEvento = EVT_COMENZAR_DETECCION;
-      break;
+  if(primeraConexion) {
 
-    default:
-      break;
+    // Medimos el punto de inicio
+    unsigned long startTime = millis();
+    Serial.print("CONECTANDOSE AL WIFI");
+    // Hacemos que intente conectarse durante 20 ms
+    while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
+      // Hacer nada
+      Serial.print(".");
+    }
+
+    // Verificamos si se logra conectar
+    if(WiFi.status() != WL_CONNECTED) {
+      glbEvento = EVT_ACABA_TIEMPO;
+    } else {
+      // Marcamos que logro conectarse a WiFI
+      primeraConexion = false;
+      glbEvento = EVT_CONEXION_EXITOSA;
+    }
+  } else {
+    glbEvento = EVT_COMENZAR_DETECCION;
   }
 }
 
@@ -111,18 +129,22 @@ void maquinaEstadosGeneral() {
     switch(glbEstado) {
         
         case ST_INACTIVO:
+            Serial.print("INACTIVO");
             stInactivo();
             break;
 
         case ST_REALIZANDO_CONEXION_WIFI:
+            Serial.print("REALIZANDO COENXION");
             stRealizandoConexionWifi();
             break;
 
         case ST_CONECTADO_WIFI:
+            Serial.print("CONECTADO");
             stConectandoWifi();
             break;
 
         case ST_DETECTANDO_OBJETO:
+            Serial.print("DETECTANDO OBJETO");
             for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
               maquinaEstadosSensoresDistancia(i);
             }
@@ -145,6 +167,7 @@ void stInactivo(){
 
     case EVT_CONTINUAR:
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      conectarWifi();
       break;
 
     default:
@@ -256,4 +279,18 @@ void stObjetoDetectado(int nro){
     default:
       break;
   }
+}
+
+/* ------------------ SECCIÓN WiFi ------------------ */
+
+void conectarWifi() {
+  
+  // Modo para que el ESP se conecte a una red
+  WiFi.mode(WIFI_STA);
+
+  // Comenzamos conexión
+  WiFi.begin(WIFI_RED, WIFI_CONTRASENIA);
+
+  // Marcamos que es la primera conexión que se realiza
+  primeraConexion = true;
 }

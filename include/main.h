@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <WiFi.h>
 #include <sensores.h>
 #include <utilitarias.h>
 #include <config.h>
@@ -31,6 +32,7 @@
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
 void doInit(void);
+void conectarWifi(void);
 
 // MdE general
 void generarEventoMdEGeneral(void);
@@ -67,3 +69,5 @@ int pinesTrig[CANT_SENSORES_DISTANCIA] = PINES_TRIG;
 
 int glbEstado;
 int glbEvento;
+
+bool primeraConexion;

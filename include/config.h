@@ -1,4 +1,5 @@
 /* -------- PINES --------  */
+
 // LED
 #define PIN_LED 4
 
@@ -15,3 +16,8 @@
 // Dominio del problema
 #define UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM 20
 #define UMBRAL_MINIMA_DISTANCIA_OBJETO_CM 1
+
+// WiFi
+#define WIFI_RED "MiCasa"
+#define WIFI_CONTRASENIA "99agua_Azul"
+#define WIFI_TIMEOUT_MS 20000
