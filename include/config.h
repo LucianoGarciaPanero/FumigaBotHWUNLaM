@@ -18,6 +18,6 @@
 #define UMBRAL_MINIMA_DISTANCIA_OBJETO_CM 1
 
 // WiFi
-#define WIFI_RED "MiCasa"
+#define WIFI_RED "MICASA"
 #define WIFI_CONTRASENIA "99agua_Azul"
 #define WIFI_TIMEOUT_MS 20000

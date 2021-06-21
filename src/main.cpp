@@ -8,8 +8,6 @@ void setup() {
 
 void loop() {
   maquinaEstadosGeneral();
-  // BORRAR
-  sleep(1);
 }
 
 /* ------------------ SECCIÓN INIT ------------------ */
@@ -70,7 +68,9 @@ void doInitMdESesonres() {
 
 /* ------------------ SECCIÓN GENERAR EVENTO ------------------ */
 
-
+/*
+* Genera los eventos para la MdE general en base al estado de la conexión WiFi.
+*/
 
 void generarEventoMdEGeneral(void) {
 
@@ -78,7 +78,7 @@ void generarEventoMdEGeneral(void) {
 
     // Medimos el punto de inicio
     unsigned long startTime = millis();
-    Serial.print("CONECTANDOSE AL WIFI");
+    
     // Hacemos que intente conectarse durante 20 ms
     while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
       // Hacer nada
@@ -91,6 +91,7 @@ void generarEventoMdEGeneral(void) {
     } else {
       // Marcamos que logro conectarse a WiFI
       primeraConexion = false;
+
       glbEvento = EVT_CONEXION_EXITOSA;
     }
   } else {
@@ -129,22 +130,22 @@ void maquinaEstadosGeneral() {
     switch(glbEstado) {
         
         case ST_INACTIVO:
-            Serial.print("INACTIVO");
+            Serial.println("INACTIVO");
             stInactivo();
             break;
 
         case ST_REALIZANDO_CONEXION_WIFI:
-            Serial.print("REALIZANDO COENXION");
+            Serial.println("REALIZANDO COENXION");
             stRealizandoConexionWifi();
             break;
 
         case ST_CONECTADO_WIFI:
-            Serial.print("CONECTADO");
+            Serial.println("CONECTADO");
             stConectandoWifi();
             break;
 
         case ST_DETECTANDO_OBJETO:
-            Serial.print("DETECTANDO OBJETO");
+            Serial.println("DETECTANDO OBJETO");
             for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
               maquinaEstadosSensoresDistancia(i);
             }
