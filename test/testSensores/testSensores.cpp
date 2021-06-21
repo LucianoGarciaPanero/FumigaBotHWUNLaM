@@ -1,6 +1,6 @@
 #include <ArduinoFake.h>
 #include <unity.h>
-#include <Sensores.h>
+#include <sensores.h>
 
 using namespace fakeit;
 
