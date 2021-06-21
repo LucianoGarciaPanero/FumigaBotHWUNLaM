@@ -34,9 +34,6 @@ void doInit(){
 
   // Inicialización MdE
   doInitMdEGeneral();
-
-  // BORRAR
-  Serial.begin(VEL_TRANSMISION);
 }
 
 /*
@@ -82,7 +79,6 @@ void generarEventoMdEGeneral(void) {
     // Hacemos que intente conectarse durante 20 ms
     while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
       // Hacer nada
-      Serial.print(".");
     }
 
     // Verificamos si se logra conectar
@@ -130,22 +126,18 @@ void maquinaEstadosGeneral() {
     switch(glbEstado) {
         
         case ST_INACTIVO:
-            Serial.println("INACTIVO");
             stInactivo();
             break;
 
         case ST_REALIZANDO_CONEXION_WIFI:
-            Serial.println("REALIZANDO COENXION");
             stRealizandoConexionWifi();
             break;
 
         case ST_CONECTADO_WIFI:
-            Serial.println("CONECTADO");
             stConectandoWifi();
             break;
 
         case ST_DETECTANDO_OBJETO:
-            Serial.println("DETECTANDO OBJETO");
             for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
               maquinaEstadosSensoresDistancia(i);
             }
