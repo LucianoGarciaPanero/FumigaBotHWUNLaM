@@ -44,7 +44,7 @@ void doInitMdEGeneral(void){
     
   // Inicializamos estados generales
   glbEstado = ST_INACTIVO;
-  glbEstado = EVT_CONTINUAR;
+  glbEvento = EVT_CONTINUAR;
 
   // Inicialización MdE sensores
   doInitMdESesonres();
