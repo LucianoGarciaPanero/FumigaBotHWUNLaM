@@ -46,9 +46,9 @@ void maquinaEstadosGeneral(void);
 
 void stInactivo(void);
 void stRealizandoConexionWifi(void);
-void stConectandoWifi(void);
+void stConectadoWifi(void);
 void stRealizandoConexionFB(void);
-void stConectandoFB(void);
+void stConectadoFB(void);
 
 
 // MdE sensores

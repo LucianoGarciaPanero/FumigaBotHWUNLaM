@@ -126,22 +126,30 @@ void maquinaEstadosGeneral() {
     switch(glbEstado) {
         
         case ST_INACTIVO:
-            stInactivo();
-            break;
+          stInactivo();
+          break;
 
         case ST_REALIZANDO_CONEXION_WIFI:
-            stRealizandoConexionWifi();
-            break;
+          stRealizandoConexionWifi();
+          break;
 
         case ST_CONECTADO_WIFI:
-            stConectandoWifi();
-            break;
+          stConectadoWifi();
+          break;
+
+        case ST_REALIZANDO_CONEXION_FB:
+          stRealizandoConexionFB();
+          break;
+        
+        case ST_CONECTADO_FB:
+          stConectadoFB();
+          break;
 
         case ST_DETECTANDO_OBJETO:
-            for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
-              maquinaEstadosSensoresDistancia(i);
-            }
-            break;
+          for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
+            maquinaEstadosSensoresDistancia(i);
+          }
+          break;
 
         default:
             break;
@@ -184,7 +192,7 @@ void stRealizandoConexionWifi(void) {
   }
 }
 
-void stConectandoWifi(void) {
+void stConectadoWifi(void) {
 
   switch(glbEvento) {
 
