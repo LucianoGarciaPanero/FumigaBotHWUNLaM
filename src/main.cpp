@@ -34,6 +34,10 @@ void doInit(){
 
   // Inicialización MdE
   doInitMdEGeneral();
+
+  // Inicialización variables
+  conectadoWifi = false;
+  conectadoFB = false;
 }
 
 /*
@@ -71,7 +75,7 @@ void doInitMdESesonres() {
 
 void generarEventoMdEGeneral(void) {
 
-  if(primeraConexion) {
+  if(!conectadoWifi) {
 
     // Medimos el punto de inicio
     unsigned long startTime = millis();
@@ -83,14 +87,21 @@ void generarEventoMdEGeneral(void) {
 
     // Verificamos si se logra conectar
     if(WiFi.status() != WL_CONNECTED) {
+      
       glbEvento = EVT_ACABA_TIEMPO_WIFI;
+    
     } else {
-      // Marcamos que logro conectarse a WiFI
-      primeraConexion = false;
 
+      // Marcamos que logro conectarse a WiFI
+      conectadoWifi = true;
       glbEvento = EVT_CONEXION_EXITOSA_WIFI;
     }
+  } else if(!stConectadoFB) {
+
+
+
   } else {
+
     glbEvento = EVT_COMENZAR_DETECCION;
   }
 }
@@ -322,7 +333,7 @@ void stObjetoDetectado(int nro){
   }
 }
 
-/* ------------------ SECCIÓN WiFi ------------------ */
+/* ------------------ SECCIÓN CONEXIONES ------------------ */
 
 void conectarWifi() {
   
@@ -333,5 +344,14 @@ void conectarWifi() {
   WiFi.begin(WIFI_RED, WIFI_CONTRASENIA);
 
   // Marcamos que es la primera conexión que se realiza
-  primeraConexion = true;
+  conectadoWifi = false;
+}
+
+void conectarFB(void) {
+
+  // Iniciar conexión
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+
+  
+  conectadoFB = false;
 }

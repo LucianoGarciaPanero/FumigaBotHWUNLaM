@@ -42,6 +42,7 @@
 
 void doInit(void);
 void conectarWifi(void);
+void conectarFB(void);
 
 // MdE general
 void generarEventoMdEGeneral(void);
@@ -75,10 +76,15 @@ typedef struct {
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
 stSensorDistancia sensores[CANT_SENSORES_DISTANCIA];
-int pinesEcho[CANT_SENSORES_DISTANCIA] = PINES_ECHO;
-int pinesTrig[CANT_SENSORES_DISTANCIA] = PINES_TRIG;
+int pinesEcho[] = PINES_ECHO;
+int pinesTrig[] = PINES_TRIG;
 
 int glbEstado;
 int glbEvento;
 
-bool primeraConexion;
+bool conectadoWifi, conectadoFB;
+
+// Variables para Firebase
+FirebaseData fbData;
+
+//String path = ;

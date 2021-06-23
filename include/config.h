@@ -21,3 +21,7 @@
 #define WIFI_RED "MICASA"
 #define WIFI_CONTRASENIA "99agua_Azul"
 #define WIFI_TIMEOUT_MS 20000
+
+// FireBase
+#define FIREBASE_HOST "fumigabot-default-rtdb.firebaseio.com"
+#define FIREBASE_AUTH "mWGc6K24cfGsvWsJ73HkFMPrGq852SpK2g3yqMP2"
