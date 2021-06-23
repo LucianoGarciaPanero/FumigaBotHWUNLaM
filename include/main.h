@@ -1,5 +1,9 @@
+// Bibliotecas externas
 #include <Arduino.h>
 #include <WiFi.h>
+#include <FirebaseESP32.h>
+
+// Bibliotecas propias
 #include <sensores.h>
 #include <utilitarias.h>
 #include <config.h>
