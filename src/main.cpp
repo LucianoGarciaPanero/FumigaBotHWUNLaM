@@ -83,12 +83,12 @@ void generarEventoMdEGeneral(void) {
 
     // Verificamos si se logra conectar
     if(WiFi.status() != WL_CONNECTED) {
-      glbEvento = EVT_ACABA_TIEMPO;
+      glbEvento = EVT_ACABA_TIEMPO_WIFI;
     } else {
       // Marcamos que logro conectarse a WiFI
       primeraConexion = false;
 
-      glbEvento = EVT_CONEXION_EXITOSA;
+      glbEvento = EVT_CONEXION_EXITOSA_WIFI;
     }
   } else {
     glbEvento = EVT_COMENZAR_DETECCION;
@@ -179,11 +179,11 @@ void stInactivo(){
 void stRealizandoConexionWifi(void) {
   switch(glbEvento){
     
-    case EVT_ACABA_TIEMPO:
+    case EVT_ACABA_TIEMPO_WIFI:
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
-    case EVT_CONEXION_EXITOSA:
+    case EVT_CONEXION_EXITOSA_WIFI:
       glbEstado = ST_CONECTADO_WIFI;
       break;
     
@@ -196,16 +196,56 @@ void stConectadoWifi(void) {
 
   switch(glbEvento) {
 
-  case EVT_DESCONEXION:
+  case EVT_DESCONEXION_WIFI:
     glbEstado = ST_REALIZANDO_CONEXION_WIFI;
     break;
 
-  case EVT_COMENZAR_DETECCION:
-    glbEstado = ST_DETECTANDO_OBJETO;
+  case EVT_CONTINUAR:
+    glbEstado = ST_REALIZANDO_CONEXION_FB;
     break;
 
   default:
     break;
+  }
+}
+
+void stRealizandoConexionFB() {
+  switch(glbEvento){
+    
+    case EVT_ACABA_TIEMPO_FB:
+      glbEstado = ST_REALIZANDO_CONEXION_FB;
+      break;
+
+    case EVT_CONEXION_EXITOSA_FB:
+      glbEstado = ST_CONECTADO_FB;
+      break;
+
+    case EVT_DESCONEXION_WIFI:
+      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      break;
+    
+    default:
+      break;
+  }
+}
+
+void stConectadoFB() {
+  switch(glbEvento) {
+    
+    case EVT_DESCONEXION_FB:
+      glbEstado = ST_REALIZANDO_CONEXION_FB;
+      break;
+
+    case EVT_DESCONEXION_WIFI:
+      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      break;
+    
+    case EVT_COMENZAR_DETECCION:
+      glbEstado = ST_DETECTANDO_OBJETO;
+      break;
+    
+    default:
+      break;
   }
 }
 
