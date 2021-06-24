@@ -4,10 +4,13 @@
 
 void setup() {
   doInit();
+
+  Serial.begin(VEL_TRANSMISION);
 }
 
 void loop() {
   maquinaEstadosGeneral();
+  sleep(1);
 }
 
 /* ------------------ SECCIÓN INIT ------------------ */
@@ -82,28 +85,30 @@ void generarEventoMdEGeneral(void) {
     
     // Hacemos que intente conectarse durante 20 ms
     while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
-      // Hacer nada
     }
 
     // Verificamos si se logra conectar
     if(WiFi.status() != WL_CONNECTED) {
       
       glbEvento = EVT_ACABA_TIEMPO_WIFI;
-    
+      return;
     } else {
 
       // Marcamos que logro conectarse a WiFI
       conectadoWifi = true;
       glbEvento = EVT_CONEXION_EXITOSA_WIFI;
+      return;
     }
-  } else if(!stConectadoFB) {
-
-
-
-  } else {
-
-    glbEvento = EVT_COMENZAR_DETECCION;
   }
+
+  // Si ocurre una desconexión del wifi debemos volver a conectarnos nuevamente
+  if(WiFi.status() != WL_CONNECTED) {
+    glbEvento = EVT_DESCONEXION_WIFI;
+    return;
+  }
+
+  glbEvento = EVT_COMENZAR_DETECCION;
+  
 }
 
 /*
@@ -178,8 +183,8 @@ void stInactivo(){
   switch(glbEvento){
 
     case EVT_CONTINUAR:
-      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       conectarWifi();
+      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
     default:
@@ -191,6 +196,7 @@ void stRealizandoConexionWifi(void) {
   switch(glbEvento){
     
     case EVT_ACABA_TIEMPO_WIFI:
+      conectarWifi();
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
@@ -208,6 +214,7 @@ void stConectadoWifi(void) {
   switch(glbEvento) {
 
   case EVT_DESCONEXION_WIFI:
+    conectarWifi();
     glbEstado = ST_REALIZANDO_CONEXION_WIFI;
     break;
 
@@ -232,6 +239,7 @@ void stRealizandoConexionFB() {
       break;
 
     case EVT_DESCONEXION_WIFI:
+      conectarWifi();
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
@@ -248,6 +256,7 @@ void stConectadoFB() {
       break;
 
     case EVT_DESCONEXION_WIFI:
+      conectarWifi();
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
@@ -347,11 +356,11 @@ void conectarWifi() {
   conectadoWifi = false;
 }
 
+/*
 void conectarFB(void) {
 
   // Iniciar conexión
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-
-  
   conectadoFB = false;
 }
+*/
