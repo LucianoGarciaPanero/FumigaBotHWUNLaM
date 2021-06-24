@@ -3,14 +3,15 @@
 /* ------------------ CÓDIGO ------------------ */
 
 void setup() {
-  doInit();
-
+  
+  // Borrar
   Serial.begin(VEL_TRANSMISION);
+  
+  doInit();
 }
 
 void loop() {
   maquinaEstadosGeneral();
-  sleep(1);
 }
 
 /* ------------------ SECCIÓN INIT ------------------ */
