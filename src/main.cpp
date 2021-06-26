@@ -40,8 +40,8 @@ void doInit(){
   doInitMdEGeneral();
 
   // Inicialización variables
-  conectadoWifi = false;
   conectadoFB = false;
+  senialFumigar = false;
 }
 
 /*
@@ -79,36 +79,47 @@ void doInitMdESesonres() {
 
 void generarEventoMdEGeneral(void) {
 
-  if(!conectadoWifi) {
+  if(WiFi.status() != WL_CONNECTED) {
 
-    // Medimos el punto de inicio
-    unsigned long startTime = millis();
-    
-    // Hacemos que intente conectarse durante 20 ms
-    while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
-    }
+    // Realizamos la conexión a wifi
+    conectarWifi();
 
     // Verificamos si se logra conectar
     if(WiFi.status() != WL_CONNECTED) {
-      
-      glbEvento = EVT_ACABA_TIEMPO_WIFI;
-      return;
+      glbEvento = EVT_DESCONEXION_WIFI;
+    } else {
+      glbEvento = EVT_CONEXION_EXITOSA_WIFI;
+    }
+
+  } else if(!conectadoFB) {
+   
+    // Realizmaos la coneixón al Firebase
+    bool exito = conectarFB();
+  
+    // Verificamos que logro la conexión
+    if(exito) {
+
+      glbEvento = EVT_CONEXION_EXITOSA_FB;
+      conectadoFB = true;
+
     } else {
 
-      // Marcamos que logro conectarse a WiFI
-      conectadoWifi = true;
-      glbEvento = EVT_CONEXION_EXITOSA_WIFI;
-      return;
+      glbEvento = EVT_CONEXION_RECHAZADA_FB;
+      conectadoFB = false;
+
     }
-  }
+  } else if(senialFumigar) {
 
-  // Si ocurre una desconexión del wifi debemos volver a conectarnos nuevamente
-  if(WiFi.status() != WL_CONNECTED) {
-    glbEvento = EVT_DESCONEXION_WIFI;
-    return;
-  }
+    glbEvento = EVT_COMENZAR_DETECCION;
+    
+  } else if(glbEstado == ST_DETECTANDO_OBJETO) {
 
-  glbEvento = EVT_COMENZAR_DETECCION;
+    glbEvento = EVT_DETENER_DETECCION;
+  
+  } else {  
+    glbEvento = EVT_CONTINUAR;
+
+  } 
   
 }
 
@@ -150,10 +161,6 @@ void maquinaEstadosGeneral() {
           stRealizandoConexionWifi();
           break;
 
-        case ST_CONECTADO_WIFI:
-          stConectadoWifi();
-          break;
-
         case ST_REALIZANDO_CONEXION_FB:
           stRealizandoConexionFB();
           break;
@@ -163,9 +170,7 @@ void maquinaEstadosGeneral() {
           break;
 
         case ST_DETECTANDO_OBJETO:
-          for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
-            maquinaEstadosSensoresDistancia(i);
-          }
+          stDetectandoObjeto();
           break;
 
         default:
@@ -184,7 +189,6 @@ void stInactivo(){
   switch(glbEvento){
 
     case EVT_CONTINUAR:
-      conectarWifi();
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
@@ -196,13 +200,12 @@ void stInactivo(){
 void stRealizandoConexionWifi(void) {
   switch(glbEvento){
     
-    case EVT_ACABA_TIEMPO_WIFI:
-      conectarWifi();
+    case EVT_DESCONEXION_WIFI:
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
     case EVT_CONEXION_EXITOSA_WIFI:
-      glbEstado = ST_CONECTADO_WIFI;
+      glbEstado = ST_REALIZANDO_CONEXION_FB;
       break;
     
     default:
@@ -210,28 +213,10 @@ void stRealizandoConexionWifi(void) {
   }
 }
 
-void stConectadoWifi(void) {
-
-  switch(glbEvento) {
-
-  case EVT_DESCONEXION_WIFI:
-    conectarWifi();
-    glbEstado = ST_REALIZANDO_CONEXION_WIFI;
-    break;
-
-  case EVT_CONTINUAR:
-    glbEstado = ST_REALIZANDO_CONEXION_FB;
-    break;
-
-  default:
-    break;
-  }
-}
-
 void stRealizandoConexionFB() {
   switch(glbEvento){
     
-    case EVT_ACABA_TIEMPO_FB:
+    case EVT_CONEXION_RECHAZADA_FB:
       glbEstado = ST_REALIZANDO_CONEXION_FB;
       break;
 
@@ -240,7 +225,6 @@ void stRealizandoConexionFB() {
       break;
 
     case EVT_DESCONEXION_WIFI:
-      conectarWifi();
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
@@ -257,7 +241,6 @@ void stConectadoFB() {
       break;
 
     case EVT_DESCONEXION_WIFI:
-      conectarWifi();
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
@@ -266,6 +249,22 @@ void stConectadoFB() {
       break;
     
     default:
+      break;
+  }
+}
+
+void stDetectandoObjeto() {
+  switch(glbEvento) {
+    
+    case EVT_DETENER_DETECCION:
+      digitalWrite(PIN_LED, LOW);
+      glbEstado = ST_CONECTADO_FB;
+      break;
+    
+    default:
+        for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
+            maquinaEstadosSensoresDistancia(i);
+          }
       break;
   }
 }
@@ -343,7 +342,7 @@ void stObjetoDetectado(int nro){
   }
 }
 
-/* ------------------ SECCIÓN CONEXIONES ------------------ */
+/* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
 
 void conectarWifi() {
   
@@ -353,15 +352,54 @@ void conectarWifi() {
   // Comenzamos conexión
   WiFi.begin(WIFI_RED, WIFI_CONTRASENIA);
 
-  // Marcamos que es la primera conexión que se realiza
-  conectadoWifi = false;
+  // Medimos el punto de inicio
+  unsigned long startTime = millis();
+    
+  // Hacemos que intente conectarse durante 20 ms
+  while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {}
+
+}
+
+/* ------------------ SECCIÓN CONEXIÓN FIREBASE ------------------ */
+
+bool conectarFB(void) {
+
+  // Asignamos los datos de la base de datos en tiempo real
+  config.database_url = FIREBASE_URL;
+  config.signer.tokens.legacy_token = FIREBASE_SECRETO;
+  
+  // Hacemos la conexión
+  Firebase.begin(&config, &auth);
+
+  // Nos suscribimos a la hoja de fumigar
+  bool resultado =  Firebase.RTDB.beginStream(&fbConection, pathHojaFumigar.c_str());
+
+  // Establece las acciones cuando ocurre una actualización
+  Firebase.RTDB.setStreamCallback(&fbConection, streamCallback, streamTimeoutCallback);
+
+  return resultado;
+}
+
+
+/*
+* Función que se ejecuta cada vez que se recibe una actualización de Firebase.
+* Genera el evento para comenzar la detección.
+*/
+
+void streamCallback(FirebaseStream data) {
+  senialFumigar = data.boolData();
 }
 
 /*
-void conectarFB(void) {
-
-  // Iniciar conexión
-  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
-  conectadoFB = false;
-}
+* Esta función se ejecuta en caso de que se reciba un timeout.
 */
+
+void streamTimeoutCallback(bool timeout) {
+  if(timeout){
+
+    Serial.println("----------------------------------------------------------");
+    Serial.println("TIMEOUT");
+    Serial.println("----------------------------------------------------------");
+  
+  }
+}

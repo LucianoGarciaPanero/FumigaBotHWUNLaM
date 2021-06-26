@@ -1,7 +1,7 @@
 // Bibliotecas externas
 #include <Arduino.h>
 #include <WiFi.h>
-#include <FirebaseESP32.h>
+#include <Firebase_ESP_Client.h>
 
 // Bibliotecas propias
 #include <sensores.h>
@@ -13,7 +13,6 @@
 // Estados MdE general
 #define ST_INACTIVO                     0
 #define ST_REALIZANDO_CONEXION_WIFI     1
-#define ST_CONECTADO_WIFI               2
 #define ST_REALIZANDO_CONEXION_FB       3
 #define ST_CONECTADO_FB                 4
 #define ST_DETECTANDO_OBJETO            5
@@ -26,23 +25,27 @@
 
 // Eventos MdE general
 #define EVT_CONTINUAR                   0
-#define EVT_ACABA_TIEMPO_WIFI           1
-#define EVT_CONEXION_EXITOSA_WIFI       2
-#define EVT_DESCONEXION_WIFI            3
-#define EVT_ACABA_TIEMPO_FB             4
-#define EVT_CONEXION_EXITOSA_FB         5
-#define EVT_DESCONEXION_FB              6
-#define EVT_COMENZAR_DETECCION          7
+#define EVT_CONEXION_EXITOSA_WIFI       100
+#define EVT_DESCONEXION_WIFI            200
+#define EVT_CONEXION_RECHAZADA_FB       300
+#define EVT_CONEXION_EXITOSA_FB         400
+#define EVT_DESCONEXION_FB              600
+#define EVT_COMENZAR_DETECCION          700
+#define EVT_DETENER_DETECCION           800
 
 // Eventos MdE sensores distancia
-#define EVT_OBJETO_FUERA_RANGO          8
-#define EVT_OBJETO_DENTRO_RANGO         9
+#define EVT_OBJETO_FUERA_RANGO          900
+#define EVT_OBJETO_DENTRO_RANGO         10000
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
 void doInit(void);
 void conectarWifi(void);
-void conectarFB(void);
+
+// Conexión Firebase
+bool conectarFB(void);
+void streamCallback(FirebaseStream);
+void streamTimeoutCallback(bool);
 
 // MdE general
 void generarEventoMdEGeneral(void);
@@ -51,9 +54,9 @@ void maquinaEstadosGeneral(void);
 
 void stInactivo(void);
 void stRealizandoConexionWifi(void);
-void stConectadoWifi(void);
 void stRealizandoConexionFB(void);
 void stConectadoFB(void);
+void stDetectandoObjeto(void);
 
 
 // MdE sensores
@@ -82,9 +85,14 @@ int pinesTrig[] = PINES_TRIG;
 int glbEstado;
 int glbEvento;
 
-bool conectadoWifi, conectadoFB;
+
+// Banderas
+bool conectadoFB;
+bool senialFumigar;
 
 // Variables para Firebase
-FirebaseData fbData;
+FirebaseData fbConection;
+FirebaseConfig config;
+FirebaseAuth auth;
 
-//String path = ;
+const String pathHojaFumigar = "/robots/0/fumigando";
