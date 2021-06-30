@@ -9,8 +9,9 @@
 /* -------- BATERÍA --------  */
 
 // Valores dominio
-#define CONSTANTE_CORRECCION_VOLTAJE_BATERIA 2 * 3.3 / 4095
+#define CONSTANTE_CORRECCION_VOLTAJE_BATERIA 2 * 3.3 / 4096
 #define VOLTAJE_MIN_ESP 5
 
 /* -------- FUNCIONES --------  */
 long obtenerDistancia(int, int);
+float obtenerNivelBateria(int, int, int);
