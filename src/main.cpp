@@ -6,6 +6,9 @@ void setup() {
   
   // Borrar
   Serial.begin(VEL_TRANSMISION);
+
+  // Inicialización pines, variables, etc.
+  doInit();
   
   // Inicialización de tareas
   xTaskCreatePinnedToCore(
@@ -18,46 +21,71 @@ void setup() {
     0);             // Número de procesador
 
   xTaskCreatePinnedToCore(
-    codigoTaskUno, // Código a ejecutar
+    codigoTaskUno,  // Código a ejecutar
     "Task1",        // Un identificador
     10000,          // Tamaño del stack
     NULL,           // Parámetros que recibe el código
     1,              // Prioridad
     &task1,         // Objeto para manejar la task
     1);             // Número de procesador
-
-  doInit();
 }
 
-void loop() {}
+void loop() {vTaskDelete(NULL);}
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
 
 /*
 * Código a ejecutar en el core 0.
+* Máquina de estados para hacer la detección de objetos
 */
 
 void codigoTaskCero(void *param) {
   
   /* SETUP */
+  
+  // Inicialización MdE sensores
+  doInitMdESesonres();
 
   /* LOOP */
   while(true) {
-    // TODO
+
+    //  Solo se ejecuta la MdE de fumgar si se recibe la señal del Firebase.
+    if(senialFumigar) {
+
+      // Recorremos todos los sensores y ejecutamos sus MdE
+     for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
+            maquinaEstadosSensoresDistancia(i);
+      }
+
+    } else {
+     digitalWrite(PIN_LED, LOW);
+    }
+   
+    // Le damos tiempo a las tareas en background a ejecutarse
+    delay(10);
   }
 }
 
 /*
 * Código a ejecutar en el core 1.
+* Máquina de estados para la conexión a internet y conectarse a Wifi y FB.
 */
 
 void codigoTaskUno(void *param) {
   
   /* SETUP */
+  
+  // Inicialización MdE
+  doInitMdEGeneral();
 
   /* LOOP */
   while(true) {
-    // TODO
+    
+    maquinaEstadosGeneral();
+
+    
+    // Le damos tiempo a las tareas en background a ejecutarse
+    delay(10);
   }
 }
 
@@ -83,9 +111,6 @@ void doInit(){
     pinMode(sensores[i].pinTrig, OUTPUT);
   }
 
-  // Inicialización MdE
-  doInitMdEGeneral();
-
   // Inicialización variables
   conectadoFB = false;
   senialFumigar = false;
@@ -100,9 +125,6 @@ void doInitMdEGeneral(void){
   // Inicializamos estados generales
   glbEstado = ST_INACTIVO;
   glbEvento = EVT_CONTINUAR;
-
-  // Inicialización MdE sensores
-  doInitMdESesonres();
 }
 
 /*
@@ -155,15 +177,8 @@ void generarEventoMdEGeneral(void) {
       conectadoFB = false;
 
     }
-  } else if(senialFumigar) {
-
-    glbEvento = EVT_COMENZAR_DETECCION;
-    
-  } else if(glbEstado == ST_DETECTANDO_OBJETO) {
-
-    glbEvento = EVT_DETENER_DETECCION;
-  
   } else {  
+    
     glbEvento = EVT_CONTINUAR;
 
   } 
@@ -214,10 +229,6 @@ void maquinaEstadosGeneral() {
         
         case ST_CONECTADO_FB:
           stConectadoFB();
-          break;
-
-        case ST_DETECTANDO_OBJETO:
-          stDetectandoObjeto();
           break;
 
         default:
@@ -300,21 +311,6 @@ void stConectadoFB() {
   }
 }
 
-void stDetectandoObjeto() {
-  switch(glbEvento) {
-    
-    case EVT_DETENER_DETECCION:
-      digitalWrite(PIN_LED, LOW);
-      glbEstado = ST_CONECTADO_FB;
-      break;
-    
-    default:
-        for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
-            maquinaEstadosSensoresDistancia(i);
-          }
-      break;
-  }
-}
 
 /* ------------------ SECCIÓN MdE SENSORES DISTANCIA ------------------ */
 

@@ -58,7 +58,6 @@ void stInactivo(void);
 void stRealizandoConexionWifi(void);
 void stRealizandoConexionFB(void);
 void stConectadoFB(void);
-void stDetectandoObjeto(void);
 
 // MdE sensores
 int generarEventoMdESensorDistancia(int, int);
