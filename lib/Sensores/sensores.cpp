@@ -2,8 +2,9 @@
 #include <Arduino.h>
 
 /*
-* Esta función se encarga de obtener la distancia que se encuentra un objeto en frente 
-* del sensor de ultrasonido identificado, pasado los pines donde se ubican el trigger y echo
+* Esta función se encarga de obtener la distancia que se encuentra un objeto en
+* frente del sensor de ultrasonido identificado, pasado los pines donde se 
+* ubican el trigger y echo
 */
 
 long obtenerDistancia(int trigPin, int echoPin) {
@@ -22,4 +23,18 @@ long obtenerDistancia(int trigPin, int echoPin) {
 
   // Calculamos la distancia del objeto
   return (duracion / VALOR_CORRECCION_ONDA) * VELOCIDAD_SONIDO_CM;
+}
+
+/*
+* Lee la tensión que entra por el pin especificado. Calcula el nivel de 
+* batería de acuerdo a la tensión mínima de esta y la max
+*/
+
+float obtenerNivelBateria(int pin, int vMin, int vMax) {
+
+  // Leemos el voltaje de entrada por el pin
+  float vIn = analogRead(pin) * CONSTANTE_CORRECCION_VOLTAJE_BATERIA;
+
+  // Calculamos el porcentaje de la carga y lo retornamos
+  return 100 * (vIn - vMin) / (vMax - vIn);
 }

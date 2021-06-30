@@ -25,3 +25,6 @@
 // FireBase
 #define FIREBASE_URL "fumigabot-default-rtdb.firebaseio.com"
 #define FIREBASE_SECRETO "mWGc6K24cfGsvWsJ73HkFMPrGq852SpK2g3yqMP2"
+
+// Batería
+#define VOLTAJE_MAX_BATERIA 6.6
