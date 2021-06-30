@@ -5,8 +5,9 @@
 using namespace fakeit;
 
 // Variables globales que necesitamos
-int vMin = 5;
-int vMax = 6;
+float vMin = 5;
+float vMax = 6.6;
+float delta = 0.05;
 
 void testObtenerDistancia(void) {
     
@@ -26,32 +27,58 @@ void testObtenerDistancia(void) {
     TEST_ASSERT_EQUAL(expectedDistance, currentDistance);
 }
 
-void testObtenerNivelBateriaMinimo(void){
+/*
+* Testeamos que el límite inferior (0%).
+*/
+
+void testObtenerNivelBateriaMinimo(void) {
 
     // Arrange
-    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3103.030303);
+    // Para un Vin de 2.5V le corresponde un valor de 3102.2727...
+    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3102);
     float expectedNivel = 0;
 
     // Act
     float actualNivel = obtenerNivelBateria(1, vMin, vMax);
 
     // Assert
-    Verify(Method(ArduinoFake(), analogRead)).Exactly(1_Times);
-    TEST_ASSERT_TRUE(abs(expectedNivel - actualNivel) < 0.01);
+    TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
 }
+
+/*
+* Testeamos el límite superior(100%).
+*/
 
 void testObtenerNivelBateriaMaximo(void){
 
     // Arrange
-    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(4096);
+    // Para un Vin de 3.3V le corresponde un valor de 4095
+    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(4095);
     float expectedNivel = 100;
 
     // Act
     float actualNivel = obtenerNivelBateria(1, vMin, vMax);
 
     // Assert
-    Verify(Method(ArduinoFake(), analogRead)).Exactly(1_Times);
-    TEST_ASSERT_TRUE(abs(expectedNivel - actualNivel) < 0.01);
+    TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
+}
+
+/*
+* Testeamos por debajo del límite inferior (< 0%)
+*/
+
+void testObtenerNivelBateriaNegativo(void) {
+    
+    // Arrange
+    // Para un Vin de 2.4V le corresponde un valor de 2978.181818
+    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(2978.181818);
+    float expectedNivel = ERROR_BATERIA;
+
+    // Act
+    float actualNivel = obtenerNivelBateria(1, vMin, vMax);
+
+    // Assert
+    TEST_ASSERT_EQUAL(expectedNivel, actualNivel);
 }
 
 int main(int argc, char **argv) {
@@ -62,6 +89,7 @@ int main(int argc, char **argv) {
     RUN_TEST(testObtenerDistancia);
     RUN_TEST(testObtenerNivelBateriaMinimo);
     RUN_TEST(testObtenerNivelBateriaMaximo);
+    RUN_TEST(testObtenerNivelBateriaNegativo);
 
     // Finalizan los test
     UNITY_END();
