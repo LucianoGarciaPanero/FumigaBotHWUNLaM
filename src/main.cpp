@@ -7,11 +7,58 @@ void setup() {
   // Borrar
   Serial.begin(VEL_TRANSMISION);
   
+  // Inicialización de tareas
+  xTaskCreatePinnedToCore(
+    codigoTaskCero, // Código a ejecutar
+    "Task0",        // Un identificador
+    10000,          // Tamaño del stack
+    NULL,           // Parámetros que recibe el código
+    1,              // Prioridad
+    &task0,         // Objeto para manejar la task
+    0);             // Número de procesador
+
+  xTaskCreatePinnedToCore(
+    codigoTaskUno, // Código a ejecutar
+    "Task1",        // Un identificador
+    10000,          // Tamaño del stack
+    NULL,           // Parámetros que recibe el código
+    1,              // Prioridad
+    &task1,         // Objeto para manejar la task
+    1);             // Número de procesador
+
   doInit();
 }
 
-void loop() {
-  maquinaEstadosGeneral();
+void loop() {}
+
+/* ------------------ SECCIÓN TAREAS ------------------ */
+
+/*
+* Código a ejecutar en el core 0.
+*/
+
+void codigoTaskCero(void *param) {
+  
+  /* SETUP */
+
+  /* LOOP */
+  while(true) {
+    // TODO
+  }
+}
+
+/*
+* Código a ejecutar en el core 1.
+*/
+
+void codigoTaskUno(void *param) {
+  
+  /* SETUP */
+
+  /* LOOP */
+  while(true) {
+    // TODO
+  }
 }
 
 /* ------------------ SECCIÓN INIT ------------------ */

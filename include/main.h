@@ -40,6 +40,8 @@
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
 void doInit(void);
+
+// Conexión WiFI
 void conectarWifi(void);
 
 // Conexión Firebase
@@ -58,7 +60,6 @@ void stRealizandoConexionFB(void);
 void stConectadoFB(void);
 void stDetectandoObjeto(void);
 
-
 // MdE sensores
 int generarEventoMdESensorDistancia(int, int);
 void doInitMdESesonres(void);
@@ -66,6 +67,10 @@ void maquinaEstadosSensoresDistancia(int);
 
 void stObjetoNoDetectado(int);
 void stObjetoDetectado(int);
+
+// Ejecutar tareas en paralelo
+void codigoTaskCero(void*);
+void codigoTaskUno(void*);
 
 /* ------------------ ESTRUCTURAS ------------------ */
 
@@ -96,3 +101,7 @@ FirebaseConfig config;
 FirebaseAuth auth;
 
 const String pathHojaFumigar = "/robots/0/fumigando";
+
+// Para ejecutar en paralelo
+TaskHandle_t task0;
+TaskHandle_t task1;
