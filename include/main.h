@@ -17,6 +17,13 @@
 #define EVT_OBJETO_FUERA_RANGO          1000
 #define EVT_OBJETO_DENTRO_RANGO         1025
 
+// Funciones
+void doInitMdESesonres(void);
+void maquinaEstadosSensoresDistancia(int);
+int generarEventoMdESensorDistancia(int, int);
+void stObjetoNoDetectado(int);
+void stObjetoDetectado(int);
+
 /* ------------------ MdE CONEXIONES ------------------ */
 // Estados
 #define ST_REALIZANDO_CONEXION_WIFI     100
@@ -31,6 +38,14 @@
 #define EVT_CONEXION_EXITOSA_FB         1100
 #define EVT_DESCONEXION_FB              1125
 
+// Funciones
+void doInitMdEConexiones(void);
+void maquinaEstadosConexiones(int);
+void generarEventoMdEConexiones(void);
+void stRealizandoConexionWiFi(void);
+void stRealizandoConexionFB(void);
+void stConectadoFB(void);
+
 /* ------------------ MdE BATERÍA ------------------ */
 // Estados
 #define ST_DETECTANDO_CARGA_BATERIA     100
@@ -38,6 +53,13 @@
 
 // Eventos
 #define EVT_COMUNICAR_CARGA             1000
+
+// Funciones
+void doInitMdEBateria(void);
+void maquinaEstadosBateria(int);
+void generarEventoMdEBateria(void);
+void stDetectandoCargaBateria(void);
+void stComunicandoCargaFB(void);
 
 /* ------------------ MdE GENERAL ------------------ */
 // Estados
@@ -50,8 +72,12 @@
 #define EVT_DETECTAR_CARGA_BATERIA      1025
 #define EVT_REALIZAR_CONEXION           1050
 
+// MdE general
+void doInitMdEGeneral(void);
+void generarEventoMdEGeneral(void);
+void maquinaEstadosGeneral(void);
 
-/* ------------------ DECLARACIÓN FUNCIONES ------------------ */
+/* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 
 void doInit(void);
 
@@ -62,24 +88,6 @@ void conectarWifi(void);
 bool conectarFB(void);
 void streamCallback(FirebaseStream);
 void streamTimeoutCallback(bool);
-
-// MdE general
-void generarEventoMdEGeneral(void);
-void doInitMdEGeneral(void);
-void maquinaEstadosGeneral(void);
-
-void stInactivo(void);
-void stRealizandoConexionWifi(void);
-void stRealizandoConexionFB(void);
-void stConectadoFB(void);
-
-// MdE sensores
-int generarEventoMdESensorDistancia(int, int);
-void doInitMdESesonres(void);
-void maquinaEstadosSensoresDistancia(int);
-
-void stObjetoNoDetectado(int);
-void stObjetoDetectado(int);
 
 // Ejecutar tareas en paralelo
 void codigoTaskCero(void*);
