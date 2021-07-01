@@ -8,34 +8,48 @@
 #include <utilitarias.h>
 #include <config.h>
 
-/* ------------------ ESTADOS ------------------ */
+/* ------------------ MdE SENSORES ------------------ */
+// Estados
+#define ST_OBJETO_NO_DETECTADO          100
+#define ST_OBJETO_DETECTADO             125
 
-// Estados MdE general
-#define ST_INACTIVO                     0
-#define ST_REALIZANDO_CONEXION_WIFI     1
-#define ST_REALIZANDO_CONEXION_FB       3
-#define ST_CONECTADO_FB                 4
-#define ST_DETECTANDO_OBJETO            5
+// Eventos
+#define EVT_OBJETO_FUERA_RANGO          1000
+#define EVT_OBJETO_DENTRO_RANGO         1025
 
-// Estados MdE sensores distancia
-#define ST_OBJETO_NO_DETECTADO          6
-#define ST_OBJETO_DETECTADO             7
+/* ------------------ MdE CONEXIONES ------------------ */
+// Estados
+#define ST_REALIZANDO_CONEXION_WIFI     100
+#define ST_REALIZANDO_CONEXION_FB       125
+#define ST_CONECTADO_FB                 150
 
-/* ------------------ EVENTOS ------------------ */
+// Eventos
+#define EVT_CONTINUAR                   1000
+#define EVT_CONEXION_EXITOSA_WIFI       1025
+#define EVT_DESCONEXION_WIFI            1050
+#define EVT_CONEXION_RECHAZADA_FB       1075
+#define EVT_CONEXION_EXITOSA_FB         1100
+#define EVT_DESCONEXION_FB              1125
 
-// Eventos MdE general
-#define EVT_CONTINUAR                   0
-#define EVT_CONEXION_EXITOSA_WIFI       100
-#define EVT_DESCONEXION_WIFI            200
-#define EVT_CONEXION_RECHAZADA_FB       300
-#define EVT_CONEXION_EXITOSA_FB         400
-#define EVT_DESCONEXION_FB              600
-#define EVT_COMENZAR_DETECCION          700
-#define EVT_DETENER_DETECCION           800
+/* ------------------ MdE BATERÍA ------------------ */
+// Estados
+#define ST_DETECTANDO_CARGA_BATERIA     100
+#define ST_COMUNICANDO_CARGA_FB         125
 
-// Eventos MdE sensores distancia
-#define EVT_OBJETO_FUERA_RANGO          900
-#define EVT_OBJETO_DENTRO_RANGO         10000
+// Eventos
+#define EVT_COMUNICAR_CARGA             1000
+
+/* ------------------ MdE GENERAL ------------------ */
+// Estados
+#define ST_INACTIVO                     100
+#define ST_REALIZANDO_CONEXIONES        125
+#define ST_DETECTANDO_CARGA_BATERIA     150
+
+// Eventos
+#define EVT_CONTINUAR                   1000
+#define EVT_DETECTAR_CARGA_BATERIA      1025
+#define EVT_REALIZAR_CONEXION           1050
+
 
 /* ------------------ DECLARACIÓN FUNCIONES ------------------ */
 
