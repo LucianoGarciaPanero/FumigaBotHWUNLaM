@@ -61,9 +61,12 @@ int evtConexiones;
 // Funciones
 void doInitMdEBateria(void);
 void generarEventoMdEBateria(void);
-void maquinaEstadosBateria(int);
-void stDetectandoCargaBateria(void);
-void stComunicandoCargaFB(void);
+void maquinaEstadosBateria(void);
+void stCalculandoNivelBateria(void);
+
+// Variables globales
+int stBateria;
+int evtBateria;
 
 /* ------------------ MdE GENERAL ------------------ */
 // Estados

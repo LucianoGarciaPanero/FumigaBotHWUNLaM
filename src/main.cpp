@@ -301,7 +301,7 @@ void generarEventoMdEConexiones(void) {
 * Implementación de cada uno de los estados de MdE.
 */
 
-void maquinaEstadosBateria() {
+void maquinaEstadosConexiones() {
     
     // Segun el estado en el que nos encontramos llamamos a una función
     switch(stConexiones) {
@@ -388,16 +388,54 @@ void stConectadoFB() {
 * Inicializa los estados correspondientes con la MdE.
 */
 
+void doInitMdEBateria(void) {
+  stBateria = ST_CALCULANDO_NIVEL_BATERIA;
+  evtBateria = EVT_COMUNICAR_CARGA;
+}
 
 /*
 * Genera los eventos para la MdE.
 */
 
+void generarEventoMdEBateria(void) {
+  // TODO
+}
+
 /*
 * Implementación de cada uno de los estados de la MdE.
 */
 
-/* ------------------ SECCIÓN MdE BATERÍA ------------------ */
+void maquinaEstadosBateria(void) {
+  switch(stBateria)  {
+  
+  case ST_CALCULANDO_NIVEL_BATERIA:
+    stCalculandoNivelBateria();
+    break;
+  
+  case ST_COMUNICANDO_CARGA_FB:
+    // TODO: Finalizar esta MdE
+    break;
+
+  default:
+    break;
+  }
+
+  generarEventoMdEBateria();
+}
+
+void stCalculandoNivelBateria(void) {
+  switch(evtBateria) {
+
+    case EVT_COMUNICAR_CARGA:
+      stBateria =  ST_COMUNICANDO_CARGA_FB;
+      break;
+
+    default:
+      break;
+  }
+}
+
+/* ------------------ SECCIÓN MdE GENERAL ------------------ */
 
 /*
 * Inicializa los estados correspondientes con la MdE.
@@ -410,12 +448,6 @@ void stConectadoFB() {
 
 /*
 * Implementación de cada uno de los estados de la MdE.
-
-
-/* ------------------ SECCIÓN MdE GENERAL ------------------ */
-
-/*
-* Implementación de cada uno de los estados de la máquina de estados.
 */
 
 void maquinaEstadosGeneral() {}
