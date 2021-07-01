@@ -127,19 +127,6 @@ void doInitMdEGeneral(void){
   glbEvento = EVT_CONTINUAR;
 }
 
-/*
-* Inicializa los estados correspondientes con la MdE de los sensores.
-*/
-
-void doInitMdESesonres() {
-  
-    // Inicializamos los estados
-    for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
-      sensores[i].estado = ST_OBJETO_DETECTADO;
-      sensores[i].evento = EVT_OBJETO_FUERA_RANGO;
-    }
-}
-
 /* ------------------ SECCIÓN GENERAR EVENTO ------------------ */
 
 /*
@@ -184,6 +171,20 @@ void generarEventoMdEGeneral(void) {
   } 
   
 }
+/* ------------------ SECCIÓN MdE SENSORES ------------------ */
+
+/*
+* Inicializa los estados correspondientes con la MdE de los sensores.
+*/
+
+void doInitMdESesonres() {
+  
+    // Inicializamos los estados
+    for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
+      sensores[i].estado = ST_OBJETO_DETECTADO;
+      sensores[i].evento = EVT_OBJETO_FUERA_RANGO;
+    }
+}
 
 /*
 * Genera un evento a partir de analizar los sensores.
@@ -205,6 +206,79 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
     return EVT_OBJETO_DENTRO_RANGO;
   } else {
     return EVT_OBJETO_FUERA_RANGO;
+  }
+}
+
+void maquinaEstadosSensoresDistancia(int nro) {
+
+    switch(sensores[nro].estado) {
+      case ST_OBJETO_NO_DETECTADO:
+        stObjetoNoDetectado(nro);
+        break;
+
+      case ST_OBJETO_DETECTADO:
+        stObjetoDetectado(nro);
+        break;
+    
+      default:
+        break;
+      }
+    
+    // Generación evento para próxima pasada
+    sensores[nro].evento = generarEventoMdESensorDistancia(
+      sensores[nro].pinTrig, 
+      sensores[nro].pinEcho);
+  }
+
+/*
+* Implementación de cada uno de los estados de la máquina de estados.
+*/
+
+void stObjetoNoDetectado(int nro){
+  switch(sensores[nro].evento){
+
+    case EVT_OBJETO_FUERA_RANGO:
+      // Apagamos LED
+      digitalWrite(PIN_LED, LOW);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
+      break;
+
+    case EVT_OBJETO_DENTRO_RANGO:
+      // Encendemos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_DETECTADO;
+      break;
+    
+    default:
+      break;
+  }
+}
+
+void stObjetoDetectado(int nro){
+  switch(sensores[nro].evento){
+
+    case EVT_OBJETO_FUERA_RANGO:
+      // Apagamos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
+      break;
+
+    case EVT_OBJETO_DENTRO_RANGO:
+      // Encendemos el LED
+      digitalWrite(PIN_LED, HIGH);
+
+      // Cambiamos de estado
+      sensores[nro].estado = ST_OBJETO_DETECTADO;
+      break;
+    
+    default:
+      break;
   }
 }
 
@@ -304,80 +378,6 @@ void stConectadoFB() {
     
     case EVT_COMENZAR_DETECCION:
       glbEstado = ST_DETECTANDO_OBJETO;
-      break;
-    
-    default:
-      break;
-  }
-}
-
-
-/* ------------------ SECCIÓN MdE SENSORES DISTANCIA ------------------ */
-
-void maquinaEstadosSensoresDistancia(int nro) {
-
-    switch(sensores[nro].estado) {
-      case ST_OBJETO_NO_DETECTADO:
-        stObjetoNoDetectado(nro);
-        break;
-
-      case ST_OBJETO_DETECTADO:
-        stObjetoDetectado(nro);
-        break;
-    
-      default:
-        break;
-      }
-    
-    // Generación evento para próxima pasada
-    sensores[nro].evento = generarEventoMdESensorDistancia(sensores[nro].pinTrig, sensores[nro].pinEcho);
-  }
-
-/*
-* Implementación de cada uno de los estados de la máquina de estados.
-*/
-
-void stObjetoNoDetectado(int nro){
-  switch(sensores[nro].evento){
-
-    case EVT_OBJETO_FUERA_RANGO:
-      // Apagamos LED
-      digitalWrite(PIN_LED, LOW);
-
-      // Cambiamos de estado
-      sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
-      break;
-
-    case EVT_OBJETO_DENTRO_RANGO:
-      // Encendemos el LED
-      digitalWrite(PIN_LED, HIGH);
-
-      // Cambiamos de estado
-      sensores[nro].estado = ST_OBJETO_DETECTADO;
-      break;
-    
-    default:
-      break;
-  }
-}
-
-void stObjetoDetectado(int nro){
-  switch(sensores[nro].evento){
-
-    case EVT_OBJETO_FUERA_RANGO:
-      // Apagamos el LED
-      digitalWrite(PIN_LED, HIGH);
-
-      // Cambiamos de estado
-      sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
-      break;
-
-    case EVT_OBJETO_DENTRO_RANGO:
-      // Encendemos el LED
-      digitalWrite(PIN_LED, HIGH);
-
-      // Cambiamos de estado
-      sensores[nro].estado = ST_OBJETO_DETECTADO;
       break;
     
     default:

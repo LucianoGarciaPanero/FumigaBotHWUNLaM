@@ -19,8 +19,8 @@
 
 // Funciones
 void doInitMdESesonres(void);
-void maquinaEstadosSensoresDistancia(int);
 int generarEventoMdESensorDistancia(int, int);
+void maquinaEstadosSensoresDistancia(int);
 void stObjetoNoDetectado(int);
 void stObjetoDetectado(int);
 
@@ -40,8 +40,8 @@ void stObjetoDetectado(int);
 
 // Funciones
 void doInitMdEConexiones(void);
-void maquinaEstadosConexiones(int);
 void generarEventoMdEConexiones(void);
+void maquinaEstadosConexiones(int);
 void stRealizandoConexionWiFi(void);
 void stRealizandoConexionFB(void);
 void stConectadoFB(void);
@@ -56,8 +56,8 @@ void stConectadoFB(void);
 
 // Funciones
 void doInitMdEBateria(void);
-void maquinaEstadosBateria(int);
 void generarEventoMdEBateria(void);
+void maquinaEstadosBateria(int);
 void stDetectandoCargaBateria(void);
 void stComunicandoCargaFB(void);
 
@@ -73,8 +73,8 @@ void stComunicandoCargaFB(void);
 #define EVT_REALIZAR_CONEXION           1050
 
 // MdE general
-void doInitMdEGeneral(void);
 void generarEventoMdEGeneral(void);
+void doInitMdEGeneral(void);
 void maquinaEstadosGeneral(void);
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
