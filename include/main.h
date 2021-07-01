@@ -41,7 +41,7 @@ void stObjetoDetectado(int);
 // Funciones
 void doInitMdEConexiones(void);
 void generarEventoMdEConexiones(void);
-void maquinaEstadosConexiones(int);
+void maquinaEstadosConexiones(void);
 void stRealizandoConexionWiFi(void);
 void stRealizandoConexionFB(void);
 void stConectadoFB(void);

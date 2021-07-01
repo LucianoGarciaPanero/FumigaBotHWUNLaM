@@ -120,12 +120,7 @@ void doInit(){
 * Inicializa los estados correspondientes con la MdE general.
 */
 
-void doInitMdEGeneral(void){
-    
-  // Inicializamos estados generales
-  glbEstado = ST_INACTIVO;
-  glbEvento = EVT_CONTINUAR;
-}
+void doInitMdEGeneral(void){}
 
 /* ------------------ SECCIÓN GENERAR EVENTO ------------------ */
 
@@ -209,6 +204,10 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   }
 }
 
+/*
+* Implementación de cada uno de los estados de la máquina de estados.
+*/
+
 void maquinaEstadosSensoresDistancia(int nro) {
 
     switch(sensores[nro].estado) {
@@ -229,10 +228,6 @@ void maquinaEstadosSensoresDistancia(int nro) {
       sensores[nro].pinTrig, 
       sensores[nro].pinEcho);
   }
-
-/*
-* Implementación de cada uno de los estados de la máquina de estados.
-*/
 
 void stObjetoNoDetectado(int nro){
   switch(sensores[nro].evento){
@@ -282,19 +277,72 @@ void stObjetoDetectado(int nro){
   }
 }
 
-/* ------------------ SECCIÓN MdE GENERAL ------------------ */
+/* ------------------ SECCIÓN MdE CONEXIONES ------------------ */
+
+/*
+* Inicializa los estados correspondientes con la MdE de los sensores.
+*/
+
+void doInitMdEConexiones(void) {
+  
+  // Inicializamos estados generales
+  glbEstado = ST_INACTIVO;
+  glbEvento = EVT_CONTINUAR;
+
+}
+
+/*
+* Genera los eventos para la MdE general en base al estado de la conexión WiFi.
+*/
+
+void generarEventoMdEConexiones(void) {
+
+  if(WiFi.status() != WL_CONNECTED) {
+
+    // Realizamos la conexión a wifi
+    conectarWifi();
+
+    // Verificamos si se logra conectar
+    if(WiFi.status() != WL_CONNECTED) {
+      glbEvento = EVT_DESCONEXION_WIFI;
+    } else {
+      glbEvento = EVT_CONEXION_EXITOSA_WIFI;
+    }
+
+  } else if(!conectadoFB) {
+   
+    // Realizmaos la coneixón al Firebase
+    bool exito = conectarFB();
+  
+    // Verificamos que logro la conexión
+    if(exito) {
+
+      glbEvento = EVT_CONEXION_EXITOSA_FB;
+      conectadoFB = true;
+
+    } else {
+
+      glbEvento = EVT_CONEXION_RECHAZADA_FB;
+      conectadoFB = false;
+
+    }
+  } else {  
+    
+    glbEvento = EVT_CONEXION_EXITOSA_FB;
+
+  } 
+
+/*
+* Implementación de cada uno de los estados de la máquina de estados.
+*/
 
 void maquinaEstadosGeneral() {
     
     // Segun el estado en el que nos encontramos llamamos a una función
     switch(glbEstado) {
-        
-        case ST_INACTIVO:
-          stInactivo();
-          break;
 
         case ST_REALIZANDO_CONEXION_WIFI:
-          stRealizandoConexionWifi();
+          stRealizandoConexionWiFi();
           break;
 
         case ST_REALIZANDO_CONEXION_FB:
@@ -310,26 +358,10 @@ void maquinaEstadosGeneral() {
     }
 
   // Generamos el evento para la siguiente pasada
-  generarEventoMdEGeneral();
+  generarEventoMdEConexiones();
 }
 
-/*
-* Implementación de cada uno de los estados de la máquina de estados.
-*/
-
-void stInactivo(){
-  switch(glbEvento){
-
-    case EVT_CONTINUAR:
-      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
-      break;
-
-    default:
-      break;
-  }
-}
-
-void stRealizandoConexionWifi(void) {
+void stRealizandoConexionWiFi(void) {
   switch(glbEvento){
     
     case EVT_DESCONEXION_WIFI:
@@ -384,6 +416,16 @@ void stConectadoFB() {
       break;
   }
 }
+
+/* ------------------ SECCIÓN MdE GENERAL ------------------ */
+
+/*
+* Implementación de cada uno de los estados de la máquina de estados.
+*/
+
+void maquinaEstadosGeneral() {}
+
+void stInactivo(){}
 
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
 
@@ -440,9 +482,7 @@ void streamCallback(FirebaseStream data) {
 void streamTimeoutCallback(bool timeout) {
   if(timeout){
 
-    Serial.println("----------------------------------------------------------");
-    Serial.println("TIMEOUT");
-    Serial.println("----------------------------------------------------------");
+    // TODO: ACCIÓN POR UN TIMEOUT
   
   }
 }
