@@ -330,13 +330,14 @@ void generarEventoMdEConexiones(void) {
     
     glbEvento = EVT_CONEXION_EXITOSA_FB;
 
-  } 
+  }
+} 
 
 /*
 * Implementación de cada uno de los estados de la máquina de estados.
 */
 
-void maquinaEstadosGeneral() {
+void maquinaEstadosBateria() {
     
     // Segun el estado en el que nos encontramos llamamos a una función
     switch(glbEstado) {
@@ -408,8 +409,8 @@ void stConectadoFB() {
       glbEstado = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
-    case EVT_COMENZAR_DETECCION:
-      glbEstado = ST_DETECTANDO_OBJETO;
+    case EVT_CONEXION_EXITOSA_FB:
+      glbEstado = ST_CONECTADO_FB;
       break;
     
     default:

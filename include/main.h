@@ -48,7 +48,7 @@ void stConectadoFB(void);
 
 /* ------------------ MdE BATERÍA ------------------ */
 // Estados
-#define ST_DETECTANDO_CARGA_BATERIA     100
+#define ST_CALCULANDO_NIVEL_BATERIA     100
 #define ST_COMUNICANDO_CARGA_FB         125
 
 // Eventos
