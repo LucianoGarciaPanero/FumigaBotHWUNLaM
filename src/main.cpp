@@ -128,48 +128,12 @@ void doInitMdEGeneral(void){}
 * Genera los eventos para la MdE general en base al estado de la conexión WiFi.
 */
 
-void generarEventoMdEGeneral(void) {
+void generarEventoMdEGeneral(void) {}
 
-  if(WiFi.status() != WL_CONNECTED) {
-
-    // Realizamos la conexión a wifi
-    conectarWifi();
-
-    // Verificamos si se logra conectar
-    if(WiFi.status() != WL_CONNECTED) {
-      glbEvento = EVT_DESCONEXION_WIFI;
-    } else {
-      glbEvento = EVT_CONEXION_EXITOSA_WIFI;
-    }
-
-  } else if(!conectadoFB) {
-   
-    // Realizmaos la coneixón al Firebase
-    bool exito = conectarFB();
-  
-    // Verificamos que logro la conexión
-    if(exito) {
-
-      glbEvento = EVT_CONEXION_EXITOSA_FB;
-      conectadoFB = true;
-
-    } else {
-
-      glbEvento = EVT_CONEXION_RECHAZADA_FB;
-      conectadoFB = false;
-
-    }
-  } else {  
-    
-    glbEvento = EVT_CONTINUAR;
-
-  } 
-  
-}
 /* ------------------ SECCIÓN MdE SENSORES ------------------ */
 
 /*
-* Inicializa los estados correspondientes con la MdE de los sensores.
+* Inicializa los estados correspondientes con la MdE.
 */
 
 void doInitMdESesonres() {
@@ -205,7 +169,7 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
 }
 
 /*
-* Implementación de cada uno de los estados de la máquina de estados.
+* Implementación de cada uno de los estados de la MdE.
 */
 
 void maquinaEstadosSensoresDistancia(int nro) {
@@ -280,19 +244,19 @@ void stObjetoDetectado(int nro){
 /* ------------------ SECCIÓN MdE CONEXIONES ------------------ */
 
 /*
-* Inicializa los estados correspondientes con la MdE de los sensores.
+* Inicializa los estados correspondientes con la MdE.
 */
 
 void doInitMdEConexiones(void) {
   
   // Inicializamos estados generales
-  glbEstado = ST_INACTIVO;
-  glbEvento = EVT_CONTINUAR;
+  stConexiones = ST_INACTIVO;
+  evtConexiones = EVT_CONTINUAR;
 
 }
 
 /*
-* Genera los eventos para la MdE general en base al estado de la conexión WiFi.
+* Genera los eventos para la MdE.
 */
 
 void generarEventoMdEConexiones(void) {
@@ -304,9 +268,9 @@ void generarEventoMdEConexiones(void) {
 
     // Verificamos si se logra conectar
     if(WiFi.status() != WL_CONNECTED) {
-      glbEvento = EVT_DESCONEXION_WIFI;
+      evtConexiones = EVT_DESCONEXION_WIFI;
     } else {
-      glbEvento = EVT_CONEXION_EXITOSA_WIFI;
+      evtConexiones = EVT_CONEXION_EXITOSA_WIFI;
     }
 
   } else if(!conectadoFB) {
@@ -317,30 +281,30 @@ void generarEventoMdEConexiones(void) {
     // Verificamos que logro la conexión
     if(exito) {
 
-      glbEvento = EVT_CONEXION_EXITOSA_FB;
+      evtConexiones = EVT_CONEXION_EXITOSA_FB;
       conectadoFB = true;
 
     } else {
 
-      glbEvento = EVT_CONEXION_RECHAZADA_FB;
+      evtConexiones = EVT_CONEXION_RECHAZADA_FB;
       conectadoFB = false;
 
     }
   } else {  
     
-    glbEvento = EVT_CONEXION_EXITOSA_FB;
+    evtConexiones = EVT_CONEXION_EXITOSA_FB;
 
   }
 } 
 
 /*
-* Implementación de cada uno de los estados de la máquina de estados.
+* Implementación de cada uno de los estados de MdE.
 */
 
 void maquinaEstadosBateria() {
     
     // Segun el estado en el que nos encontramos llamamos a una función
-    switch(glbEstado) {
+    switch(stConexiones) {
 
         case ST_REALIZANDO_CONEXION_WIFI:
           stRealizandoConexionWiFi();
@@ -363,14 +327,14 @@ void maquinaEstadosBateria() {
 }
 
 void stRealizandoConexionWiFi(void) {
-  switch(glbEvento){
+  switch(evtConexiones){
     
     case EVT_DESCONEXION_WIFI:
-      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      stConexiones = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
     case EVT_CONEXION_EXITOSA_WIFI:
-      glbEstado = ST_REALIZANDO_CONEXION_FB;
+      stConexiones = ST_REALIZANDO_CONEXION_FB;
       break;
     
     default:
@@ -379,18 +343,18 @@ void stRealizandoConexionWiFi(void) {
 }
 
 void stRealizandoConexionFB() {
-  switch(glbEvento){
+  switch(evtConexiones){
     
     case EVT_CONEXION_RECHAZADA_FB:
-      glbEstado = ST_REALIZANDO_CONEXION_FB;
+      stConexiones = ST_REALIZANDO_CONEXION_FB;
       break;
 
     case EVT_CONEXION_EXITOSA_FB:
-      glbEstado = ST_CONECTADO_FB;
+      stConexiones = ST_CONECTADO_FB;
       break;
 
     case EVT_DESCONEXION_WIFI:
-      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      stConexiones = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
     default:
@@ -399,24 +363,54 @@ void stRealizandoConexionFB() {
 }
 
 void stConectadoFB() {
-  switch(glbEvento) {
+  switch(evtConexiones) {
     
     case EVT_DESCONEXION_FB:
-      glbEstado = ST_REALIZANDO_CONEXION_FB;
+      stConexiones = ST_REALIZANDO_CONEXION_FB;
       break;
 
     case EVT_DESCONEXION_WIFI:
-      glbEstado = ST_REALIZANDO_CONEXION_WIFI;
+      stConexiones = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
     case EVT_CONEXION_EXITOSA_FB:
-      glbEstado = ST_CONECTADO_FB;
+      stConexiones = ST_CONECTADO_FB;
       break;
     
     default:
       break;
   }
 }
+
+/* ------------------ SECCIÓN MdE BATERÍA ------------------ */
+
+/*
+* Inicializa los estados correspondientes con la MdE.
+*/
+
+
+/*
+* Genera los eventos para la MdE.
+*/
+
+/*
+* Implementación de cada uno de los estados de la MdE.
+*/
+
+/* ------------------ SECCIÓN MdE BATERÍA ------------------ */
+
+/*
+* Inicializa los estados correspondientes con la MdE.
+*/
+
+
+/*
+* Genera los eventos para la MdE.
+*/
+
+/*
+* Implementación de cada uno de los estados de la MdE.
+
 
 /* ------------------ SECCIÓN MdE GENERAL ------------------ */
 

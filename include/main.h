@@ -46,6 +46,10 @@ void stRealizandoConexionWiFi(void);
 void stRealizandoConexionFB(void);
 void stConectadoFB(void);
 
+// Variables globales
+int stConexiones;
+int evtConexiones;
+
 /* ------------------ MdE BATERÍA ------------------ */
 // Estados
 #define ST_CALCULANDO_NIVEL_BATERIA     100
@@ -107,10 +111,6 @@ typedef struct {
 stSensorDistancia sensores[CANT_SENSORES_DISTANCIA];
 int pinesEcho[] = PINES_ECHO;
 int pinesTrig[] = PINES_TRIG;
-
-int glbEstado;
-int glbEvento;
-
 
 // Banderas
 bool conectadoFB;
