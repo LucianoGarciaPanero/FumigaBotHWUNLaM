@@ -130,10 +130,13 @@ bool senialFumigar;
 
 // Variables para Firebase
 FirebaseData fbConection;
+FirebaseData fbWrite;
 FirebaseConfig config;
 FirebaseAuth auth;
 
 const String pathHojaFumigar = "/robots/0/fumigando";
+const String pathHojaBateria = "/robots/0/bateria";
+const String pathHojaEncendido = "/robots/0/encendido";
 
 // Para ejecutar en paralelo
 TaskHandle_t task0;

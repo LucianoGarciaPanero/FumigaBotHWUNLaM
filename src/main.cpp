@@ -410,7 +410,6 @@ void maquinaEstadosBateria(void) {
     break;
   
   case ST_COMUNICANDO_CARGA_FB:
-    // TODO: Finalizar esta MdE
     break;
 
   default:
@@ -431,10 +430,14 @@ void stCalculandoNivelBateria(void) {
   switch(evtBateria) {
 
     case EVT_COMUNICAR_CARGA:
-      Serial.println("--------------------------------------------");
-      Serial.println("CARGA BATERIA: " + String(cargaBateria));
-      Serial.println("--------------------------------------------");
+      // Comunicar la carga de batería en Firebase
+      Firebase.RTDB.setFloat(&fbWrite, pathHojaBateria.c_str(), cargaBateria);
+
       stBateria =  ST_COMUNICANDO_CARGA_FB;
+      break;
+
+    case EVT_DETECTAR_CARGA:
+      stBateria = ST_CALCULANDO_NIVEL_BATERIA;
       break;
 
     default:
@@ -555,7 +558,6 @@ void stDetectandoCargaBateria() {
       break;
 
     case EVT_CONTINUAR:
-
       maquinaEstadosBateria();
 
       stGeneral = ST_DETECTANDO_CARGA_BATERIA;
