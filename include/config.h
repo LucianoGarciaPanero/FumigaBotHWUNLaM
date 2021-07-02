@@ -1,14 +1,15 @@
 /* -------- PINES --------  */
 
-// LED
-#define PIN_LED 4
-
 // Sensor Ultrasonido
 #define PINES_TRIG {13}
 #define PINES_ECHO {14}
 #define CANT_SENSORES_DISTANCIA 1
+#define PIN_LED_DISTANCIA 4
 
 // Batería
+#define PIN_LED_VERDE 5
+#define PIN_LED_AMARILLO 15
+#define PIN_LED_ROJO 18
 #define PIN_VIN_BATERIA 33
 
 /* -------- OTROS --------  */
@@ -31,4 +32,6 @@
 
 // Batería
 #define VOLTAJE_MAX_BATERIA 6.6
-#define TIEMPO_VERIFICACION_BATERIA_MS 10000
+#define TIEMPO_VERIFICACION_BATERIA_MS 5 * 1000
+#define MAX_VALOR_NIVEL_BAJO 15
+#define MAX_VALOR_NIVEL_MEDIO 40

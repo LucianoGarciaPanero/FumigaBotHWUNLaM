@@ -58,7 +58,7 @@ void codigoTaskCero(void *param) {
       }
 
     } else {
-     digitalWrite(PIN_LED, LOW);
+     digitalWrite(PIN_LED_DISTANCIA, LOW);
     }
    
     // Le damos tiempo a las tareas en background a ejecutarse
@@ -99,7 +99,10 @@ void codigoTaskUno(void *param) {
 void doInit(){
 
   // Inicializamos pin LED
-  pinMode(PIN_LED, OUTPUT);
+  pinMode(PIN_LED_DISTANCIA, OUTPUT);
+  pinMode(PIN_LED_ROJO, OUTPUT);
+  pinMode(PIN_LED_AMARILLO, OUTPUT);
+  pinMode(PIN_LED_VERDE, OUTPUT);
 
   // Inicialización pines sensores distancia
   for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
@@ -185,7 +188,7 @@ void stObjetoNoDetectado(int nro){
 
     case EVT_OBJETO_FUERA_RANGO:
       // Apagamos LED
-      digitalWrite(PIN_LED, LOW);
+      digitalWrite(PIN_LED_DISTANCIA, LOW);
 
       // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
@@ -193,7 +196,7 @@ void stObjetoNoDetectado(int nro){
 
     case EVT_OBJETO_DENTRO_RANGO:
       // Encendemos el LED
-      digitalWrite(PIN_LED, HIGH);
+      digitalWrite(PIN_LED_DISTANCIA, HIGH);
 
       // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_DETECTADO;
@@ -209,7 +212,7 @@ void stObjetoDetectado(int nro){
 
     case EVT_OBJETO_FUERA_RANGO:
       // Apagamos el LED
-      digitalWrite(PIN_LED, HIGH);
+      digitalWrite(PIN_LED_DISTANCIA, HIGH);
 
       // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
@@ -217,7 +220,7 @@ void stObjetoDetectado(int nro){
 
     case EVT_OBJETO_DENTRO_RANGO:
       // Encendemos el LED
-      digitalWrite(PIN_LED, HIGH);
+      digitalWrite(PIN_LED_DISTANCIA, HIGH);
 
       // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_DETECTADO;
@@ -410,6 +413,7 @@ void maquinaEstadosBateria(void) {
     break;
   
   case ST_COMUNICANDO_CARGA_FB:
+    //  DO NOTHING
     break;
 
   default:
@@ -430,8 +434,33 @@ void stCalculandoNivelBateria(void) {
   switch(evtBateria) {
 
     case EVT_COMUNICAR_CARGA:
+
       // Comunicar la carga de batería en Firebase
       Firebase.RTDB.setFloat(&fbWrite, pathHojaBateria.c_str(), cargaBateria);
+
+      // Prendemos el LED segun el nivel de batería
+      if(cargaBateria  < MAX_VALOR_NIVEL_BAJO) {
+
+        // Prendemos solo el LED rojo
+        digitalWrite(PIN_LED_VERDE, LOW);
+        digitalWrite(PIN_LED_AMARILLO, LOW);
+        digitalWrite(PIN_LED_ROJO, HIGH);
+
+      } else if(cargaBateria < MAX_VALOR_NIVEL_MEDIO) {
+
+        // Prendemos solo el LED amarillo
+        digitalWrite(PIN_LED_VERDE, LOW);
+        digitalWrite(PIN_LED_AMARILLO, HIGH);
+        digitalWrite(PIN_LED_ROJO, LOW);
+
+      } else {
+
+        // Prendemos solo el LED verde
+        digitalWrite(PIN_LED_VERDE, HIGH);
+        digitalWrite(PIN_LED_AMARILLO, LOW);
+        digitalWrite(PIN_LED_ROJO, LOW);
+
+      }
 
       stBateria =  ST_COMUNICANDO_CARGA_FB;
       break;
