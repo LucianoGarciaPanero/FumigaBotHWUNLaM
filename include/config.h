@@ -8,6 +8,9 @@
 #define PINES_ECHO {14}
 #define CANT_SENSORES_DISTANCIA 1
 
+// Batería
+#define PIN_VIN_BATERIA 33
+
 /* -------- OTROS --------  */
 
 // Comunicacion con el serial
@@ -28,3 +31,4 @@
 
 // Batería
 #define VOLTAJE_MAX_BATERIA 6.6
+#define TIEMPO_VERIFICACION_BATERIA_MS 10000

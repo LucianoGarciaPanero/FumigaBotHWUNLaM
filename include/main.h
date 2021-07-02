@@ -57,6 +57,7 @@ int evtConexiones;
 
 // Eventos
 #define EVT_COMUNICAR_CARGA             1000
+#define EVT_DETECTAR_CARGA              1025
 
 // Funciones
 void doInitMdEBateria(void);
@@ -67,6 +68,7 @@ void stCalculandoNivelBateria(void);
 // Variables globales
 int stBateria;
 int evtBateria;
+float cargaBateria;
 
 /* ------------------ MdE GENERAL ------------------ */
 // Estados
@@ -76,8 +78,7 @@ int evtBateria;
 
 // Eventos
 #define EVT_CONTINUAR                   1000
-#define EVT_DETECTAR_CARGA_BATERIA      1025
-#define EVT_REALIZAR_CONEXION           1050
+#define EVT_FIN_TIMER                   1025
 
 // MdE general
 void generarEventoMdEGeneral(void);
@@ -90,6 +91,7 @@ void stDetectandoCargaBateria(void);
 // Variables globales
 int stGeneral;
 int evtGeneral;
+unsigned long lastTime;
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 

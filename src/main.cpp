@@ -75,10 +75,11 @@ void codigoTaskUno(void *param) {
   
   /* SETUP */
   
-  // Inicialización MdE
   doInitMdEGeneral();
+  
 
   /* LOOP */
+
   while(true) {
     
     maquinaEstadosGeneral();
@@ -375,8 +376,13 @@ void stConectadoFB() {
 */
 
 void doInitMdEBateria(void) {
+  
+  // Inicialización estados y eventos
   stBateria = ST_CALCULANDO_NIVEL_BATERIA;
   evtBateria = EVT_COMUNICAR_CARGA;
+
+  // Inicialización variables
+  cargaBateria = 0;
 }
 
 /*
@@ -384,7 +390,12 @@ void doInitMdEBateria(void) {
 */
 
 void generarEventoMdEBateria(void) {
-  // TODO
+  
+  if(cargaBateria != 0) {
+    evtBateria = EVT_COMUNICAR_CARGA;
+  } else {
+    evtBateria = EVT_DETECTAR_CARGA;
+  }
 }
 
 /*
@@ -410,9 +421,19 @@ void maquinaEstadosBateria(void) {
 }
 
 void stCalculandoNivelBateria(void) {
+
+  // Calculamos la carga de la batería  
+  cargaBateria = obtenerNivelBateria(
+    PIN_VIN_BATERIA, 
+    VOLTAJE_MIN_ESP, 
+    VOLTAJE_MAX_BATERIA);
+
   switch(evtBateria) {
 
     case EVT_COMUNICAR_CARGA:
+      Serial.println("--------------------------------------------");
+      Serial.println("CARGA BATERIA: " + String(cargaBateria));
+      Serial.println("--------------------------------------------");
       stBateria =  ST_COMUNICANDO_CARGA_FB;
       break;
 
@@ -428,15 +449,34 @@ void stCalculandoNivelBateria(void) {
 */
 
 void doInitMdEGeneral(void) {
+  
+  // Inicializaicón estado y evento
   stGeneral = ST_INACTIVO;
   evtGeneral = EVT_CONTINUAR;
+
+  // Inicialización del a variable a usar
+  lastTime = millis();
 }
 
 /*
 * Genera los eventos para la MdE.
 */
 
-void generarEventoMdEGeneral(void) {}
+void generarEventoMdEGeneral(void) {
+
+  // Verificación de que haya ocurrido timeout en el timer
+  if(millis() - lastTime >=  TIEMPO_VERIFICACION_BATERIA_MS) {
+    
+    // Volvemos a tomar el tiempo
+    lastTime = millis();
+
+    // Asignamos el evento
+    evtGeneral = EVT_FIN_TIMER;
+  } else {
+    evtGeneral = EVT_CONTINUAR;
+  }
+
+}
 
 /*
 * Implementación de cada uno de los estados de la MdE.
@@ -460,12 +500,18 @@ void maquinaEstadosGeneral() {
     default:
       break;
   }
+
+  generarEventoMdEGeneral();
 }
 
 void stInactivo() {
   switch(evtGeneral) {
 
     case EVT_CONTINUAR:
+      
+      doInitMdEConexiones();
+      maquinaEstadosConexiones();
+
       stGeneral = ST_REALIZANDO_CONEXIONES;
       break;
 
@@ -477,8 +523,19 @@ void stInactivo() {
 void stRealizandoConexiones() {
   switch(evtGeneral) {
 
-    case EVT_DETECTAR_CARGA_BATERIA:
+    case EVT_FIN_TIMER:
+
+      doInitMdEBateria();
+      maquinaEstadosBateria();
+
       stGeneral = ST_DETECTANDO_CARGA_BATERIA;
+      break;
+
+    case EVT_CONTINUAR:
+
+      maquinaEstadosConexiones();
+
+      stGeneral = ST_REALIZANDO_CONEXIONES;
       break;
 
     default:
@@ -489,8 +546,19 @@ void stRealizandoConexiones() {
 void stDetectandoCargaBateria() {
   switch(evtGeneral) {
 
-    case EVT_REALIZAR_CONEXION:
+    case EVT_FIN_TIMER:
+
+      doInitMdEConexiones();
+      maquinaEstadosConexiones();
+
       stGeneral = ST_REALIZANDO_CONEXIONES;
+      break;
+
+    case EVT_CONTINUAR:
+
+      maquinaEstadosBateria();
+
+      stGeneral = ST_DETECTANDO_CARGA_BATERIA;
       break;
 
     default:
