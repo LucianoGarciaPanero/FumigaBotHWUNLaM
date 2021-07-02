@@ -557,6 +557,10 @@ void stRealizandoConexiones() {
 
     case EVT_FIN_TIMER:
 
+      // Informamos que el micro sigue prendido
+      Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
+
+      // Realizamos la acción para cambiar de MdE
       doInitMdEBateria();
       maquinaEstadosBateria();
 
@@ -580,6 +584,10 @@ void stDetectandoCargaBateria() {
 
     case EVT_FIN_TIMER:
 
+      // Informamos que el micro sigue prendido
+      Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
+
+      // Realizamos la acción para cambiar de MdE
       doInitMdEConexiones();
       maquinaEstadosConexiones();
 
