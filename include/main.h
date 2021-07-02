@@ -83,6 +83,13 @@ int evtBateria;
 void generarEventoMdEGeneral(void);
 void doInitMdEGeneral(void);
 void maquinaEstadosGeneral(void);
+void stInactivo(void);
+void stRealizandoConexiones(void);
+void stDetectandoCargaBateria(void);
+
+// Variables globales
+int stGeneral;
+int evtGeneral;
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 

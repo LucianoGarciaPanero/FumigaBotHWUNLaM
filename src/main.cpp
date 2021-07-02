@@ -116,20 +116,6 @@ void doInit(){
   senialFumigar = false;
 }
 
-/*
-* Inicializa los estados correspondientes con la MdE general.
-*/
-
-void doInitMdEGeneral(void){}
-
-/* ------------------ SECCIÓN GENERAR EVENTO ------------------ */
-
-/*
-* Genera los eventos para la MdE general en base al estado de la conexión WiFi.
-*/
-
-void generarEventoMdEGeneral(void) {}
-
 /* ------------------ SECCIÓN MdE SENSORES ------------------ */
 
 /*
@@ -441,18 +427,76 @@ void stCalculandoNivelBateria(void) {
 * Inicializa los estados correspondientes con la MdE.
 */
 
+void doInitMdEGeneral(void) {
+  stGeneral = ST_INACTIVO;
+  evtGeneral = EVT_CONTINUAR;
+}
 
 /*
 * Genera los eventos para la MdE.
 */
 
+void generarEventoMdEGeneral(void) {}
+
 /*
 * Implementación de cada uno de los estados de la MdE.
 */
 
-void maquinaEstadosGeneral() {}
+void maquinaEstadosGeneral() {
+  switch(stGeneral) {
 
-void stInactivo(){}
+    case ST_INACTIVO:
+      stInactivo();
+      break;
+   
+    case ST_REALIZANDO_CONEXIONES:
+      stRealizandoConexiones();
+      break;
+    
+    case ST_DETECTANDO_CARGA_BATERIA:
+      stDetectandoCargaBateria();
+      break;
+    
+    default:
+      break;
+  }
+}
+
+void stInactivo() {
+  switch(evtGeneral) {
+
+    case EVT_CONTINUAR:
+      stGeneral = ST_REALIZANDO_CONEXIONES;
+      break;
+
+    default:
+      break;
+  }
+}
+
+void stRealizandoConexiones() {
+  switch(evtGeneral) {
+
+    case EVT_DETECTAR_CARGA_BATERIA:
+      stGeneral = ST_DETECTANDO_CARGA_BATERIA;
+      break;
+
+    default:
+      break;
+  }
+}
+
+void stDetectandoCargaBateria() {
+  switch(evtGeneral) {
+
+    case EVT_REALIZAR_CONEXION:
+      stGeneral = ST_REALIZANDO_CONEXIONES;
+      break;
+
+    default:
+      break;
+  }
+}
 
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
 
