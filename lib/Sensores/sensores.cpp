@@ -40,9 +40,9 @@ float obtenerNivelBateria(int pin, float vMin, float vMax) {
 
   // Si llega a ocurrir que leemos valores no previstos devolvemos error  
   // Como estamos tratando con float y hay un error en los décimales, damos un 
-  // margen de 0.05
+  // margen de DELTA_CARGA_BATERIA
   
-  if(porcentaje < -0.05 || porcentaje > 100.05) {
+  if(porcentaje < 0 - DELTA_CARGA_BATERIA || porcentaje > 100 + DELTA_CARGA_BATERIA) {
     return ERROR_BATERIA;
   } else {
     return porcentaje;
