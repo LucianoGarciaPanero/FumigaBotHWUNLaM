@@ -33,7 +33,7 @@ long obtenerDistancia(int trigPin, int echoPin) {
 float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
   // Inicializar variables
-  float acum = -1;
+  float acum = 0;
   float vIn = -1;
   float porcentaje = -1;
 

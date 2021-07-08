@@ -6,8 +6,9 @@ using namespace fakeit;
 
 // Variables globales que necesitamos
 float vMin = 5;
-float vMax = 6.6;
+float vMax = 6;
 float delta = 0.05;
+float constCorreccion = 0.00161172;
 
 void testObtenerDistancia(void) {
     
@@ -34,12 +35,12 @@ void testObtenerDistancia(void) {
 void testObtenerNivelBateriaMinimo(void) {
 
     // Arrange
-    // Para un Vin de 2.5V le corresponde un valor de 3102.2727...
+    // Simulamos una entrada de 2.5V
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3102);
     float expectedNivel = 0;
 
     // Act
-    float actualNivel = obtenerNivelBateria(1, vMin, vMax);
+    float actualNivel = obtenerNivelBateria(1, vMin, vMax, constCorreccion);
 
     // Assert
     TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
@@ -52,12 +53,12 @@ void testObtenerNivelBateriaMinimo(void) {
 void testObtenerNivelBateriaMaximo(void){
 
     // Arrange
-    // Para un Vin de 3.3V le corresponde un valor de 4095
-    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(4095);
+    // Simulamos una entrada de 3V
+    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3723);
     float expectedNivel = 100;
 
     // Act
-    float actualNivel = obtenerNivelBateria(1, vMin, vMax);
+    float actualNivel = obtenerNivelBateria(1, vMin, vMax, constCorreccion);
 
     // Assert
     TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
@@ -70,12 +71,12 @@ void testObtenerNivelBateriaMaximo(void){
 void testObtenerNivelBateriaNegativo(void) {
     
     // Arrange
-    // Para un Vin de 2.4V le corresponde un valor de 2978.181818
-    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(2978.181818);
+    // Simulamos una entrada de 2.4V
+    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(2978);
     float expectedNivel = ERROR_BATERIA;
 
     // Act
-    float actualNivel = obtenerNivelBateria(1, vMin, vMax);
+    float actualNivel = obtenerNivelBateria(1, vMin, vMax, constCorreccion);
 
     // Assert
     TEST_ASSERT_EQUAL(expectedNivel, actualNivel);
