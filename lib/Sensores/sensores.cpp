@@ -30,13 +30,31 @@ long obtenerDistancia(int trigPin, int echoPin) {
 * batería de acuerdo a la tensión mínima y la máxima
 */
 
-float obtenerNivelBateria(int pin, float vMin, float vMax) {
+float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
-  // Obtener el voltaje de entrada
-  float vIn =  analogRead(pin) * CONSTANTE_CORRECCION_VOLTAJE_BATERIA;
+  // Inicializar variables
+  float acum = -1;
+  float vIn = -1;
+  float porcentaje = -1;
+
+  int nLecturasDescartadas = 10;
+  int nLecturasTotales = 100;
+  
+  // Realizar 10 pasadas iniciales para desechar valores basura
+  for(int i = 0; i < nLecturasDescartadas; i++) {
+    analogRead(pin);
+  }
+
+  // Leer 20 valores seguidos
+  for(int i = 0; i < nLecturasTotales; i++) {
+    acum += analogRead(pin) * constCorr;
+  }
+  
+  // Obtener el promedio leido
+  vIn =  acum / nLecturasTotales;
 
   // Calcular el porcentaje de la carga
-  float porcentaje = 100 * (vIn - vMin) / (vMax - vMin);
+  porcentaje = 100 * (vIn - vMin) / (vMax - vMin);
 
   // Verificar que obtenemos resultados entre 0 y 100
   if(porcentaje < 0 - DELTA_CARGA_BATERIA || porcentaje > 100 + DELTA_CARGA_BATERIA) {

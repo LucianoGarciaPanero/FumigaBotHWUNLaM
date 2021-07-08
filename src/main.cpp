@@ -429,7 +429,8 @@ void stCalculandoNivelBateria(void) {
   cargaBateria = obtenerNivelBateria(
     PIN_VIN_BATERIA, 
     VOLTAJE_MIN_ESP, 
-    VOLTAJE_MAX_BATERIA);
+    VOLTAJE_MAX_BATERIA,
+    CONSTANTE_CORRECCION_VOLTAJE_BATERIA);
 
   switch(evtBateria) {
 
@@ -588,7 +589,6 @@ void stDetectandoCargaBateria() {
       Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
 
       // Realizamos la acción para cambiar de MdE
-      doInitMdEConexiones();
       maquinaEstadosConexiones();
 
       stGeneral = ST_REALIZANDO_CONEXIONES;
