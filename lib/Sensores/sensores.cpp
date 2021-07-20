@@ -40,23 +40,23 @@ float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
   int nLecturasDescartadas = 10;
   int nLecturasTotales = 100;
   
-  // Realizar 10 pasadas iniciales para desechar valores basura
+  // Realizar pasadas iniciales para desechar valores basura
   for(int i = 0; i < nLecturasDescartadas; i++) {
     analogRead(pin);
   }
 
-  // Leer 20 valores seguidos
+  // Leer n valores seguidos
   for(int i = 0; i < nLecturasTotales; i++) {
     acum += analogRead(pin) * constCorr;
   }
   
-  // Obtener el promedio leido
+  // Calcular el promedio leido
   vIn =  acum / nLecturasTotales;
 
   // Calcular el porcentaje de la carga
   porcentaje = 100 * (vIn - vMin) / (vMax - vMin);
 
-  // Verificar que obtenemos resultados entre 0 y 100
+  // Verificar que el resultado no tenga errores
   if(porcentaje < 0 - DELTA_CARGA_BATERIA || porcentaje > 100 + DELTA_CARGA_BATERIA) {
     return ERROR_BATERIA;
   } else {
