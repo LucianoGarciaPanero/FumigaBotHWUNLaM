@@ -71,14 +71,14 @@ void codigoTaskUno(void *param) {
   
   /* SETUP */
   
-  doInitMdEGeneral();
+  doInitMdECoreUno();
   
 
   /* LOOP */
 
   while(true) {
     
-    maquinaEstadosGeneral();
+    maquinaEstadosCoreUno();
 
     
     // Le damos tiempo a las tareas en background a ejecutarse
@@ -471,17 +471,17 @@ void stCalculandoNivelBateria(void) {
   }
 }
 
-/* ------------------ SECCIÓN MdE GENERAL ------------------ */
+/* ------------------ SECCIÓN MdE CORE UNO ------------------ */
 
 /*
 * Inicializa los estados correspondientes con la MdE.
 */
 
-void doInitMdEGeneral(void) {
+void doInitMdECoreUno(void) {
   
   // Inicializaicón estado y evento
-  stGeneral = ST_INACTIVO;
-  evtGeneral = EVT_CONTINUAR;
+  stCoreUno = ST_INACTIVO;
+  evtCoreUno = EVT_CONTINUAR;
 
   // Inicialización del a variable a usar
   lastTime = millis();
@@ -491,7 +491,7 @@ void doInitMdEGeneral(void) {
 * Genera los eventos para la MdE.
 */
 
-void generarEventoMdEGeneral(void) {
+void generarEventoMdECoreUno(void) {
 
   // Verificación de que haya ocurrido timeout en el timer
   if(millis() - lastTime >=  TIEMPO_VERIFICACION_BATERIA_MS) {
@@ -500,9 +500,9 @@ void generarEventoMdEGeneral(void) {
     lastTime = millis();
 
     // Asignamos el evento
-    evtGeneral = EVT_FIN_TIMER;
+    evtCoreUno = EVT_FIN_TIMER;
   } else {
-    evtGeneral = EVT_CONTINUAR;
+    evtCoreUno = EVT_CONTINUAR;
   }
 
 }
@@ -511,8 +511,8 @@ void generarEventoMdEGeneral(void) {
 * Implementación de cada uno de los estados de la MdE.
 */
 
-void maquinaEstadosGeneral() {
-  switch(stGeneral) {
+void maquinaEstadosCoreUno() {
+  switch(stCoreUno) {
 
     case ST_INACTIVO:
       stInactivo();
@@ -530,18 +530,18 @@ void maquinaEstadosGeneral() {
       break;
   }
 
-  generarEventoMdEGeneral();
+  generarEventoMdECoreUno();
 }
 
 void stInactivo() {
-  switch(evtGeneral) {
+  switch(evtCoreUno) {
 
     case EVT_CONTINUAR:
       
       doInitMdEConexiones();
       maquinaEstadosConexiones();
 
-      stGeneral = ST_REALIZANDO_CONEXIONES;
+      stCoreUno = ST_REALIZANDO_CONEXIONES;
       break;
 
     default:
@@ -550,7 +550,7 @@ void stInactivo() {
 }
 
 void stRealizandoConexiones() {
-  switch(evtGeneral) {
+  switch(evtCoreUno) {
 
     case EVT_FIN_TIMER:
 
@@ -561,14 +561,14 @@ void stRealizandoConexiones() {
       doInitMdEBateria();
       maquinaEstadosBateria();
 
-      stGeneral = ST_DETECTANDO_CARGA_BATERIA;
+      stCoreUno = ST_DETECTANDO_CARGA_BATERIA;
       break;
 
     case EVT_CONTINUAR:
 
       maquinaEstadosConexiones();
 
-      stGeneral = ST_REALIZANDO_CONEXIONES;
+      stCoreUno = ST_REALIZANDO_CONEXIONES;
       break;
 
     default:
@@ -577,7 +577,7 @@ void stRealizandoConexiones() {
 }
 
 void stDetectandoCargaBateria() {
-  switch(evtGeneral) {
+  switch(evtCoreUno) {
 
     case EVT_FIN_TIMER:
 
@@ -587,13 +587,13 @@ void stDetectandoCargaBateria() {
       // Realizamos la acción para cambiar de MdE
       maquinaEstadosConexiones();
 
-      stGeneral = ST_REALIZANDO_CONEXIONES;
+      stCoreUno = ST_REALIZANDO_CONEXIONES;
       break;
 
     case EVT_CONTINUAR:
       maquinaEstadosBateria();
 
-      stGeneral = ST_DETECTANDO_CARGA_BATERIA;
+      stCoreUno = ST_DETECTANDO_CARGA_BATERIA;
       break;
 
     default:

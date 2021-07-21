@@ -70,7 +70,7 @@ int stBateria;
 int evtBateria;
 float cargaBateria;
 
-/* ------------------ MdE GENERAL ------------------ */
+/* ------------------ MdE CORE 1 ------------------ */
 // Estados
 #define ST_INACTIVO                     100
 #define ST_REALIZANDO_CONEXIONES        125
@@ -81,16 +81,16 @@ float cargaBateria;
 #define EVT_FIN_TIMER                   1025
 
 // MdE general
-void generarEventoMdEGeneral(void);
-void doInitMdEGeneral(void);
-void maquinaEstadosGeneral(void);
+void generarEventoMdECoreUno(void);
+void doInitMdECoreUno(void);
+void maquinaEstadosCoreUno(void);
 void stInactivo(void);
 void stRealizandoConexiones(void);
 void stDetectandoCargaBateria(void);
 
 // Variables globales
-int stGeneral;
-int evtGeneral;
+int stCoreUno;
+int evtCoreUno;
 unsigned long lastTime;
 
 /* ------------------ MdE CORE 0 ------------------ */
