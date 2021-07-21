@@ -10,6 +10,8 @@ float vMax = 6;
 float delta = 0.05;
 float constCorreccion = 0.00161172;
 
+/* ------------------ TEST MÉTODO obtenerDistancia() ------------------ */
+
 void testObtenerDistancia(void) {
     
     // Arrange
@@ -27,6 +29,8 @@ void testObtenerDistancia(void) {
 
     TEST_ASSERT_EQUAL(expectedDistance, currentDistance);
 }
+
+/* ------------------ TEST MÉTODO obtenerNivelBateria() ------------------ */
 
 /*
 * Testeamos que el límite inferior (0%).
@@ -87,7 +91,10 @@ int main(int argc, char **argv) {
     // Comienzan los test
     UNITY_BEGIN();
 
+    // obtenerDistancia()
     RUN_TEST(testObtenerDistancia);
+
+    // obtenerNivelBateria
     RUN_TEST(testObtenerNivelBateriaMinimo);
     RUN_TEST(testObtenerNivelBateriaMaximo);
     RUN_TEST(testObtenerNivelBateriaNegativo);

@@ -14,10 +14,6 @@
 #define ERROR_BATERIA -1
 #define DELTA_CARGA_BATERIA 2
 
-/* -------- CALCULAR PROMEDIO --------  */
-#define ERROR_PROMEDIO -1;
-
 /* -------- FUNCIONES --------  */
 long obtenerDistancia(int, int);
 float obtenerNivelBateria(int, float, float, float);
-float calcularPromedio(float[], int);
