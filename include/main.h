@@ -93,6 +93,30 @@ int stGeneral;
 int evtGeneral;
 unsigned long lastTime;
 
+/* ------------------ MdE CORE 0 ------------------ */
+// Estados
+#define ST_VERIFICANDO_SENSORES_DISTANCIA   100
+#define ST_LIBERAR_QUIMICO                  125
+#define ST_SIN_QUIMICO                      150
+
+// Eventos
+#define EVT_LIBERAR_QUIMICO                   1000
+#define EVT_NIVEL_BAJO_QUIMICO                1025
+#define EVT_FIN_LIBERAR_QUIMICO               1050
+#define EVT_FINALIZAR_FUMIGACION              1075
+
+// MdE general
+void generarEventoMdECoreCero(void);
+void doInitMdECoreCero(void);
+void maquinaEstadosCoreCero(void);
+void stVerificandoSensoresDistancia(void);
+void stLiberarQuimico(void);
+void stSinQuimico(void);
+
+// Variables globales
+int stCoreCero;
+int evtCoreCero;
+
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 
 void doInit(void);

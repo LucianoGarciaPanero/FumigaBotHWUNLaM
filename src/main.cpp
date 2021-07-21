@@ -43,8 +43,9 @@ void codigoTaskCero(void *param) {
   
   /* SETUP */
   
-  // Inicialización MdE sensores
+  // Inicialización MdE
   doInitMdESesonres();
+  doInitMdECoreCero();
 
   /* LOOP */
   while(true) {
@@ -52,15 +53,10 @@ void codigoTaskCero(void *param) {
     //  Solo se ejecuta la MdE de fumgar si se recibe la señal del Firebase.
     if(senialFumigar) {
 
-      // Recorremos todos los sensores y ejecutamos sus MdE
-     for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
-            maquinaEstadosSensoresDistancia(i);
-      }
-
-    } else {
-     digitalWrite(PIN_LED_DISTANCIA, LOW);
+      maquinaEstadosCoreCero();
+    
     }
-   
+
     // Le damos tiempo a las tareas en background a ejecutarse
     delay(10);
   }
@@ -604,6 +600,30 @@ void stDetectandoCargaBateria() {
       break;
   }
 }
+
+/* ------------------ SECCIÓN MdE CORE CERO ------------------ */
+
+/*
+* Inicializa los estados correspondientes con la MdE.
+*/
+
+void doInitMdECoreCero(void) {
+}
+
+/*
+* Genera los eventos para la MdE.
+*/
+
+void generarEventoMdECoreCero(void) {
+}
+
+/*
+* Implementación de cada uno de los estados de la MdE.
+*/
+
+void maquinaEstadosCoreCero() {
+}
+
 
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
 
