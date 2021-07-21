@@ -55,6 +55,11 @@ void codigoTaskCero(void *param) {
 
       maquinaEstadosCoreCero();
     
+    } else {
+
+      // Apagar la bomba
+      digitalWrite(PIN_BOMBA, LOW);
+
     }
 
     // Le damos tiempo a las tareas en background a ejecutarse
@@ -178,7 +183,8 @@ void maquinaEstadosSensoresDistancia(int nro) {
     // Generación evento para próxima pasada
     sensores[nro].evento = generarEventoMdESensorDistancia(
       sensores[nro].pinTrig, 
-      sensores[nro].pinEcho);
+      sensores[nro].pinEcho
+      );
   }
 
 void stObjetoNoDetectado(int nro){
@@ -615,6 +621,9 @@ void generarEventoMdECoreCero(void) {
   // Inicializar variables auxiliares
   int evtAux = -1;
 
+  // Hacer una pasada de la MdE
+  maquinaEstadosSensoresDistancia(0);
+
   // Verificar que se detecte un objeto
   evtAux = sensores[0].evento;
 
@@ -653,6 +662,9 @@ void maquinaEstadosCoreCero() {
     default:
       break;
   }
+
+  // Esperamos un par de segundos, para que mantenga el estado
+  delay(500);
 
   // Generar un nuevo evento
   generarEventoMdECoreCero();
