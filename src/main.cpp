@@ -618,9 +618,32 @@ void doInitMdECoreCero(void) {
 
 /*
 * Genera los eventos para la MdE.
+* sensores[0] -> Sensor de distancia del objeto.
+* sensores[1] -> Sensor de distancia para el recipiente.
+* Verificamos que un objeto se encuentre en el rango establecido y que 
+* haya suficiente químico para liberar.
 */
 
 void generarEventoMdECoreCero(void) {
+
+  // Inicializar el evento por defecto
+  evtCoreCero = EVT_FIN_LIBERAR_QUIMICO;
+
+  // Inicializar variables auxiliares
+  int evtAux = -1;
+
+  // Verificar que se detecte un objeto
+  evtAux = sensores[0].evento;
+
+  if(evtAux == EVT_OBJETO_DENTRO_RANGO) {
+    evtCoreCero = EVT_LIBERAR_QUIMICO;
+  } else if(evtAux == EVT_OBJETO_FUERA_RANGO) {
+    evtCoreCero = EVT_FIN_LIBERAR_QUIMICO;
+  }
+
+  // Verificar que se tenga suficiente quiímico
+  // TODO
+  
 }
 
 /*
@@ -629,6 +652,7 @@ void generarEventoMdECoreCero(void) {
 
 void maquinaEstadosCoreCero() {
 
+  // Mover entre estados
   switch(stCoreCero) {
 
     case ST_VERIFICANDO_SENSORES_DISTANCIA:
@@ -646,6 +670,9 @@ void maquinaEstadosCoreCero() {
     default:
       break;
   }
+
+  // Generar un nuevo evento
+  generarEventoMdECoreCero();
 }
 
 void stVerificandoSensoresDistancia(void) {
@@ -682,7 +709,7 @@ void stLiberarQuimico(void) {
 
       // Apagar bomba de agua
       digitalWrite(PIN_BOMBA, LOW);
-      
+
       stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
       break;
 
