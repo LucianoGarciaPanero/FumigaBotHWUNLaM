@@ -147,13 +147,16 @@ void doInitMdESesonres() {
 int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   
   // Inicializar variable
-  int acum = 0;
+  long acum = 0;
+  long promedio = -1;
   int nLecturas = 100;
-  float promedio = -1;
 
   // Leer 100 valores
   for(int i = 0; i < nLecturas; i++) {
     acum += obtenerDistancia(pinTrig, pinEcho);
+
+    // Para que las mediciones no interfieran entre si
+    delay(30);
   }
   
   // Calcular promedio

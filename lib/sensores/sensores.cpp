@@ -43,6 +43,9 @@ float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
   // Realizar pasadas iniciales para desechar valores basura
   for(int i = 0; i < nLecturasDescartadas; i++) {
     analogRead(pin);
+
+    // Para que las mediciones no interfieran entre si
+    delay(30);
   }
 
   // Leer n valores seguidos
