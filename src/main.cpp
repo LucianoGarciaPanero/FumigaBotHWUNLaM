@@ -662,6 +662,10 @@ void stVerificandoSensoresDistancia(void) {
       break;
 
     case EVT_LIBERAR_QUIMICO:
+
+      // Prender bomba de agua
+      digitalWrite(PIN_BOMBA, HIGH);
+
       stCoreCero = ST_LIBERAR_QUIMICO;
       break;
 
@@ -675,6 +679,10 @@ void stLiberarQuimico(void) {
   switch(evtCoreCero) {
 
     case EVT_FIN_LIBERAR_QUIMICO:
+
+      // Apagar bomba de agua
+      digitalWrite(PIN_BOMBA, LOW);
+      
       stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
       break;
 
