@@ -1,4 +1,5 @@
 #include "./utilitarias.h"
+#include <stdio.h>
 
 /*
 * Verifica que un valor se encuentre en el intervalo [Li; Ls]
@@ -28,25 +29,24 @@ float calcularPromedio(float *valores, int len) {
   
   // Inicializar variables
   float acum = 0;
+  float *aux = valores;
   
   // Ordenar el vector de forma ascendente
-  for(int i = 0; i < len; i++) {
-    for(int j = i + 1; j < len - 1; j++) {
-      if(valores[i] > valores[j]) {
-        float swap = valores[i];
-        valores[i] = valores[j];
-        valores[j] = swap;
+  for(int i = 0; i < len - 1; i++) {
+    for(int j = i + 1; j < len; j++) {
+      if(aux[i] > aux[j]) {
+        float swap = aux[i];
+        aux[i] = aux[j];
+        aux[j] = swap;
       }
     }
+  }
 
     // Calcular el promedio excluyendo las primeras y últimas 5 observaciones,
     // se consideran que son ruido.
     for(int i = 5; i < len - 5; i++) {
-      acum += valores[i];
+      acum += aux[i];
     }
 
-    return acum / len - 10;
-
+    return acum / (len - 10);
   }
-
-}
