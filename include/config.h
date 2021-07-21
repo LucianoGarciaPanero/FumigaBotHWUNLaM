@@ -12,6 +12,9 @@
 #define PIN_LED_ROJO 18
 #define PIN_VIN_BATERIA 33
 
+// Bomba Agua
+#define PIN_BOMBA 32
+
 /* -------- OTROS --------  */
 
 // Comunicacion con el serial

@@ -94,7 +94,7 @@ void codigoTaskUno(void *param) {
 
 void doInit(){
 
-  // Inicializamos pin LED
+  // Inicialización pin LED
   pinMode(PIN_LED_DISTANCIA, OUTPUT);
   pinMode(PIN_LED_ROJO, OUTPUT);
   pinMode(PIN_LED_AMARILLO, OUTPUT);
@@ -110,6 +110,9 @@ void doInit(){
     pinMode(sensores[i].pinEcho, INPUT);
     pinMode(sensores[i].pinTrig, OUTPUT);
   }
+
+  // Inicialización pin bomba
+  pinMode(PIN_BOMBA, OUTPUT);
 
   // Inicialización variables
   conectadoFB = false;
