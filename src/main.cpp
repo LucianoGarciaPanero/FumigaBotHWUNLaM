@@ -608,6 +608,9 @@ void stDetectandoCargaBateria() {
 */
 
 void doInitMdECoreCero(void) {
+
+  stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+  evtCoreCero = EVT_FIN_LIBERAR_QUIMICO;
 }
 
 /*
@@ -622,6 +625,68 @@ void generarEventoMdECoreCero(void) {
 */
 
 void maquinaEstadosCoreCero() {
+
+  switch(stCoreCero) {
+
+    case ST_VERIFICANDO_SENSORES_DISTANCIA:
+      stVerificandoSensoresDistancia();
+      break;
+
+    case ST_LIBERAR_QUIMICO:
+      stLiberarQuimico();
+      break;
+
+    case ST_SIN_QUIMICO:
+      stSinQuimico();
+      break;
+
+    default:
+      break;
+  }
+}
+
+void stVerificandoSensoresDistancia(void) {
+
+  switch(evtCoreCero) {
+
+    case EVT_FIN_LIBERAR_QUIMICO:
+      stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+      break;
+
+
+    case EVT_NIVEL_BAJO_QUIMICO:
+      stCoreCero = ST_SIN_QUIMICO;
+      break;
+
+    case EVT_LIBERAR_QUIMICO:
+      stCoreCero = ST_LIBERAR_QUIMICO;
+      break;
+
+    default:
+      break;
+  }
+
+}
+void stLiberarQuimico(void) {
+
+  switch(evtCoreCero) {
+
+    case EVT_FIN_LIBERAR_QUIMICO:
+      stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+      break;
+
+    default:
+      break;
+  }
+
+}
+void stSinQuimico(void) {
+
+  switch(evtCoreCero) {
+    
+    default:
+      break;
+  }
 }
 
 

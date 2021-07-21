@@ -105,7 +105,7 @@ unsigned long lastTime;
 #define EVT_FIN_LIBERAR_QUIMICO               1050
 #define EVT_FINALIZAR_FUMIGACION              1075
 
-// MdE general
+// MdE Core Cero
 void generarEventoMdECoreCero(void);
 void doInitMdECoreCero(void);
 void maquinaEstadosCoreCero(void);
