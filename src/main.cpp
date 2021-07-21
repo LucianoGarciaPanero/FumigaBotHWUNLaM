@@ -95,7 +95,6 @@ void codigoTaskUno(void *param) {
 void doInit(){
 
   // Inicialización pin LED
-  pinMode(PIN_LED_DISTANCIA, OUTPUT);
   pinMode(PIN_LED_ROJO, OUTPUT);
   pinMode(PIN_LED_AMARILLO, OUTPUT);
   pinMode(PIN_LED_VERDE, OUTPUT);
@@ -186,18 +185,10 @@ void stObjetoNoDetectado(int nro){
   switch(sensores[nro].evento){
 
     case EVT_OBJETO_FUERA_RANGO:
-      // Apagamos LED
-      digitalWrite(PIN_LED_DISTANCIA, LOW);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
       break;
 
     case EVT_OBJETO_DENTRO_RANGO:
-      // Encendemos el LED
-      digitalWrite(PIN_LED_DISTANCIA, HIGH);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_DETECTADO;
       break;
     
@@ -210,18 +201,10 @@ void stObjetoDetectado(int nro){
   switch(sensores[nro].evento){
 
     case EVT_OBJETO_FUERA_RANGO:
-      // Apagamos el LED
-      digitalWrite(PIN_LED_DISTANCIA, HIGH);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
       break;
 
     case EVT_OBJETO_DENTRO_RANGO:
-      // Encendemos el LED
-      digitalWrite(PIN_LED_DISTANCIA, HIGH);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_DETECTADO;
       break;
     

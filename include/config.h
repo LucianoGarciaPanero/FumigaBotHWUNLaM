@@ -4,7 +4,6 @@
 #define PINES_TRIG {13}
 #define PINES_ECHO {14}
 #define CANT_SENSORES_DISTANCIA 1
-#define PIN_LED_DISTANCIA 4
 
 // Batería
 #define PIN_LED_VERDE 5
