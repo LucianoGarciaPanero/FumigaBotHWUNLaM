@@ -13,7 +13,7 @@
 
 // Bomba Agua
 #define PIN_BOMBA 32
-#define TIEMPO_LIBERAR_QUIMICO_MS 0.5 * 1000
+#define TIEMPO_LIBERAR_QUIMICO_MS 1 * 1000
 
 /* -------- OTROS --------  */
 

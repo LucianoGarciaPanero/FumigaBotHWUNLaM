@@ -147,7 +147,7 @@ void doInitMdESesonres() {
 int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   
   // Inicializar variable
-  int n = 100;
+  int n = 25;
 
   float promedio = -1;
   float values[n];
@@ -169,13 +169,11 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
     UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, 
     promedio
     );
-  Serial.println(promedio);
+
   // De acuerdo al valor devolvemos el evento correspondiente
   if(resultado) {
-    Serial.println("OBJETO DENTRO DE RANGO");
     return EVT_OBJETO_DENTRO_RANGO;
   } else {
-    Serial.println("OBJETO FUERA DE RANGO");
     return EVT_OBJETO_FUERA_RANGO;
   }
 }

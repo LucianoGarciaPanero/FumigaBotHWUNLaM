@@ -33,7 +33,7 @@ long obtenerDistancia(int trigPin, int echoPin) {
 float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
   // Inicializar variables
-  int n = 25;
+  int n = 100;
   
   float vIn = -1;
   float porcentaje = -1;
@@ -76,7 +76,9 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 
   // Dejarla prendida durante x ms
   currentTime = millis();
-  while(millis() - currentTime < tiempoMs ) {// DO NOTHING}
+  while(millis() - currentTime < tiempoMs ) {
+    // DO NOTHING
+  }
 
   // Apagar bomba
   digitalWrite(pinBomba, LOW);
