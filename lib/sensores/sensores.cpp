@@ -68,6 +68,18 @@ float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
 void liberarQuimico(int pinBomba, float tiempoMs) {
 
+  // Inicializar variable
+  long currentTime = 0;
   
+  // Prender bomba
+  digitalWrite(pinBomba, HIGH);
+
+  // Dejarla prendida durante x ms
+  currentTime = millis();
+  while(millis() - currentTime < tiempoMs ) {// DO NOTHING}
+
+  // Apagar bomba
+  digitalWrite(pinBomba, LOW);
+
 
 }
