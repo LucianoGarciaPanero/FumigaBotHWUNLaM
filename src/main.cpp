@@ -104,7 +104,7 @@ void doInit(){
   pinMode(PIN_LED_AMARILLO, OUTPUT);
   pinMode(PIN_LED_VERDE, OUTPUT);
 
-  // Inicialización pines sensores distancia
+  // Inicialización pines sensores distancia de posición
   for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
     
     // Inicialización pines
@@ -114,6 +114,10 @@ void doInit(){
     pinMode(sensores[i].pinEcho, INPUT);
     pinMode(sensores[i].pinTrig, OUTPUT);
   }
+
+  // Inicialización de pines sensor distancia de liquido
+  pinMode(PIN_ECHO_LIQUIDO, INPUT);
+  pinMode(PIN_TRIG_LIQUIDO, OUTPUT);
 
   // Inicialización pin bomba
   pinMode(PIN_BOMBA, OUTPUT);
@@ -627,6 +631,7 @@ void generarEventoMdECoreCero(void) {
 
   // Inicializar variables auxiliares
   int evtAux = -1;
+  float distanciaQuimico = -1;
 
   // Hacer una pasada de la MdE del pin 0
   maquinaEstadosSensoresDistancia(0);
@@ -641,7 +646,12 @@ void generarEventoMdECoreCero(void) {
   }
 
   // Verificar que se tenga suficiente quiímico
-  // TODO
+  distanciaQuimico = calcularDistanciaPromedio(
+    PIN_TRIG_LIQUIDO, 
+    PIN_ECHO_LIQUIDO
+    );
+
+  Serial.println(distanciaQuimico);
   
 }
 

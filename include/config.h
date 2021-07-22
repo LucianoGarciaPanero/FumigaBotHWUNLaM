@@ -1,9 +1,13 @@
 /* -------- PINES --------  */
 
-// Sensor Ultrasonido
+// Sensor Ultrasonido de posición
 #define PINES_TRIG {13}
 #define PINES_ECHO {14}
 #define CANT_SENSORES_DISTANCIA 1
+
+// Sensor Ultrasonido de químico
+#define PIN_TRIG_LIQUIDO 25
+#define PIN_ECHO_LIQUIDO 26
 
 // Batería
 #define PIN_LED_VERDE 5
