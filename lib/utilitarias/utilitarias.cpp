@@ -13,6 +13,24 @@ bool estaDentroRango(int limiteInferior, int limiteSuperior, long valor) {
     }
 }
 
+/*
+* Ordena un vector de tipo float de forma ascendente mediante burbujeo
+*/
+
+void ordenarVector(float *values, int len) {
+
+  // Ordenar vector
+  for(int i = 0; i < len - 1; i++) {
+      for(int j = i + 1; j < len; j++) {
+        if(values[i] > values[j]) {
+          float swap = values[i];
+          values[i] = values[j];
+          values[j] = swap;
+        }
+      }
+    }
+}
+
 
 /*
 * Dado un array con los valores leidos, lo ordena, filtra las primeras y últimas
@@ -20,7 +38,7 @@ bool estaDentroRango(int limiteInferior, int limiteSuperior, long valor) {
 * los restantes.
 */
 
-float calcularPromedio(float *valores, int len) {
+float calcularPromedio(float *values, int len) {
 
   // Verificar tener por lo menos 11 observaciones
   if(len <= 10) {
@@ -29,24 +47,21 @@ float calcularPromedio(float *valores, int len) {
   
   // Inicializar variables
   float acum = 0;
-  float *aux = valores;
-  
+  float vecAux[len];
+
+  // Copiar values en aux
+  for(int i = 0; i < len; i++) {
+    vecAux[i] = values[i];
+  }
+
   // Ordenar el vector de forma ascendente
-  for(int i = 0; i < len - 1; i++) {
-    for(int j = i + 1; j < len; j++) {
-      if(aux[i] > aux[j]) {
-        float swap = aux[i];
-        aux[i] = aux[j];
-        aux[j] = swap;
-      }
-    }
+  ordenarVector(vecAux, len);
+
+  // Calcular el promedio excluyendo las primeras y últimas 5 observaciones,
+  // se consideran que son ruido.
+  for(int i = 5; i < len - 5; i++) {
+    acum += vecAux[i];
   }
 
-    // Calcular el promedio excluyendo las primeras y últimas 5 observaciones,
-    // se consideran que son ruido.
-    for(int i = 5; i < len - 5; i++) {
-      acum += aux[i];
-    }
-
-    return acum / (len - 10);
-  }
+  return acum / (len - 10);
+}
