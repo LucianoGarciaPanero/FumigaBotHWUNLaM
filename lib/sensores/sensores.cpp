@@ -33,28 +33,23 @@ long obtenerDistancia(int trigPin, int echoPin) {
 float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
   // Inicializar variables
-  float acum = 0;
+  int n = 100;
+  
   float vIn = -1;
   float porcentaje = -1;
 
-  int nLecturasDescartadas = 10;
-  int nLecturasTotales = 100;
-  
-  // Realizar pasadas iniciales para desechar valores basura
-  for(int i = 0; i < nLecturasDescartadas; i++) {
-    analogRead(pin);
+  float values[n];  
+
+  // Leer n valores seguidos
+  for(int i = 0; i < n; i++) {
+    values[i] = analogRead(pin) * constCorr;
 
     // Para que las mediciones no interfieran entre si
     delay(30);
   }
-
-  // Leer n valores seguidos
-  for(int i = 0; i < nLecturasTotales; i++) {
-    acum += analogRead(pin) * constCorr;
-  }
   
   // Calcular el promedio leido
-  vIn =  acum / nLecturasTotales;
+  vIn =  calcularPromedio(values, n);
 
   // Calcular el porcentaje de la carga
   porcentaje = 100 * (vIn - vMin) / (vMax - vMin);

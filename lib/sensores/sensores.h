@@ -1,3 +1,5 @@
+#include <utilitarias.h>
+
 /* -------- SENSOR ULTRASONIDO --------  */
 
 // Valores dominio 
