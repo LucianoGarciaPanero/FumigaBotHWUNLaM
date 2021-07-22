@@ -169,11 +169,13 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
     UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, 
     promedio
     );
-
+  Serial.println(promedio);
   // De acuerdo al valor devolvemos el evento correspondiente
   if(resultado) {
+    Serial.println("OBJETO DENTRO DE RANGO");
     return EVT_OBJETO_DENTRO_RANGO;
   } else {
+    Serial.println("OBJETO FUERA DE RANGO");
     return EVT_OBJETO_FUERA_RANGO;
   }
 }
@@ -698,10 +700,7 @@ void stVerificandoSensoresDistancia(void) {
       break;
 
     case EVT_LIBERAR_QUIMICO:
-
-      // Prender bomba de agua
-      digitalWrite(PIN_BOMBA, HIGH);
-
+      liberarQuimico(PIN_BOMBA, TIEMPO_LIBERAR_QUIMICO_MS);
       stCoreCero = ST_LIBERAR_QUIMICO;
       break;
 
@@ -715,11 +714,12 @@ void stLiberarQuimico(void) {
   switch(evtCoreCero) {
 
     case EVT_FIN_LIBERAR_QUIMICO:
-
-      // Apagar bomba de agua
-      digitalWrite(PIN_BOMBA, LOW);
-
       stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+      break;
+    
+    case EVT_LIBERAR_QUIMICO:
+      liberarQuimico(PIN_BOMBA, TIEMPO_LIBERAR_QUIMICO_MS);
+      stCoreCero = ST_LIBERAR_QUIMICO;
       break;
 
     default:
@@ -783,6 +783,10 @@ bool conectarFB(void) {
 
 void streamCallback(FirebaseStream data) {
   senialFumigar = data.boolData();
+
+  if(senialFumigar) {
+    doInitMdECoreCero();
+  }
 }
 
 /*

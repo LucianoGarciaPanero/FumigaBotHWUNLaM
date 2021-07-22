@@ -33,7 +33,7 @@ long obtenerDistancia(int trigPin, int echoPin) {
 float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
   // Inicializar variables
-  int n = 100;
+  int n = 25;
   
   float vIn = -1;
   float porcentaje = -1;
@@ -60,4 +60,14 @@ float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
   } else {
     return porcentaje;
   }
+}
+
+/*
+* Libera químico por el pin especificado durante x milisegundos
+*/
+
+void liberarQuimico(int pinBomba, float tiempoMs) {
+
+  
+
 }

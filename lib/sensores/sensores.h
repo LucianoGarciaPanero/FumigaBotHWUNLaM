@@ -19,3 +19,4 @@
 /* -------- FUNCIONES --------  */
 long obtenerDistancia(int, int);
 float obtenerNivelBateria(int, float, float, float);
+void liberarQuimico(int, float);
