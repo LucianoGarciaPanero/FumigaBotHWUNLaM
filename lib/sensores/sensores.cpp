@@ -26,6 +26,28 @@ long obtenerDistancia(int trigPin, int echoPin) {
 }
 
 /*
+* Calcula la distancia promedio leyendo por los pines indicados
+*/ 
+
+float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
+  
+  // Inicializar variables
+  int n = 25;
+  float values[n];
+
+  // Leer n valores
+  for(int i = 0; i < n; i++) {
+    values[i]= obtenerDistancia(pinTrig, pinEcho);
+
+    // Para que las mediciones no interfieran entre si
+    delay(30);
+  }
+  
+  // Calcular promedio
+  return calcularPromedio(values, n);
+}
+
+/*
 * Lee la tensión que entra por el pin especificado. Calcula el nivel de 
 * batería de acuerdo a la tensión mínima y la máxima
 */

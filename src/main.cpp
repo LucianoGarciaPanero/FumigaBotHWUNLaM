@@ -147,24 +147,14 @@ void doInitMdESesonres() {
 int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   
   // Inicializar variable
-  int n = 25;
-
   float promedio = -1;
-  float values[n];
+  bool resultado = false;
 
-  // Leer n valores
-  for(int i = 0; i < n; i++) {
-    values[i]= obtenerDistancia(pinTrig, pinEcho);
-
-    // Para que las mediciones no interfieran entre si
-    delay(30);
-  }
-  
-  // Calcular promedio
-  promedio = calcularPromedio(values, n);
+  // Calcular la distancia promedio
+  promedio = calcularDistanciaPromedio(pinTrig, pinEcho);
   
   // Verificar en que parte del rango esta
-  bool resultado = estaDentroRango(
+  resultado = estaDentroRango(
     UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, 
     UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, 
     promedio
@@ -638,7 +628,7 @@ void generarEventoMdECoreCero(void) {
   // Inicializar variables auxiliares
   int evtAux = -1;
 
-  // Hacer una pasada de la MdE
+  // Hacer una pasada de la MdE del pin 0
   maquinaEstadosSensoresDistancia(0);
 
   // Verificar que se detecte un objeto

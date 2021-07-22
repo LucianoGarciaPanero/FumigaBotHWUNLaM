@@ -18,5 +18,6 @@
 
 /* -------- FUNCIONES --------  */
 long obtenerDistancia(int, int);
+float calcularDistanciaPromedio(int, int);
 float obtenerNivelBateria(int, float, float, float);
 void liberarQuimico(int, float);
