@@ -632,6 +632,7 @@ void generarEventoMdECoreCero(void) {
   // Inicializar variables auxiliares
   int evtAux = -1;
   float distanciaQuimico = -1;
+  float porcentajeQuimico = -1;
 
   // Hacer una pasada de la MdE del pin 0
   maquinaEstadosSensoresDistancia(0);
@@ -651,8 +652,15 @@ void generarEventoMdECoreCero(void) {
     PIN_ECHO_LIQUIDO
     );
 
-  Serial.println(distanciaQuimico);
-  
+  porcentajeQuimico = 1 - ((distanciaQuimico - (DISTANCIA_SENSOR_CM-DISTANCIA_MAX_CM)) / DISTANCIA_MAX_CM);
+
+  if(porcentajeQuimico < LIMITE_INFERIOR_CONTENIDO) {
+    evtCoreCero = EVT_NIVEL_BAJO_QUIMICO;
+  }
+
+  Serial.println(evtAux);
+  Serial.println(evtCoreCero);
+  Serial.println(stCoreCero);
 }
 
 /*
@@ -695,6 +703,12 @@ void stVerificandoSensoresDistancia(void) {
 
     case EVT_NIVEL_BAJO_QUIMICO:
       stCoreCero = ST_SIN_QUIMICO;
+
+      // Comunicar a firebase el error
+      Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), ERROR_NIVEL_QUIMICO);
+
+      // Apagar la fumigacion en firebase
+      Firebase.RTDB.setBool(&fbWrite, pathHojaFumigar.c_str(), false);
       break;
 
     case EVT_LIBERAR_QUIMICO:
@@ -719,6 +733,15 @@ void stLiberarQuimico(void) {
       liberarQuimico(PIN_BOMBA, TIEMPO_LIBERAR_QUIMICO_MS);
       stCoreCero = ST_LIBERAR_QUIMICO;
       break;
+    
+    case EVT_NIVEL_BAJO_QUIMICO:
+      stCoreCero = ST_SIN_QUIMICO;
+
+      // Comunicar a firebase el error
+      Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), ERROR_NIVEL_QUIMICO);
+
+      // Apagar la fumigacion en firebase
+      Firebase.RTDB.setBool(&fbWrite, pathHojaFumigar.c_str(), false);
 
     default:
       break;
