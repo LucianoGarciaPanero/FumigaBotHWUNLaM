@@ -26,6 +26,28 @@ long obtenerDistancia(int trigPin, int echoPin) {
 }
 
 /*
+* Calcula la distancia promedio leyendo por los pines indicados
+*/ 
+
+float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
+  
+  // Inicializar variables
+  int n = 25;
+  float values[n];
+
+  // Leer n valores
+  for(int i = 0; i < n; i++) {
+    values[i]= obtenerDistancia(pinTrig, pinEcho);
+
+    // Para que las mediciones no interfieran entre si
+    delay(30);
+  }
+  
+  // Calcular promedio
+  return calcularPromedio(values, n);
+}
+
+/*
 * Lee la tensión que entra por el pin especificado. Calcula el nivel de 
 * batería de acuerdo a la tensión mínima y la máxima
 */
@@ -33,33 +55,55 @@ long obtenerDistancia(int trigPin, int echoPin) {
 float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
   // Inicializar variables
-  float acum = 0;
+  int n = 100;
+  
   float vIn = -1;
   float porcentaje = -1;
 
-  int nLecturasDescartadas = 10;
-  int nLecturasTotales = 100;
-  
-  // Realizar 10 pasadas iniciales para desechar valores basura
-  for(int i = 0; i < nLecturasDescartadas; i++) {
-    analogRead(pin);
-  }
+  float values[n];  
 
-  // Leer 20 valores seguidos
-  for(int i = 0; i < nLecturasTotales; i++) {
-    acum += analogRead(pin) * constCorr;
+  // Leer n valores seguidos
+  for(int i = 0; i < n; i++) {
+    values[i] = analogRead(pin) * constCorr;
+
+    // Para que las mediciones no interfieran entre si
+    delay(30);
   }
   
-  // Obtener el promedio leido
-  vIn =  acum / nLecturasTotales;
+  // Calcular el promedio leido
+  vIn =  calcularPromedio(values, n);
 
   // Calcular el porcentaje de la carga
   porcentaje = 100 * (vIn - vMin) / (vMax - vMin);
 
-  // Verificar que obtenemos resultados entre 0 y 100
+  // Verificar que el resultado no tenga errores
   if(porcentaje < 0 - DELTA_CARGA_BATERIA || porcentaje > 100 + DELTA_CARGA_BATERIA) {
     return ERROR_BATERIA;
   } else {
     return porcentaje;
   }
+}
+
+/*
+* Libera químico por el pin especificado durante x milisegundos
+*/
+
+void liberarQuimico(int pinBomba, float tiempoMs) {
+
+  // Inicializar variable
+  long currentTime = 0;
+  
+  // Prender bomba
+  digitalWrite(pinBomba, HIGH);
+
+  // Dejarla prendida durante x ms
+  currentTime = millis();
+  while(millis() - currentTime < tiempoMs ) {
+    // DO NOTHING
+  }
+
+  // Apagar bomba
+  digitalWrite(pinBomba, LOW);
+
+
 }

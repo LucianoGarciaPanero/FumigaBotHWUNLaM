@@ -70,7 +70,7 @@ int stBateria;
 int evtBateria;
 float cargaBateria;
 
-/* ------------------ MdE GENERAL ------------------ */
+/* ------------------ MdE CORE 1 ------------------ */
 // Estados
 #define ST_INACTIVO                     100
 #define ST_REALIZANDO_CONEXIONES        125
@@ -81,17 +81,41 @@ float cargaBateria;
 #define EVT_FIN_TIMER                   1025
 
 // MdE general
-void generarEventoMdEGeneral(void);
-void doInitMdEGeneral(void);
-void maquinaEstadosGeneral(void);
+void generarEventoMdECoreUno(void);
+void doInitMdECoreUno(void);
+void maquinaEstadosCoreUno(void);
 void stInactivo(void);
 void stRealizandoConexiones(void);
 void stDetectandoCargaBateria(void);
 
 // Variables globales
-int stGeneral;
-int evtGeneral;
+int stCoreUno;
+int evtCoreUno;
 unsigned long lastTime;
+
+/* ------------------ MdE CORE 0 ------------------ */
+// Estados
+#define ST_VERIFICANDO_SENSORES_DISTANCIA   100
+#define ST_LIBERAR_QUIMICO                  125
+#define ST_SIN_QUIMICO                      150
+
+// Eventos
+#define EVT_LIBERAR_QUIMICO                   1000
+#define EVT_NIVEL_BAJO_QUIMICO                1025
+#define EVT_FIN_LIBERAR_QUIMICO               1050
+#define EVT_FINALIZAR_FUMIGACION              1075
+
+// MdE Core Cero
+void generarEventoMdECoreCero(void);
+void doInitMdECoreCero(void);
+void maquinaEstadosCoreCero(void);
+void stVerificandoSensoresDistancia(void);
+void stLiberarQuimico(void);
+void stSinQuimico(void);
+
+// Variables globales
+int stCoreCero;
+int evtCoreCero;
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 
@@ -137,6 +161,7 @@ FirebaseAuth auth;
 const String pathHojaFumigar = "/robots/0/fumigando";
 const String pathHojaBateria = "/robots/0/bateria";
 const String pathHojaEncendido = "/robots/0/encendido";
+const String pathHojaQuimico = "/robots/0/nivelQuimico";
 
 // Para ejecutar en paralelo
 TaskHandle_t task0;

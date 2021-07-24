@@ -43,8 +43,9 @@ void codigoTaskCero(void *param) {
   
   /* SETUP */
   
-  // Inicialización MdE sensores
+  // Inicialización MdE
   doInitMdESesonres();
+  doInitMdECoreCero();
 
   /* LOOP */
   while(true) {
@@ -52,15 +53,15 @@ void codigoTaskCero(void *param) {
     //  Solo se ejecuta la MdE de fumgar si se recibe la señal del Firebase.
     if(senialFumigar) {
 
-      // Recorremos todos los sensores y ejecutamos sus MdE
-     for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++){
-            maquinaEstadosSensoresDistancia(i);
-      }
-
+      maquinaEstadosCoreCero();
+    
     } else {
-     digitalWrite(PIN_LED_DISTANCIA, LOW);
+
+      // Apagar la bomba
+      digitalWrite(PIN_BOMBA, LOW);
+
     }
-   
+
     // Le damos tiempo a las tareas en background a ejecutarse
     delay(10);
   }
@@ -75,14 +76,14 @@ void codigoTaskUno(void *param) {
   
   /* SETUP */
   
-  doInitMdEGeneral();
+  doInitMdECoreUno();
   
 
   /* LOOP */
 
   while(true) {
     
-    maquinaEstadosGeneral();
+    maquinaEstadosCoreUno();
 
     
     // Le damos tiempo a las tareas en background a ejecutarse
@@ -98,13 +99,12 @@ void codigoTaskUno(void *param) {
 
 void doInit(){
 
-  // Inicializamos pin LED
-  pinMode(PIN_LED_DISTANCIA, OUTPUT);
+  // Inicialización pin LED
   pinMode(PIN_LED_ROJO, OUTPUT);
   pinMode(PIN_LED_AMARILLO, OUTPUT);
   pinMode(PIN_LED_VERDE, OUTPUT);
 
-  // Inicialización pines sensores distancia
+  // Inicialización pines sensores distancia de posición
   for(int i = 0; i < CANT_SENSORES_DISTANCIA; i++) {
     
     // Inicialización pines
@@ -114,6 +114,13 @@ void doInit(){
     pinMode(sensores[i].pinEcho, INPUT);
     pinMode(sensores[i].pinTrig, OUTPUT);
   }
+
+  // Inicialización de pines sensor distancia de liquido
+  pinMode(PIN_ECHO_LIQUIDO, INPUT);
+  pinMode(PIN_TRIG_LIQUIDO, OUTPUT);
+
+  // Inicialización pin bomba
+  pinMode(PIN_BOMBA, OUTPUT);
 
   // Inicialización variables
   conectadoFB = false;
@@ -143,11 +150,18 @@ void doInitMdESesonres() {
 
 int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   
-  // Verificamos en que parte del rango esta
-  bool resultado = estaDentroRango(
+  // Inicializar variable
+  float promedio = -1;
+  bool resultado = false;
+
+  // Calcular la distancia promedio
+  promedio = calcularDistanciaPromedio(pinTrig, pinEcho);
+  
+  // Verificar en que parte del rango esta
+  resultado = estaDentroRango(
     UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, 
     UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, 
-    obtenerDistancia(pinTrig, pinEcho)
+    promedio
     );
 
   // De acuerdo al valor devolvemos el evento correspondiente
@@ -180,25 +194,18 @@ void maquinaEstadosSensoresDistancia(int nro) {
     // Generación evento para próxima pasada
     sensores[nro].evento = generarEventoMdESensorDistancia(
       sensores[nro].pinTrig, 
-      sensores[nro].pinEcho);
+      sensores[nro].pinEcho
+      );
   }
 
 void stObjetoNoDetectado(int nro){
   switch(sensores[nro].evento){
 
     case EVT_OBJETO_FUERA_RANGO:
-      // Apagamos LED
-      digitalWrite(PIN_LED_DISTANCIA, LOW);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
       break;
 
     case EVT_OBJETO_DENTRO_RANGO:
-      // Encendemos el LED
-      digitalWrite(PIN_LED_DISTANCIA, HIGH);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_DETECTADO;
       break;
     
@@ -211,18 +218,10 @@ void stObjetoDetectado(int nro){
   switch(sensores[nro].evento){
 
     case EVT_OBJETO_FUERA_RANGO:
-      // Apagamos el LED
-      digitalWrite(PIN_LED_DISTANCIA, HIGH);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_NO_DETECTADO;
       break;
 
     case EVT_OBJETO_DENTRO_RANGO:
-      // Encendemos el LED
-      digitalWrite(PIN_LED_DISTANCIA, HIGH);
-
-      // Cambiamos de estado
       sensores[nro].estado = ST_OBJETO_DETECTADO;
       break;
     
@@ -475,17 +474,17 @@ void stCalculandoNivelBateria(void) {
   }
 }
 
-/* ------------------ SECCIÓN MdE GENERAL ------------------ */
+/* ------------------ SECCIÓN MdE CORE UNO ------------------ */
 
 /*
 * Inicializa los estados correspondientes con la MdE.
 */
 
-void doInitMdEGeneral(void) {
+void doInitMdECoreUno(void) {
   
   // Inicializaicón estado y evento
-  stGeneral = ST_INACTIVO;
-  evtGeneral = EVT_CONTINUAR;
+  stCoreUno = ST_INACTIVO;
+  evtCoreUno = EVT_CONTINUAR;
 
   // Inicialización del a variable a usar
   lastTime = millis();
@@ -495,7 +494,7 @@ void doInitMdEGeneral(void) {
 * Genera los eventos para la MdE.
 */
 
-void generarEventoMdEGeneral(void) {
+void generarEventoMdECoreUno(void) {
 
   // Verificación de que haya ocurrido timeout en el timer
   if(millis() - lastTime >=  TIEMPO_VERIFICACION_BATERIA_MS) {
@@ -504,9 +503,9 @@ void generarEventoMdEGeneral(void) {
     lastTime = millis();
 
     // Asignamos el evento
-    evtGeneral = EVT_FIN_TIMER;
+    evtCoreUno = EVT_FIN_TIMER;
   } else {
-    evtGeneral = EVT_CONTINUAR;
+    evtCoreUno = EVT_CONTINUAR;
   }
 
 }
@@ -515,8 +514,8 @@ void generarEventoMdEGeneral(void) {
 * Implementación de cada uno de los estados de la MdE.
 */
 
-void maquinaEstadosGeneral() {
-  switch(stGeneral) {
+void maquinaEstadosCoreUno() {
+  switch(stCoreUno) {
 
     case ST_INACTIVO:
       stInactivo();
@@ -534,18 +533,18 @@ void maquinaEstadosGeneral() {
       break;
   }
 
-  generarEventoMdEGeneral();
+  generarEventoMdECoreUno();
 }
 
 void stInactivo() {
-  switch(evtGeneral) {
+  switch(evtCoreUno) {
 
     case EVT_CONTINUAR:
       
       doInitMdEConexiones();
       maquinaEstadosConexiones();
 
-      stGeneral = ST_REALIZANDO_CONEXIONES;
+      stCoreUno = ST_REALIZANDO_CONEXIONES;
       break;
 
     default:
@@ -554,7 +553,7 @@ void stInactivo() {
 }
 
 void stRealizandoConexiones() {
-  switch(evtGeneral) {
+  switch(evtCoreUno) {
 
     case EVT_FIN_TIMER:
 
@@ -565,14 +564,14 @@ void stRealizandoConexiones() {
       doInitMdEBateria();
       maquinaEstadosBateria();
 
-      stGeneral = ST_DETECTANDO_CARGA_BATERIA;
+      stCoreUno = ST_DETECTANDO_CARGA_BATERIA;
       break;
 
     case EVT_CONTINUAR:
 
       maquinaEstadosConexiones();
 
-      stGeneral = ST_REALIZANDO_CONEXIONES;
+      stCoreUno = ST_REALIZANDO_CONEXIONES;
       break;
 
     default:
@@ -581,7 +580,7 @@ void stRealizandoConexiones() {
 }
 
 void stDetectandoCargaBateria() {
-  switch(evtGeneral) {
+  switch(evtCoreUno) {
 
     case EVT_FIN_TIMER:
 
@@ -591,19 +590,172 @@ void stDetectandoCargaBateria() {
       // Realizamos la acción para cambiar de MdE
       maquinaEstadosConexiones();
 
-      stGeneral = ST_REALIZANDO_CONEXIONES;
+      stCoreUno = ST_REALIZANDO_CONEXIONES;
       break;
 
     case EVT_CONTINUAR:
       maquinaEstadosBateria();
 
-      stGeneral = ST_DETECTANDO_CARGA_BATERIA;
+      stCoreUno = ST_DETECTANDO_CARGA_BATERIA;
       break;
 
     default:
       break;
   }
 }
+
+/* ------------------ SECCIÓN MdE CORE CERO ------------------ */
+
+/*
+* Inicializa los estados correspondientes con la MdE.
+*/
+
+void doInitMdECoreCero(void) {
+
+  stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+  evtCoreCero = EVT_FIN_LIBERAR_QUIMICO;
+}
+
+/*
+* Genera los eventos para la MdE.
+* sensores[0] -> Sensor de distancia del objeto.
+* sensores[1] -> Sensor de distancia para el recipiente.
+* Verificamos que un objeto se encuentre en el rango establecido y que 
+* haya suficiente químico para liberar.
+*/
+
+void generarEventoMdECoreCero(void) {
+
+  // Inicializar el evento por defecto
+  evtCoreCero = EVT_FIN_LIBERAR_QUIMICO;
+
+  // Inicializar variables auxiliares
+  int evtAux = -1;
+  float distanciaQuimico = -1;
+  float porcentajeQuimico = -1;
+
+  // Hacer una pasada de la MdE del pin 0
+  maquinaEstadosSensoresDistancia(0);
+
+  // Verificar que se detecte un objeto
+  evtAux = sensores[0].evento;
+
+  if(evtAux == EVT_OBJETO_DENTRO_RANGO) {
+    evtCoreCero = EVT_LIBERAR_QUIMICO;
+  } else if(evtAux == EVT_OBJETO_FUERA_RANGO) {
+    evtCoreCero = EVT_FIN_LIBERAR_QUIMICO;
+  }
+
+  // Verificar que se tenga suficiente quiímico
+  distanciaQuimico = calcularDistanciaPromedio(
+    PIN_TRIG_LIQUIDO, 
+    PIN_ECHO_LIQUIDO
+    );
+
+  porcentajeQuimico = 1 - ((distanciaQuimico - (DISTANCIA_SENSOR_CM-DISTANCIA_MAX_CM)) / DISTANCIA_MAX_CM);
+
+  if(porcentajeQuimico < LIMITE_INFERIOR_CONTENIDO) {
+    evtCoreCero = EVT_NIVEL_BAJO_QUIMICO;
+  }
+
+  // Escribir en firebase el nivel de quimico
+  Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), porcentajeQuimico * 100);
+}
+
+/*
+* Implementación de cada uno de los estados de la MdE.
+*/
+
+void maquinaEstadosCoreCero() {
+
+  // Mover entre estados
+  switch(stCoreCero) {
+
+    case ST_VERIFICANDO_SENSORES_DISTANCIA:
+      stVerificandoSensoresDistancia();
+      break;
+
+    case ST_LIBERAR_QUIMICO:
+      stLiberarQuimico();
+      break;
+
+    case ST_SIN_QUIMICO:
+      stSinQuimico();
+      break;
+
+    default:
+      break;
+  }
+
+  // Generar un nuevo evento
+  generarEventoMdECoreCero();
+}
+
+void stVerificandoSensoresDistancia(void) {
+
+  switch(evtCoreCero) {
+
+    case EVT_FIN_LIBERAR_QUIMICO:
+      stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+      break;
+
+
+    case EVT_NIVEL_BAJO_QUIMICO:
+      stCoreCero = ST_SIN_QUIMICO;
+
+      // Comunicar a firebase el error
+      Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), ERROR_NIVEL_QUIMICO);
+
+      // Apagar la fumigacion en firebase
+      Firebase.RTDB.setBool(&fbWrite, pathHojaFumigar.c_str(), false);
+      break;
+
+    case EVT_LIBERAR_QUIMICO:
+      liberarQuimico(PIN_BOMBA, TIEMPO_LIBERAR_QUIMICO_MS);
+      stCoreCero = ST_LIBERAR_QUIMICO;
+      break;
+
+    default:
+      break;
+  }
+
+}
+void stLiberarQuimico(void) {
+
+  switch(evtCoreCero) {
+
+    case EVT_FIN_LIBERAR_QUIMICO:
+      stCoreCero = ST_VERIFICANDO_SENSORES_DISTANCIA;
+      break;
+    
+    case EVT_LIBERAR_QUIMICO:
+      liberarQuimico(PIN_BOMBA, TIEMPO_LIBERAR_QUIMICO_MS);
+      stCoreCero = ST_LIBERAR_QUIMICO;
+      break;
+    
+    case EVT_NIVEL_BAJO_QUIMICO:
+      stCoreCero = ST_SIN_QUIMICO;
+
+      // Comunicar a firebase el error
+      Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), ERROR_NIVEL_QUIMICO);
+
+      // Apagar la fumigacion en firebase
+      Firebase.RTDB.setBool(&fbWrite, pathHojaFumigar.c_str(), false);
+
+    default:
+      break;
+  }
+
+}
+void stSinQuimico(void) {
+
+  switch(evtCoreCero) {
+    
+    default:
+      break;
+  }
+}
+
 
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
 
@@ -651,6 +803,10 @@ bool conectarFB(void) {
 
 void streamCallback(FirebaseStream data) {
   senialFumigar = data.boolData();
+
+  if(senialFumigar) {
+    doInitMdECoreCero();
+  }
 }
 
 /*
