@@ -41,6 +41,7 @@ void testObtenerNivelBateriaMinimo(void) {
     // Arrange
     // Simulamos una entrada de 2.5V
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3102);
+    When(Method(ArduinoFake(), delay)).AlwaysReturn();
     float expectedNivel = 0;
 
     // Act
@@ -59,6 +60,7 @@ void testObtenerNivelBateriaMaximo(void){
     // Arrange
     // Simulamos una entrada de 3V
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3723);
+    When(Method(ArduinoFake(), delay)).AlwaysReturn();
     float expectedNivel = 100;
 
     // Act
@@ -77,6 +79,7 @@ void testObtenerNivelBateriaNegativo(void) {
     // Arrange
     // Simulamos una entrada de 2.4V
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(2978);
+    When(Method(ArduinoFake(), delay)).AlwaysReturn();
     float expectedNivel = ERROR_BATERIA;
 
     // Act

@@ -658,9 +658,8 @@ void generarEventoMdECoreCero(void) {
     evtCoreCero = EVT_NIVEL_BAJO_QUIMICO;
   }
 
-  Serial.println(evtAux);
-  Serial.println(evtCoreCero);
-  Serial.println(stCoreCero);
+  // Escribir en firebase el nivel de quimico
+  Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), porcentajeQuimico * 100);
 }
 
 /*
