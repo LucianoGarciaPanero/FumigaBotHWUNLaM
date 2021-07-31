@@ -621,7 +621,7 @@ void doInitMdECoreCero(void) {
   
   Firebase.RTDB.getInt(
     &fbWrite, 
-    pathHojaQuimico.c_str(),
+    pathHojaCantidadQuimicoPorArea.c_str(),
     &cantidadQuimicoLiberar);
 
   // Setear el tiempo que libera el quimico
