@@ -116,6 +116,10 @@ void stSinQuimico(void);
 // Variables globales
 int stCoreCero;
 int evtCoreCero;
+int tiempoLiberarQuimicoMs;
+
+// Función auxiliar
+void finalizarFumigacion(void);
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 
@@ -162,6 +166,7 @@ const String pathHojaFumigar = "/robots/0/fumigando";
 const String pathHojaBateria = "/robots/0/bateria";
 const String pathHojaEncendido = "/robots/0/encendido";
 const String pathHojaQuimico = "/robots/0/nivelQuimico";
+const String pathHojaCantidadQuimicoPorArea = "/robots/0/cantidadQuimicoPorArea";
 
 // Para ejecutar en paralelo
 TaskHandle_t task0;
