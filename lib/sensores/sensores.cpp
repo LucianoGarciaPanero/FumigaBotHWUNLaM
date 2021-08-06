@@ -2,13 +2,13 @@
 #include <Arduino.h>
 
 /******************************************************************* 
-Nombre: obtenerDistancia
+Nombre: calcularDistancia
 Entradas:
           + trigPin: int
           + echoPin: int
 Salida:
           + distancia: long
-Proceso: obtiene la distancia a la que se encuentra un objeto en frente
+Proceso: calcula la distancia a la que se encuentra un objeto en frente
 del sensor de ultrasonido, identificado por trigPin y echoPin
 Fecha Creación: 01/07/2021
 Creador: 
@@ -20,7 +20,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-long obtenerDistancia(int trigPin, int echoPin) {
+long calcularDistancia(int trigPin, int echoPin) {
   
   // Inicializando el pin del trigger
   digitalWrite(trigPin, LOW);
@@ -66,7 +66,7 @@ float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
 
   // Leer n valores
   for(int i = 0; i < n; i++) {
-    values[i]= obtenerDistancia(pinTrig, pinEcho);
+    values[i]= calcularDistancia(pinTrig, pinEcho);
 
     // Para que las mediciones no interfieran entre si
     delay(30);
@@ -77,7 +77,7 @@ float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
 }
 
 /******************************************************************* 
-Nombre: obtenerNivelBateria
+Nombre: calcularNivelBateriaPromedio
 Entradas:
           + pin: int
           + vMin: float
@@ -99,7 +99,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
+float calcularNivelBateriaPromedio(int pin, float vMin, float vMax, float constCorr) {
 
   // Inicializar variables
   int n = 100;
@@ -131,9 +131,22 @@ float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
   }
 }
 
-/*
-* Libera químico por el pin especificado durante x milisegundos
-*/
+/******************************************************************* 
+Nombre: liberarQuimico
+Entradas:
+          + pinBomba: int
+          + tiempoMs: float
+Salida: -
+Proceso: activa la bomba durante tiempMs, identificandola por pinBomba
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void liberarQuimico(int pinBomba, float tiempoMs) {
 
@@ -151,6 +164,4 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 
   // Apagar bomba
   digitalWrite(pinBomba, LOW);
-
-
 }

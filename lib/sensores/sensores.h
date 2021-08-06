@@ -18,7 +18,7 @@
 #define DELTA_CARGA_BATERIA 2
 
 /* -------- FUNCIONES --------  */
-long obtenerDistancia(int, int);
+long calcularDistancia(int, int);
 float calcularDistanciaPromedio(int, int);
-float obtenerNivelBateria(int, float, float, float);
+float calcularNivelBateriaPromedio(int, float, float, float);
 void liberarQuimico(int, float);

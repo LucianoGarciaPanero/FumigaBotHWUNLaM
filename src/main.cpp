@@ -425,7 +425,7 @@ void maquinaEstadosBateria(void) {
 void stCalculandoNivelBateria(void) {
 
   // Calculamos la carga de la batería  
-  cargaBateria = obtenerNivelBateria(
+  cargaBateria = calcularNivelBateriaPromedio(
     PIN_VIN_BATERIA, 
     VOLTAJE_MIN_ESP, 
     VOLTAJE_MAX_BATERIA,
