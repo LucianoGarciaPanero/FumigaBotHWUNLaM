@@ -1,12 +1,6 @@
 #include "./sensores.h"
 #include <Arduino.h>
 
-/*
-* Esta función se encarga de obtener la distancia que se encuentra un objeto en
-* frente del sensor de ultrasonido identificado, pasado los pines donde se 
-* ubican el trigger y echo
-*/
-
 /******************************************************************* 
 Nombre: obtenerDistancia
 Entradas:
@@ -44,15 +38,16 @@ long obtenerDistancia(int trigPin, int echoPin) {
   return (duracion / VALOR_CORRECCION_ONDA) * VELOCIDAD_SONIDO_CM;
 }
 
-/*
-* Calcula la distancia promedio leyendo por los pines indicados
-*/ 
-
 /******************************************************************* 
-Nombre:
+Nombre: calcularDistanciaPromedio
 Entradas:
+          + pinTrig: int
+          + pinEcho: int
 Salida:
-Proceso: 
+          + distanciaPromedio: float
+Proceso: obtiene n mediciones del sensor de ultrasonido, especificado por
+pinTrig y pinEcho. Luego, calcular el promedio usando la función 
+calcularPromedio.
 Fecha Creación: 01/07/2021
 Creador: 
         + Luciano Garcia Panero 
@@ -85,6 +80,21 @@ float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
 * Lee la tensión que entra por el pin especificado. Calcula el nivel de 
 * batería de acuerdo a la tensión mínima y la máxima
 */
+
+/******************************************************************* 
+Nombre:
+Entradas:
+Salida:
+Proceso: 
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 float obtenerNivelBateria(int pin, float vMin, float vMax, float constCorr) {
 
