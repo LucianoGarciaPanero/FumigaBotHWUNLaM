@@ -60,18 +60,17 @@ void ordenarVector(float *values, int len) {
     }
 }
 
-
-/*
-* Dado un array con los valores leidos, lo ordena, filtra las primeras y últimas
-* n observaciones porque se las trata como ruido y calcula el promedio con
-* los restantes.
-*/
-
 /******************************************************************* 
-Nombre:
+Nombre: calcularPromedio
 Entradas:
+          + values: float*
+          + len: int
 Salida:
-Proceso: 
+          + promedio: float
+Proceso: ordena el vector dado como entrada, descarta las primeras 5
+observaciones y las 5 últimas observaciones. Luego, calcula el promedio con
+el resto de observaciones. Si la longitud del vector es menor o igual a 10
+retorna error.
 Fecha Creación: 01/07/2021
 Creador: 
         + Luciano Garcia Panero 
