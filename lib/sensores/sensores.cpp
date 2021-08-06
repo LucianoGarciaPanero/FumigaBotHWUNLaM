@@ -76,16 +76,19 @@ float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
   return calcularPromedio(values, n);
 }
 
-/*
-* Lee la tensión que entra por el pin especificado. Calcula el nivel de 
-* batería de acuerdo a la tensión mínima y la máxima
-*/
-
 /******************************************************************* 
-Nombre:
+Nombre: obtenerNivelBateria
 Entradas:
+          + pin: int
+          + vMin: float
+          + vMax: float
+          + constCorr: float
 Salida:
-Proceso: 
+          + porcentajeBateria: float
+Proceso: obtiene n mediciones de la bateria. Luego, calcula el promedio usando
+calcularPromedio. Calcula y devuelve el porcentaje de bateria restante,
+teniendo en cuenta el vMin y vMax. Si el porcentaje de batería es menor
+a 0 o mayor a 100, entonces devuelve error
 Fecha Creación: 01/07/2021
 Creador: 
         + Luciano Garcia Panero 
