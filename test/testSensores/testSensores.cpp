@@ -90,10 +90,6 @@ void testNivelBateriaMaximo(void){
     TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
 }
 
-/*
-* Testeamos por debajo del límite inferior (< 0%)
-*/
-
 /******************************************************************* 
 Nombre: calcularNivelBateriaPromedio
 Método Prueba: Caja Negra
