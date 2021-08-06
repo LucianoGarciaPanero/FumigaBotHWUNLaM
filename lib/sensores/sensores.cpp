@@ -158,9 +158,7 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 
   // Dejarla prendida durante x ms
   currentTime = millis();
-  while(millis() - currentTime < tiempoMs ) {
-    // DO NOTHING
-  }
+  while(millis() - currentTime < tiempoMs ) {}
 
   // Apagar bomba
   digitalWrite(pinBomba, LOW);

@@ -119,7 +119,7 @@ int evtCoreCero;
 int tiempoLiberarQuimicoMs;
 
 // Función auxiliar
-void finalizarFumigacion(void);
+void finalizarFumigacionSinQuimico(void);
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 

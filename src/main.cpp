@@ -10,7 +10,7 @@ void setup() {
   // Inicialización pines, variables, etc.
   doInit();
   
-  // Inicialización de tareas
+  // Inicialización de tareas en cada core
   xTaskCreatePinnedToCore(
     codigoTaskCero, // Código a ejecutar
     "Task0",        // Un identificador
@@ -34,10 +34,21 @@ void loop() {vTaskDelete(NULL);}
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
 
-/*
-* Código a ejecutar en el core 0.
-* Máquina de estados para hacer la detección de objetos
-*/
+/******************************************************************* 
+Nombre: codigoTaskCero
+Entradas: -
+Salida: -
+Proceso: código a ejecutar en el procesador cero, se encarga de realizar la 
+fumigación
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void codigoTaskCero(void *param) {
   
@@ -67,10 +78,21 @@ void codigoTaskCero(void *param) {
   }
 }
 
-/*
-* Código a ejecutar en el core 1.
-* Máquina de estados para la conexión a internet y conectarse a Wifi y FB.
-*/
+/******************************************************************* 
+Nombre: codigoTaskUno
+Entradas: -
+Salida: -
+Proceso: código a ejecutar en el procesador uno, se encarga de realizar la 
+conexión al WiFi y Firebase
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void codigoTaskUno(void *param) {
   
@@ -93,9 +115,20 @@ void codigoTaskUno(void *param) {
 
 /* ------------------ SECCIÓN INIT ------------------ */
 
-/*
-* Inicializa los pines en los modos correctos y las variables necesarias
-*/
+/******************************************************************* 
+Nombre: doInit
+Entradas: -
+Salida: -
+Proceso: inicializa las variables globales y los pines
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void doInit(){
 
@@ -129,10 +162,6 @@ void doInit(){
 
 /* ------------------ SECCIÓN MdE SENSORES ------------------ */
 
-/*
-* Inicializa los estados correspondientes con la MdE.
-*/
-
 void doInitMdESesonres() {
   
     // Inicializamos los estados
@@ -141,12 +170,6 @@ void doInitMdESesonres() {
       sensores[i].evento = EVT_OBJETO_FUERA_RANGO;
     }
 }
-
-/*
-* Genera un evento a partir de analizar los sensores.
-* Si un objeto se encuentra den intervalo genera un evento
-* objeto detectado, en caso contraro objeto no detectado.
-*/
 
 int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
   
@@ -171,10 +194,6 @@ int generarEventoMdESensorDistancia(int pinTrig, int pinEcho) {
     return EVT_OBJETO_FUERA_RANGO;
   }
 }
-
-/*
-* Implementación de cada uno de los estados de la MdE.
-*/
 
 void maquinaEstadosSensoresDistancia(int nro) {
 
@@ -232,10 +251,6 @@ void stObjetoDetectado(int nro){
 
 /* ------------------ SECCIÓN MdE CONEXIONES ------------------ */
 
-/*
-* Inicializa los estados correspondientes con la MdE.
-*/
-
 void doInitMdEConexiones(void) {
   
   // Inicializamos estados generales
@@ -243,10 +258,6 @@ void doInitMdEConexiones(void) {
   evtConexiones = EVT_CONTINUAR;
 
 }
-
-/*
-* Genera los eventos para la MdE.
-*/
 
 void generarEventoMdEConexiones(void) {
 
@@ -285,10 +296,6 @@ void generarEventoMdEConexiones(void) {
 
   }
 } 
-
-/*
-* Implementación de cada uno de los estados de MdE.
-*/
 
 void maquinaEstadosConexiones() {
     
@@ -373,10 +380,6 @@ void stConectadoFB() {
 
 /* ------------------ SECCIÓN MdE BATERÍA ------------------ */
 
-/*
-* Inicializa los estados correspondientes con la MdE.
-*/
-
 void doInitMdEBateria(void) {
   
   // Inicialización estados y eventos
@@ -387,10 +390,6 @@ void doInitMdEBateria(void) {
   cargaBateria = 0;
 }
 
-/*
-* Genera los eventos para la MdE.
-*/
-
 void generarEventoMdEBateria(void) {
   
   if(cargaBateria != 0) {
@@ -399,10 +398,6 @@ void generarEventoMdEBateria(void) {
     evtBateria = EVT_DETECTAR_CARGA;
   }
 }
-
-/*
-* Implementación de cada uno de los estados de la MdE.
-*/
 
 void maquinaEstadosBateria(void) {
   switch(stBateria)  {
@@ -476,10 +471,6 @@ void stCalculandoNivelBateria(void) {
 
 /* ------------------ SECCIÓN MdE CORE UNO ------------------ */
 
-/*
-* Inicializa los estados correspondientes con la MdE.
-*/
-
 void doInitMdECoreUno(void) {
   
   // Inicializaicón estado y evento
@@ -489,10 +480,6 @@ void doInitMdECoreUno(void) {
   // Inicialización del a variable a usar
   lastTime = millis();
 }
-
-/*
-* Genera los eventos para la MdE.
-*/
 
 void generarEventoMdECoreUno(void) {
 
@@ -509,10 +496,6 @@ void generarEventoMdECoreUno(void) {
   }
 
 }
-
-/*
-* Implementación de cada uno de los estados de la MdE.
-*/
 
 void maquinaEstadosCoreUno() {
   switch(stCoreUno) {
@@ -606,10 +589,6 @@ void stDetectandoCargaBateria() {
 
 /* ------------------ SECCIÓN MdE CORE CERO ------------------ */
 
-/*
-* Inicializa los estados correspondientes con la MdE.
-*/
-
 void doInitMdECoreCero(void) {
 
   // Inicializar estado y evento
@@ -644,14 +623,6 @@ void doInitMdECoreCero(void) {
     break;
   }
 }
-
-/*
-* Genera los eventos para la MdE.
-* sensores[0] -> Sensor de distancia del objeto.
-* sensores[1] -> Sensor de distancia para el recipiente.
-* Verificamos que un objeto se encuentre en el rango establecido y que 
-* haya suficiente químico para liberar.
-*/
 
 void generarEventoMdECoreCero(void) {
 
@@ -694,10 +665,6 @@ void generarEventoMdECoreCero(void) {
   Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), porcentajeQuimico);
 }
 
-/*
-* Implementación de cada uno de los estados de la MdE.
-*/
-
 void maquinaEstadosCoreCero() {
 
   // Mover entre estados
@@ -734,7 +701,7 @@ void stVerificandoSensoresDistancia(void) {
 
     case EVT_NIVEL_BAJO_QUIMICO:
       stCoreCero = ST_SIN_QUIMICO;
-      finalizarFumigacion();
+      finalizarFumigacionSinQuimico();
       break;
 
     case EVT_LIBERAR_QUIMICO:
@@ -762,7 +729,7 @@ void stLiberarQuimico(void) {
     
     case EVT_NIVEL_BAJO_QUIMICO:
       stCoreCero = ST_SIN_QUIMICO;
-      finalizarFumigacion();
+      finalizarFumigacionSinQuimico();
       break;
 
     default:
@@ -779,7 +746,23 @@ void stSinQuimico(void) {
   }
 }
 
-void finalizarFumigacion(void) {
+/******************************************************************* 
+Nombre: finalizarFumigacionSinQuimico
+Entradas: -
+Salida: -
+Proceso: comunica en firebase que finaliza la fumigación e informa error por
+falta de quimico
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void finalizarFumigacionSinQuimico(void) {
   // Comunicar a firebase el error
   Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), ERROR_NIVEL_QUIMICO);
 
@@ -789,6 +772,21 @@ void finalizarFumigacion(void) {
 
 
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
+
+/******************************************************************* 
+Nombre: conectarWifi
+Entradas: -
+Salida: -
+Proceso: conecta al wifi, y lo reintenta durante 20 ms
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void conectarWifi() {
   
@@ -808,6 +806,21 @@ void conectarWifi() {
 
 /* ------------------ SECCIÓN CONEXIÓN FIREBASE ------------------ */
 
+/******************************************************************* 
+Nombre: conectarFB
+Entradas: -
+Salida: -
+Proceso: conecta con Firebase, y genera la suscripción a la hoja de fumigar
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
 bool conectarFB(void) {
 
   // Asignamos los datos de la base de datos en tiempo real
@@ -820,17 +833,29 @@ bool conectarFB(void) {
   // Nos suscribimos a la hoja de fumigar
   bool resultado =  Firebase.RTDB.beginStream(&fbConection, pathHojaFumigar.c_str());
 
-  // Establece las acciones cuando ocurre una actualización
-  Firebase.RTDB.setStreamCallback(&fbConection, streamCallback, streamTimeoutCallback);
+  if(resultado) {
+    // Establece las acciones cuando ocurre una actualización
+    Firebase.RTDB.setStreamCallback(&fbConection, streamCallback, streamTimeoutCallback);
+  }
 
   return resultado;
 }
 
-
-/*
-* Función que se ejecuta cada vez que se recibe una actualización de Firebase.
-* Genera el evento para comenzar la detección.
-*/
+/******************************************************************* 
+Nombre: streamCallback
+Entradas: -
+Salida: -
+Proceso: se llama a la función en el momento que se detecta un cambio
+en la hoja fumigación. Si el valor es true reinicia la MdE del core cero
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void streamCallback(FirebaseStream data) {
   senialFumigar = data.boolData();
@@ -840,14 +865,19 @@ void streamCallback(FirebaseStream data) {
   }
 }
 
-/*
-* Esta función se ejecuta en caso de que se reciba un timeout.
-*/
+/******************************************************************* 
+Nombre: streamTimeoutCallback
+Entradas: -
+Salida: -
+Proceso: se llama a la función en el momento que se detecta un timeout
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
-void streamTimeoutCallback(bool timeout) {
-  if(timeout){
-
-    // TODO: ACCIÓN POR UN TIMEOUT
-  
-  }
-}
+void streamTimeoutCallback(bool timeout) {}
