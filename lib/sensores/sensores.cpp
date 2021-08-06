@@ -7,6 +7,21 @@
 * ubican el trigger y echo
 */
 
+/******************************************************************* 
+Nombre:
+Entradas:
+Salida:
+Proceso: 
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
 long obtenerDistancia(int trigPin, int echoPin) {
   
   // Inicializando el pin del trigger

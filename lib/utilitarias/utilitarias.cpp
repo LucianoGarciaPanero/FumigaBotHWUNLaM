@@ -29,9 +29,22 @@ bool estaDentroRango(int limiteInferior, int limiteSuperior, long valor) {
     }
 }
 
-/*
-* Ordena un vector de tipo float de forma ascendente mediante burbujeo
-*/
+/******************************************************************* 
+Nombre: ordenarVector
+Entradas:
+          + values: float*
+          + len: int
+Salida: -
+Proceso: ordena el vector in situ de forma ascendente mediante burbujeo
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 void ordenarVector(float *values, int len) {
 
@@ -53,6 +66,21 @@ void ordenarVector(float *values, int len) {
 * n observaciones porque se las trata como ruido y calcula el promedio con
 * los restantes.
 */
+
+/******************************************************************* 
+Nombre:
+Entradas:
+Salida:
+Proceso: 
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 float calcularPromedio(float *values, int len) {
 
