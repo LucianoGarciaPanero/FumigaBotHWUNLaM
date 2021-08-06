@@ -1,9 +1,25 @@
 #include "./utilitarias.h"
 #include <stdio.h>
 
-/*
-* Verifica que un valor se encuentre en el intervalo [Li; Ls]
-*/
+/******************************************************************* 
+Nombre: estaDentroRango
+Entradas:
+          + limiteInferior: int
+          + limiteSuperior: int
+          + valor: long
+Salida: 
+          + true/false: bool 
+Proceso: verifica que valor se encuentre dentro del intervalo [limiteInferior;
+limiteSuperior]
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 bool estaDentroRango(int limiteInferior, int limiteSuperior, long valor) {
     if(valor < limiteInferior || valor > limiteSuperior) {
