@@ -8,10 +8,14 @@
 */
 
 /******************************************************************* 
-Nombre:
+Nombre: obtenerDistancia
 Entradas:
+          + trigPin: int
+          + echoPin: int
 Salida:
-Proceso: 
+          + distancia: long
+Proceso: obtiene la distancia a la que se encuentra un objeto en frente
+del sensor de ultrasonido, identificado por trigPin y echoPin
 Fecha Creación: 01/07/2021
 Creador: 
         + Luciano Garcia Panero 
@@ -43,6 +47,21 @@ long obtenerDistancia(int trigPin, int echoPin) {
 /*
 * Calcula la distancia promedio leyendo por los pines indicados
 */ 
+
+/******************************************************************* 
+Nombre:
+Entradas:
+Salida:
+Proceso: 
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
   
