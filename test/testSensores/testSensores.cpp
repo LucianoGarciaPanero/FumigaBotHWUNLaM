@@ -10,63 +10,83 @@ float vMax = 6;
 float delta = 0.05;
 float constCorreccion = 0.00161172;
 
-/* ------------------ TEST MÉTODO obtenerDistancia() ------------------ */
+/******************************************************************* 
+Nombre: calcularDistancia
+Método Prueba: Caja Blanca
+Técnica Prueba: McCabe
+Proceso: se verifica que con un pulseIn de 1000 se corresponda una distancia
+de 17 cm
+Fecha Creación: 01/07/2021
+Creador:
+        + Luciano Garcia Panero
+        + Tomás Sánchez Grigioni
+*****************************************************************/
 
 void testObtenerDistancia(void) {
     
-    // Arrange
     When(Method(ArduinoFake(), digitalWrite)).AlwaysReturn();
     When(Method(ArduinoFake(), delayMicroseconds)).AlwaysReturn();
     When(Method(ArduinoFake(), pulseIn)).AlwaysReturn(1000);
+    
     float expectedDistance = 17;
-
-    // Act
-    float currentDistance = obtenerDistancia(1,2);
-
-    // Assert
-    Verify(Method(ArduinoFake(), digitalWrite)).Exactly(3_Times);
-    Verify(Method(ArduinoFake(), delayMicroseconds)).Exactly(2_Times);
+    float currentDistance = calcularDistancia(1,2);
 
     TEST_ASSERT_FLOAT_WITHIN(delta, expectedDistance, currentDistance);
 }
 
-/* ------------------ TEST MÉTODO obtenerNivelBateria() ------------------ */
+/******************************************************************* 
+Nombre: calcularNivelBateriaPromedio
+Método Prueba: Caja Negra
+Técnica Prueba: AVL
+Proceso: límite inferior, se verifica que con un nivel de 5v (3102) el nivel 
+de bateria sea 0
+Fecha Creación: 01/07/2021
+Creador:
+        + Luciano Garcia Panero
+        + Tomás Sánchez Grigioni
+*****************************************************************/
 
-/*
-* Testeamos que el límite inferior (0%).
-*/
+void testNivelBateriaMinimo(void) {
 
-void testObtenerNivelBateriaMinimo(void) {
-
-    // Arrange
-    // Simulamos una entrada de 2.5V
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3102);
     When(Method(ArduinoFake(), delay)).AlwaysReturn();
+
     float expectedNivel = 0;
+    float actualNivel = calcularNivelBateriaPromedio(
+        1, 
+        vMin, 
+        vMax, 
+        constCorreccion
+    );
 
-    // Act
-    float actualNivel = obtenerNivelBateria(1, vMin, vMax, constCorreccion);
-
-    // Assert
     TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
 }
 
-/*
-* Testeamos el límite superior(100%).
-*/
+/******************************************************************* 
+Nombre: calcularNivelBateriaPromedio
+Método Prueba: Caja Negra
+Técnica Prueba: AVL
+Proceso: límite superior, se verifica que con un nivel de 6v (3723) el nivel 
+de bateria sea 100
+Fecha Creación: 01/07/2021
+Creador:
+        + Luciano Garcia Panero
+        + Tomás Sánchez Grigioni
+*****************************************************************/
 
-void testObtenerNivelBateriaMaximo(void){
+void testNivelBateriaMaximo(void){
 
-    // Arrange
-    // Simulamos una entrada de 3V
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3723);
     When(Method(ArduinoFake(), delay)).AlwaysReturn();
+
     float expectedNivel = 100;
+    float actualNivel = calcularNivelBateriaPromedio(
+        1, 
+        vMin, 
+        vMax, 
+        constCorreccion
+    );
 
-    // Act
-    float actualNivel = obtenerNivelBateria(1, vMin, vMax, constCorreccion);
-
-    // Assert
     TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
 }
 
@@ -74,34 +94,72 @@ void testObtenerNivelBateriaMaximo(void){
 * Testeamos por debajo del límite inferior (< 0%)
 */
 
-void testObtenerNivelBateriaNegativo(void) {
-    
-    // Arrange
-    // Simulamos una entrada de 2.4V
+/******************************************************************* 
+Nombre: calcularNivelBateriaPromedio
+Método Prueba: Caja Negra
+Técnica Prueba: AVL
+Proceso: por debajo del limite inferior, se verifica que con un nivel de 4.8v 
+(2978) se retorne error
+Fecha Creación: 01/07/2021
+Creador:
+        + Luciano Garcia Panero
+        + Tomás Sánchez Grigioni
+*****************************************************************/
+
+void testNivelBateriaNegativo(void) {
+
     When(Method(ArduinoFake(), analogRead)).AlwaysReturn(2978);
     When(Method(ArduinoFake(), delay)).AlwaysReturn();
+    
     float expectedNivel = ERROR_BATERIA;
+    float actualNivel = calcularNivelBateriaPromedio(
+        1, 
+        vMin, 
+        vMax, 
+        constCorreccion
+    );
 
-    // Act
-    float actualNivel = obtenerNivelBateria(1, vMin, vMax, constCorreccion);
+    TEST_ASSERT_FLOAT_WITHIN(delta, expectedNivel, actualNivel);
+}
 
-    // Assert
+/******************************************************************* 
+Nombre: calcularNivelBateriaPromedio
+Método Prueba: Caja Negra
+Técnica Prueba: AVL
+Proceso: por sobre el limite superior, se verifica que con un nivel de 6.2v 
+(3847) se retorne error
+Fecha Creación: 01/07/2021
+Creador:
+        + Luciano Garcia Panero
+        + Tomás Sánchez Grigioni
+*****************************************************************/
+
+void testNivelBateriaExcedido(void) {
+
+    When(Method(ArduinoFake(), analogRead)).AlwaysReturn(3847);
+    When(Method(ArduinoFake(), delay)).AlwaysReturn();
+    
+    float expectedNivel = ERROR_BATERIA;
+    float actualNivel = calcularNivelBateriaPromedio(
+        1, 
+        vMin, 
+        vMax, 
+        constCorreccion
+    );
+
     TEST_ASSERT_EQUAL(expectedNivel, actualNivel);
 }
 
 int main(int argc, char **argv) {
 
-    // Comienzan los test
     UNITY_BEGIN();
 
-    // obtenerDistancia()
     RUN_TEST(testObtenerDistancia);
 
-    // obtenerNivelBateria
-    RUN_TEST(testObtenerNivelBateriaMinimo);
-    RUN_TEST(testObtenerNivelBateriaMaximo);
-    RUN_TEST(testObtenerNivelBateriaNegativo);
+    RUN_TEST(testNivelBateriaMinimo);
+    RUN_TEST(testNivelBateriaMaximo);
+    RUN_TEST(testNivelBateriaNegativo);
+    RUN_TEST(testNivelBateriaExcedido);
 
-    // Finalizan los test
     UNITY_END();
 }
