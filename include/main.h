@@ -15,7 +15,6 @@
 #define ST_CONECTADO_FB                 150
 
 // Eventos
-#define EVT_CONTINUAR                   1000
 #define EVT_CONEXION_EXITOSA_WIFI       1025
 #define EVT_DESCONEXION_WIFI            1050
 #define EVT_CONEXION_RECHAZADA_FB       1075
@@ -36,6 +35,7 @@ int evtConexiones;
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 
+// Inicialización estados, variables, etc
 void doInit(void);
 
 // Conexión WiFI
@@ -45,19 +45,11 @@ void conectarWifi(void);
 bool conectarFB(void);
 void streamCallback(FirebaseStream);
 void streamTimeoutCallback(bool);
+void escribirEncendidoRobotFB(void);
 
 // Ejecutar tareas en paralelo
 void codigoTaskCero(void*);
 void codigoTaskUno(void*);
-
-/* ------------------ ESTRUCTURAS ------------------ */
-
-typedef struct {
-    int pinTrig;
-    int pinEcho;
-    int estado;
-    int evento;
-} stSensorDistancia;
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 

@@ -53,28 +53,14 @@ Referencia: -
 void codigoTaskCero(void *param) {
   
   /* SETUP */
-  
-  // Inicialización MdE
-  doInitMdESesonres();
-  doInitMdECoreCero();
 
   /* LOOP */
   while(true) {
 
-    //  Solo se ejecuta la MdE de fumgar si se recibe la señal del Firebase.
-    if(senialFumigar) {
-
-      maquinaEstadosCoreCero();
     
-    } else {
-
-      // Apagar la bomba
-      digitalWrite(PIN_BOMBA, LOW);
-
-    }
-
     // Le damos tiempo a las tareas en background a ejecutarse
     delay(10);
+
   }
 }
 
@@ -98,14 +84,13 @@ void codigoTaskUno(void *param) {
   
   /* SETUP */
   
-  doInitMdECoreUno();
-  
+  doInitMdEConexiones()  ;
 
   /* LOOP */
 
   while(true) {
     
-    maquinaEstadosCoreUno();
+    maquinaEstadosConexiones();
 
     
     // Le damos tiempo a las tareas en background a ejecutarse
@@ -164,13 +149,14 @@ void doInit(){
 void doInitMdEConexiones(void) {
   
   // Inicializamos estados generales
-  stConexiones = ST_INACTIVO;
-  evtConexiones = EVT_CONTINUAR;
+  stConexiones = ST_REALIZANDO_CONEXION_WIFI;
+  evtConexiones = EVT_DESCONEXION_WIFI;
 
 }
 
 void generarEventoMdEConexiones(void) {
 
+  // Verificación de que estemos conectados al WIFI
   if(WiFi.status() != WL_CONNECTED) {
 
     // Realizamos la conexión a wifi
@@ -178,11 +164,16 @@ void generarEventoMdEConexiones(void) {
 
     // Verificamos si se logra conectar
     if(WiFi.status() != WL_CONNECTED) {
+
       evtConexiones = EVT_DESCONEXION_WIFI;
+    
     } else {
+
       evtConexiones = EVT_CONEXION_EXITOSA_WIFI;
+
     }
 
+  // Verificamos conexión a Firebase
   } else if(!conectadoFB) {
    
     // Realizmaos la coneixón al Firebase
@@ -200,6 +191,8 @@ void generarEventoMdEConexiones(void) {
       conectadoFB = false;
 
     }
+
+  // Evento por defecto
   } else {  
     
     evtConexiones = EVT_CONEXION_EXITOSA_FB;
@@ -210,23 +203,26 @@ void generarEventoMdEConexiones(void) {
 void maquinaEstadosConexiones() {
     
     // Segun el estado en el que nos encontramos llamamos a una función
-    switch(stConexiones) {
+  switch(stConexiones) {
 
-        case ST_REALIZANDO_CONEXION_WIFI:
-          stRealizandoConexionWiFi();
-          break;
+    case ST_REALIZANDO_CONEXION_WIFI:
+      stRealizandoConexionWiFi();
 
-        case ST_REALIZANDO_CONEXION_FB:
-          stRealizandoConexionFB();
-          break;
+      break;
+
+    case ST_REALIZANDO_CONEXION_FB:
+      stRealizandoConexionFB();
+      
+      break;
         
-        case ST_CONECTADO_FB:
-          stConectadoFB();
-          break;
+    case ST_CONECTADO_FB:
+      stConectadoFB();
+    
+      break;
 
-        default:
-            break;
-    }
+    default:
+      break;
+  }
 
   // Generamos el evento para la siguiente pasada
   generarEventoMdEConexiones();
@@ -256,6 +252,10 @@ void stRealizandoConexionFB() {
       break;
 
     case EVT_CONEXION_EXITOSA_FB:
+
+      // Informamos que estamos encendidos en Firebas
+      escribirEncendidoRobotFB();
+
       stConexiones = ST_CONECTADO_FB;
       break;
 
@@ -280,6 +280,10 @@ void stConectadoFB() {
       break;
     
     case EVT_CONEXION_EXITOSA_FB:
+
+      // Informamos que estamos encendidos en Firebas
+      escribirEncendidoRobotFB();
+
       stConexiones = ST_CONECTADO_FB;
       break;
     
@@ -351,8 +355,10 @@ bool conectarFB(void) {
   bool resultado =  Firebase.RTDB.beginStream(&fbConection, pathHojaFumigar.c_str());
 
   if(resultado) {
+
     // Establece las acciones cuando ocurre una actualización
     Firebase.RTDB.setStreamCallback(&fbConection, streamCallback, streamTimeoutCallback);
+  
   }
 
   return resultado;
@@ -396,3 +402,25 @@ Referencia: -
 *****************************************************************/
 
 void streamTimeoutCallback(bool timeout) {}
+
+/******************************************************************* 
+Nombre: escribirEncendidoRobotFB
+Entradas: -
+Salida: -
+Proceso: informa en Firebase que el robot se encuentra encendido.
+Fecha Creación: 24/09/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+
+void escribirEncendidoRobotFB(void) {
+
+  Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
+  
+}
