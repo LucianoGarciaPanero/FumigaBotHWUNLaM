@@ -11,6 +11,7 @@ void setup() {
   doInit();
   
   // Inicialización de tareas en cada core
+  /*
   xTaskCreatePinnedToCore(
     codigoTaskCero, // Código a ejecutar
     "Task0",        // Un identificador
@@ -19,6 +20,7 @@ void setup() {
     1,              // Prioridad
     &task0,         // Objeto para manejar la task
     0);             // Número de procesador
+  */
 
   xTaskCreatePinnedToCore(
     codigoTaskUno,  // Código a ejecutar
@@ -30,7 +32,74 @@ void setup() {
     1);             // Número de procesador
 }
 
-void loop() {vTaskDelete(NULL);}
+void loop() {
+  
+  // Declaración e inicialización variables
+  cantGiros = 0;
+  giro = false;
+  float distanciaDerechaActual = 0;
+  float distanciaDerechaPrevia = 0;
+  float distanciaAdelante = 0;
+  int direccion = 0;
+  int velocidad = 250;
+  float tiempoDelay = 0;
+
+  while(senialFumigar) {
+
+    distanciaDerechaPrevia = distanciaDerechaActual;
+    
+    // Obtener distancias
+    distanciaDerechaActual = calcularDistanciaPromedio(PIN_TRIG_DERECHA, PIN_ECHO_DERECHA);
+    delay(0.1 * 1000);
+    distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
+      
+    // Calcular dirección y tiempo
+    direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
+    tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
+
+    mover(
+      PIN_MOTOR_IZQUIERDA_IN1,
+      PIN_MOTOR_IZQUIERDA_IN2,
+      PIN_MOTOR_DERECHA_IN3,
+      PIN_MOTOR_DERECHA_IN4,
+      direccion,
+      PWM_CHANNEL_0,
+      PWM_CHANNEL_1,
+      velocidad
+    );
+
+    // Para darle tiempo al robot a que realice la acción
+    delay(tiempoDelay);
+
+    // Parar el movimiento para que no moleste en la siguiente acción
+    mover(
+      PIN_MOTOR_IZQUIERDA_IN1,
+      PIN_MOTOR_IZQUIERDA_IN2,
+      PIN_MOTOR_DERECHA_IN3,
+      PIN_MOTOR_DERECHA_IN4,
+      PARAR,
+      PWM_CHANNEL_0,
+      PWM_CHANNEL_1,
+      velocidad
+    );
+
+    // Si superamos la maxima cantidad de giros significa que termino la fumigacion
+    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+
+      senialFumigar = false;
+
+      // Si nos encontramos conectados a firebase avisamos que finalizamos
+      if(WiFi.status() == WL_CONNECTED && conectadoFB) {
+
+        Firebase.RTDB.setBool(&fbWrite, pathHojaFumigar.c_str(), false);
+
+      }
+    }
+
+    // Le damos tiempo a las tareas en background a ejecutarse
+    delay(10);
+  }
+}
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
 
@@ -50,23 +119,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void codigoTaskCero(void *param) {
-  
-  /* SETUP */
-  
-
-  /* LOOP */
-  while(true) {
-
-
-    cantGiros = 0;
-    giro = false;
-
-    // Le damos tiempo a las tareas en background a ejecutarse
-    delay(10);
-
-  }
-}
+void codigoTaskCero(void *param) {}
 
 /******************************************************************* 
 Nombre: codigoTaskUno
@@ -155,6 +208,10 @@ void doInitMdEConexiones(void) {
   // Inicializamos estados generales
   stConexiones = ST_REALIZANDO_CONEXION_WIFI;
   evtConexiones = EVT_DESCONEXION_WIFI;
+
+  // Inicialización variables
+  conectadoFB = false;
+  senialFumigar = false;
 
 }
 
@@ -427,4 +484,100 @@ void escribirEncendidoRobotFB(void) {
 
   Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
   
+}
+
+/* ------------------ SECCIÓN MOVIMIENTO ------------------ */
+
+/******************************************************************* 
+Nombre: determinarDireccion
+Entradas:
+          + distanciaAdelante: float
+          + distanciaDerechaActual: float
+          + ditanciaDerechaPrevia: float
+Salida: dirección
+Proceso: evalua las distancia para encontrar la dirección a la cual el robot debe
+dirigirse.
+Fecha Creación: 24/09/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+int determinarDireccion(float distanciaAdelante, float distanciaDerechaActual, float ditanciaDerechaPrevia) {
+
+  // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
+  if(giro) {
+
+    giro = false;
+    if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM + 10) {
+
+      // ADELANTE_GIRO realiza 2 veces adelante
+      return ADELANTE_GIRO;
+
+    } else if(distanciaDerechaActual < DISTANCIA_DERECHA_MINIMA_CM) {
+
+      return IZQUIERDA;
+
+    } else {
+
+      return ATRAS;
+
+    }
+
+  }
+  
+  // Caso que nos encontremos muy pegado a la pared derecha
+  if(distanciaDerechaActual <  DISTANCIA_DERECHA_MINIMA_CM) {
+    
+    giro = true;
+    return IZQUIERDA;
+
+  }
+  
+  // Caso que estemos muy cerca de una pared en frente
+  if(distanciaAdelante < DISTANCIA_ADELANTE_MINIMA_CM) {
+
+    giro = true;
+    cantGiros++;
+    return IZQUIERDA;
+    
+    
+  } 
+  
+  // Caso que nos encontremos muy lejos de una pared derecha
+  if(distanciaDerechaActual > DISTANCIA_DERECHA_MAXIMA_CM) {
+    
+    giro = true;
+    cantGiros--;
+    return DERECHA;
+
+  } 
+  
+  
+  // Caso que nos encontremos con suficiente espacio como para avanzar
+  if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM) {
+
+    // Verificamos si el robot se encuentra en dirección diagonal derecha o 
+    // izquierda y corregimos
+    if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia > UMBRAL_CM) {
+
+      return ADELANTE_DERECHA;
+ 
+    } else if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia < -UMBRAL_CM) {
+
+      return ADELANTE_IZQUIERDA;
+
+    }
+
+    // Caso que este avanzando perfectamente paralelo a la pared
+    return ADELANTE;
+
+  } 
+
+  // Caso por defecto
+  return PARAR;
 }

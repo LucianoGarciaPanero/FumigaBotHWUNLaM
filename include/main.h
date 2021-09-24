@@ -51,11 +51,19 @@ void escribirEncendidoRobotFB(void);
 void codigoTaskCero(void*);
 void codigoTaskUno(void*);
 
+// Movimiento
+int determinarDireccion(float, float, float);
+
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
 // Banderas
 bool conectadoFB;
 bool senialFumigar;
+
+
+// Movimiento
+int cantGiros;
+bool giro;
 
 // Variables para Firebase
 FirebaseData fbConection;

@@ -71,7 +71,7 @@ float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
     values[i]= calcularDistancia(pinTrig, pinEcho);
 
     // Para que las mediciones no interfieran entre si
-    delay(30);
+    //delay(30);
   }
   
   // Calcular promedio
@@ -170,100 +170,6 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 
   // Apagar bomba
   digitalWrite(pinBomba, LOW);
-}
-
-/******************************************************************* 
-Nombre: determinarDireccion
-Entradas:
-          + distanciaAdelante: float
-          + distanciaDerechaActual: float
-          + ditanciaDerechaPrevia: float
-Salida: dirección
-Proceso: evalua las distancia para encontrar la dirección a la cual el robot debe
-dirigirse.
-Fecha Creación: 24/09/2021
-Creador: 
-        + Luciano Garcia Panero 
-        + Tomás Sánchez Grigioni
-—————————————————————– 
-Cambiado Por: -
-Fecha Cambió: - 
-Referencia: -
-*****************************************************************/
-
-int determinarDireccion(float distanciaAdelante, float distanciaDerechaActual, float ditanciaDerechaPrevia) {
-
-  // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
-  if(giro) {
-
-    giro = false;
-    if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM + 10) {
-
-      // ADELANTE_GIRO realiza 2 veces adelante
-      return ADELANTE_GIRO;
-
-    } else if(distanciaDerechaActual < DISTANCIA_DERECHA_MINIMA_CM) {
-
-      return IZQUIERDA;
-
-    } else {
-
-      return ATRAS;
-
-    }
-
-  }
-  
-  // Caso que nos encontremos muy pegado a la pared derecha
-  if(distanciaDerechaActual <  DISTANCIA_DERECHA_MINIMA_CM) {
-    
-    giro = true;
-    return IZQUIERDA;
-
-  }
-  
-  // Caso que estemos muy cerca de una pared en frente
-  if(distanciaAdelante < DISTANCIA_ADELANTE_MINIMA_CM) {
-
-    giro = true;
-    cantGiros++;
-    return IZQUIERDA;
-    
-    
-  } 
-  
-  // Caso que nos encontremos muy lejos de una pared derecha
-  if(distanciaDerechaActual > DISTANCIA_DERECHA_MAXIMA_CM) {
-    
-    giro = true;
-    cantGiros--;
-    return DERECHA;
-
-  } 
-  
-  
-  // Caso que nos encontremos con suficiente espacio como para avanzar
-  if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM) {
-
-    // Verificamos si el robot se encuentra en dirección diagonal derecha o 
-    // izquierda y corregimos
-    if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia > UMBRAL_CM) {
-
-      return ADELANTE_DERECHA;
- 
-    } else if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia < -UMBRAL_CM) {
-
-      return ADELANTE_IZQUIERDA;
-
-    }
-
-    // Caso que este avanzando perfectamente paralelo a la pared
-    return ADELANTE;
-
-  } 
-
-  // Caso por defecto
-  return PARAR;
 }
 
 /******************************************************************* 

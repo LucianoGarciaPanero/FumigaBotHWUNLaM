@@ -20,6 +20,8 @@ float calcularNivelBateriaPromedio(int, float, float, float);
 /* -------- MOVIMIENTO --------  */
 #define UMBRAL_CM 0.5
 
+#define MAXIMA_CANTIDAD_GIROS 4
+
 #define VELOCIDAD_ALTA 240
 #define VELOCIDAD_MEDIA 255
 #define VELOCIDAD_BAJA 220
@@ -46,12 +48,8 @@ float calcularNivelBateriaPromedio(int, float, float, float);
 #define ADELANTE_DERECHA 6
 #define ADELANTE_IZQUIERDA 7
 
-int determinarDireccion(float, float, float);
 float determinarTiempoDelay(int, float, float);
 void mover(int, int, int, int, int, int, int, int);
-
-int cantGiros;
-bool giro;
 
 /* -------- LIBERAR QUIMICO --------  */
 void liberarQuimico(int, float);
