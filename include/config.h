@@ -1,22 +1,19 @@
 /* -------- PINES --------  */
 
-// Sensor Ultrasonido de posición
-#define PINES_TRIG {13}
-#define PINES_ECHO {14}
-#define CANT_SENSORES_DISTANCIA 1
+// Sensores distancia
+#define PIN_TRIG_ADELANTE 12
+#define PIN_ECHO_ADELANTE 13
 
-// Sensor Ultrasonido de químico
-#define PIN_TRIG_LIQUIDO 25
-#define PIN_ECHO_LIQUIDO 26
+#define PIN_TRIG_DERECHA 16
+#define PIN_ECHO_DERECHA 17
 
-// Batería
-#define PIN_LED_VERDE 5
-#define PIN_LED_AMARILLO 15
-#define PIN_LED_ROJO 18
-#define PIN_VIN_BATERIA 33
-
-// Bomba Agua
-#define PIN_BOMBA 32
+// Motores
+#define PIN_MOTOR_IZQUIERDA_EN 27
+#define PIN_MOTOR_IZQUIERDA_IN1 32
+#define PIN_MOTOR_IZQUIERDA_IN2 33
+#define PIN_MOTOR_DERECHA_IN3 25
+#define PIN_MOTOR_DERECHA_IN4 26
+#define PIN_MOTOR_DERECHA_EN 14
 
 /* -------- OTROS --------  */
 
@@ -54,3 +51,9 @@
 #define TIEMPO_LIBERAR_QUIMICO_BAJA_MS 0.5 * 1000
 #define TIEMPO_LIBERAR_QUIMICO_MEDIA_MS 1 * 1000
 #define TIEMPO_LIBERAR_QUIMICO_ALTA_MS 2 * 1000
+
+// PWM
+#define FREQ 3000
+#define RESOLUTION 8
+#define PWM_CHANNEL_0 0
+#define PWM_CHANNEL_1 1
