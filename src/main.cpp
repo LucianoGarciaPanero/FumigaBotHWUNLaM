@@ -5,7 +5,7 @@
 void setup() {
   
   // Borrar
-  //Serial.begin(VEL_TRANSMISION);
+  Serial.begin(VEL_TRANSMISION);
 
   // Inicialización pines, variables, etc.
   doInit();
@@ -53,11 +53,15 @@ Referencia: -
 void codigoTaskCero(void *param) {
   
   /* SETUP */
+  
 
   /* LOOP */
   while(true) {
 
-    
+
+    cantGiros = 0;
+    giro = false;
+
     // Le damos tiempo a las tareas en background a ejecutarse
     delay(10);
 

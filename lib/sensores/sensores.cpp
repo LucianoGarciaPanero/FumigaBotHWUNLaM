@@ -1,6 +1,8 @@
 #include "./sensores.h"
 #include <Arduino.h>
 
+float calcularDistancia(int, int);
+
 /******************************************************************* 
 Nombre: calcularDistancia
 Entradas:
@@ -20,7 +22,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-long calcularDistancia(int trigPin, int echoPin) {
+float calcularDistancia(int trigPin, int echoPin) {
   
   // Inicializando el pin del trigger
   digitalWrite(trigPin, LOW);
@@ -111,10 +113,12 @@ float calcularNivelBateriaPromedio(int pin, float vMin, float vMax, float constC
 
   // Leer n valores seguidos
   for(int i = 0; i < n; i++) {
+
     values[i] = analogRead(pin) * constCorr;
 
     // Para que las mediciones no interfieran entre si
     delay(30);
+
   }
   
   // Calcular el promedio leido
@@ -125,9 +129,13 @@ float calcularNivelBateriaPromedio(int pin, float vMin, float vMax, float constC
 
   // Verificar que el resultado no tenga errores
   if(porcentaje < 0 - DELTA_CARGA_BATERIA || porcentaje > 100 + DELTA_CARGA_BATERIA) {
+
     return ERROR_BATERIA;
+
   } else {
+
     return porcentaje;
+
   }
 }
 
@@ -162,4 +170,338 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 
   // Apagar bomba
   digitalWrite(pinBomba, LOW);
+}
+
+/******************************************************************* 
+Nombre: determinarDireccion
+Entradas:
+          + distanciaAdelante: float
+          + distanciaDerechaActual: float
+          + ditanciaDerechaPrevia: float
+Salida: dirección
+Proceso: evalua las distancia para encontrar la dirección a la cual el robot debe
+dirigirse.
+Fecha Creación: 24/09/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+int determinarDireccion(float distanciaAdelante, float distanciaDerechaActual, float ditanciaDerechaPrevia) {
+
+  // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
+  if(giro) {
+
+    giro = false;
+    if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM + 10) {
+
+      // ADELANTE_GIRO realiza 2 veces adelante
+      return ADELANTE_GIRO;
+
+    } else if(distanciaDerechaActual < DISTANCIA_DERECHA_MINIMA_CM) {
+
+      return IZQUIERDA;
+
+    } else {
+
+      return ATRAS;
+
+    }
+
+  }
+  
+  // Caso que nos encontremos muy pegado a la pared derecha
+  if(distanciaDerechaActual <  DISTANCIA_DERECHA_MINIMA_CM) {
+    
+    giro = true;
+    return IZQUIERDA;
+
+  }
+  
+  // Caso que estemos muy cerca de una pared en frente
+  if(distanciaAdelante < DISTANCIA_ADELANTE_MINIMA_CM) {
+
+    giro = true;
+    cantGiros++;
+    return IZQUIERDA;
+    
+    
+  } 
+  
+  // Caso que nos encontremos muy lejos de una pared derecha
+  if(distanciaDerechaActual > DISTANCIA_DERECHA_MAXIMA_CM) {
+    
+    giro = true;
+    cantGiros--;
+    return DERECHA;
+
+  } 
+  
+  
+  // Caso que nos encontremos con suficiente espacio como para avanzar
+  if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM) {
+
+    // Verificamos si el robot se encuentra en dirección diagonal derecha o 
+    // izquierda y corregimos
+    if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia > UMBRAL_CM) {
+
+      return ADELANTE_DERECHA;
+ 
+    } else if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia < -UMBRAL_CM) {
+
+      return ADELANTE_IZQUIERDA;
+
+    }
+
+    // Caso que este avanzando perfectamente paralelo a la pared
+    return ADELANTE;
+
+  } 
+
+  // Caso por defecto
+  return PARAR;
+}
+
+/******************************************************************* 
+Nombre: determinarTiempoDelay
+Entradas:
+          + distanciaAdelante: float
+          + distanciaDerechaActual: float
+          + direccion: int
+Salida: tiempo_delay
+Proceso: evalua las distancias y la direccion del movimiento para determinar
+durante cuanto tiempo debe ejecutarlo.
+Fecha Creación: 24/09/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+float determinarTiempoDelay(int direccion, float distanciaAdelante, float distanciaDerecha) {
+
+  int diferenciaDerecha = 0;
+
+  if(direccion == DERECHA) {
+
+    diferenciaDerecha = distanciaDerecha - DISTANCIA_DERECHA_MAXIMA_CM;
+    
+    if(diferenciaDerecha < 30) {
+
+      return TIEMPO_DELAY_GIRO_CORTO_MS;
+
+    } else {
+      
+      return TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS;
+
+    }
+  }
+
+  if(direccion == IZQUIERDA) {
+
+    if(distanciaDerecha < DISTANCIA_DERECHA_MINIMA_CM) {
+
+      return TIEMPO_DELAY_GIRO_CORTO_MS;
+
+    } else {
+
+      return TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS;
+
+    }
+  }
+
+  return TIEMPO_DELAY_ADELANTE_MS;
+}
+
+/******************************************************************* 
+Nombre: mover
+Entradas:
+          + pinIzqAd: float
+          + pinIzqAt: float
+          + pinDerAd: int
+          + pinDerAt: int
+          + direccion: int
+          + canalIzq: int
+          + canalDer: int
+          + cicloTrabajo: int
+Salida: -
+Proceso: según la dirección del movimiento manda las señales a los pines corres
+pondientes
+Fecha Creación: 24/09/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion, int canalIzq, int canalDer, int cicloTrabajo) {
+
+  // Ajustamos la velocidad de movimiento
+  ledcWrite(canalIzq, cicloTrabajo);
+  ledcWrite(canalDer, cicloTrabajo);
+
+  // Realizamos el movimiento
+  switch(direccion) {
+
+    case ADELANTE:
+      digitalWrite(pinIzqAd, HIGH);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, HIGH);
+      digitalWrite(pinDerAt, LOW);
+
+      break;
+
+    case ATRAS:
+      
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, HIGH);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, HIGH);
+
+      break;
+    
+    case PARAR:
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, LOW);  
+      break;
+
+    case IZQUIERDA:
+
+      // Parar
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, LOW);
+
+      delay(TIEMPO_DELAY_PARAR_MS);
+
+      // Retroceder
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, HIGH);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, HIGH);
+
+      delay(TIEMPO_DELAY_RETROCEDER_MS);
+
+      // Girar
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, HIGH);
+      digitalWrite(pinDerAd, HIGH);
+      digitalWrite(pinDerAt, LOW);
+    
+      delay(TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS);
+
+      break;
+
+    case DERECHA:
+
+      // Parar
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, LOW);
+
+      delay(TIEMPO_DELAY_PARAR_MS);
+      
+      // Retroceder
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, HIGH);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, HIGH);
+
+      delay(TIEMPO_DELAY_RETROCEDER_MS);
+
+      // Girar
+      digitalWrite(pinIzqAd, HIGH);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, HIGH);
+    
+      delay(TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS);
+
+      break;
+
+    case ADELANTE_GIRO:
+
+      // ADELANTE_GIRO realiza 2 adelantes
+      digitalWrite(pinIzqAd, HIGH);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, HIGH);
+      digitalWrite(pinDerAt, LOW);
+
+      delay(TIEMPO_DELAY_ADELANTE_GIRO_MS);
+      
+      break;
+
+    case ADELANTE_DERECHA:
+
+      // Parar
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, LOW);
+
+      delay(TIEMPO_DELAY_PARAR_MS);
+      
+      // Girar a la derecha muy poco
+      digitalWrite(pinIzqAd, HIGH);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, HIGH);
+
+      delay(TIEMPO_DELAY_GIRO_MUY_CORTO_MS);
+
+      //Avanzar
+      digitalWrite(pinIzqAd, HIGH);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, HIGH);
+      digitalWrite(pinDerAt, LOW);
+      
+      break;
+
+    case ADELANTE_IZQUIERDA:
+
+      // Parar
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, LOW);
+
+      delay(TIEMPO_DELAY_PARAR_MS);
+      
+      // Girar a la izquierda muy poco
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, HIGH);
+      digitalWrite(pinDerAd, HIGH);
+      digitalWrite(pinDerAt, LOW);
+
+      delay(TIEMPO_DELAY_GIRO_MUY_CORTO_MS);
+
+      //Avanzar
+      digitalWrite(pinIzqAd, HIGH);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, HIGH);
+      digitalWrite(pinDerAt, LOW);
+      
+      break;
+    
+    default:
+      digitalWrite(pinIzqAd, LOW);
+      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinDerAd, LOW);
+      digitalWrite(pinDerAt, LOW);
+      break;
+  }
 }
