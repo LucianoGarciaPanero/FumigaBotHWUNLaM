@@ -45,10 +45,11 @@ void conectarWifi(void);
 bool conectarFB(void);
 void streamCallback(FirebaseStream);
 void streamTimeoutCallback(bool);
+
+// Actualizacion valores en Firebase
 void escribirEncendidoRobotFB(void);
 
 // Ejecutar tareas en paralelo
-void codigoTaskCero(void*);
 void codigoTaskUno(void*);
 
 // Movimiento

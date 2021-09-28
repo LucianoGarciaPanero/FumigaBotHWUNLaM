@@ -11,17 +11,6 @@ void setup() {
   doInit();
   
   // Inicialización de tareas en cada core
-  /*
-  xTaskCreatePinnedToCore(
-    codigoTaskCero, // Código a ejecutar
-    "Task0",        // Un identificador
-    10000,          // Tamaño del stack
-    NULL,           // Parámetros que recibe el código
-    1,              // Prioridad
-    &task0,         // Objeto para manejar la task
-    0);             // Número de procesador
-  */
-
   xTaskCreatePinnedToCore(
     codigoTaskUno,  // Código a ejecutar
     "Task1",        // Un identificador
@@ -29,7 +18,8 @@ void setup() {
     NULL,           // Parámetros que recibe el código
     1,              // Prioridad
     &task1,         // Objeto para manejar la task
-    1);             // Número de procesador
+    1               // Número de procesador
+  );            
 }
 
 void loop() {
@@ -102,24 +92,6 @@ void loop() {
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
-
-/******************************************************************* 
-Nombre: codigoTaskCero
-Entradas: -
-Salida: -
-Proceso: código a ejecutar en el procesador cero, se encarga de realizar la 
-fumigación
-Fecha Creación: 01/07/2021
-Creador: 
-        + Luciano Garcia Panero 
-        + Tomás Sánchez Grigioni
-—————————————————————– 
-Cambiado Por: -
-Fecha Cambió: - 
-Referencia: -
-*****************************************************************/
-
-void codigoTaskCero(void *param) {}
 
 /******************************************************************* 
 Nombre: codigoTaskUno
