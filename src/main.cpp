@@ -461,6 +461,7 @@ void escribirEstadoRobotFB(void) {
   Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
 
   // Obtener valores de sensores
+  
   /*
   nivelBateria = calcularNivelBateriaPromedio();
   nivelQUimico = calcularNivelQuimicoPromedio();
