@@ -47,7 +47,7 @@ void streamCallback(FirebaseStream);
 void streamTimeoutCallback(bool);
 
 // Actualizacion valores en Firebase
-void escribirEncendidoRobotFB(void);
+void escribirEstadoRobotFB(void);
 
 // Ejecutar tareas en paralelo
 void codigoTaskUno(void*);

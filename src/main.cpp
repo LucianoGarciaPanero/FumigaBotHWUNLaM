@@ -286,8 +286,7 @@ void stRealizandoConexionFB() {
 
     case EVT_CONEXION_EXITOSA_FB:
 
-      // Informamos que estamos encendidos en Firebas
-      escribirEncendidoRobotFB();
+      escribirEstadoRobotFB();
 
       stConexiones = ST_CONECTADO_FB;
       break;
@@ -314,8 +313,7 @@ void stConectadoFB() {
     
     case EVT_CONEXION_EXITOSA_FB:
 
-      // Informamos que estamos encendidos en Firebas
-      escribirEncendidoRobotFB();
+      escribirEstadoRobotFB();
 
       stConexiones = ST_CONECTADO_FB;
       break;
@@ -436,11 +434,14 @@ Referencia: -
 
 void streamTimeoutCallback(bool timeout) {}
 
+/* ------------------ SECCIÓN ACTUALIZAR VALORES FIREBASE ------------------ */
+
 /******************************************************************* 
-Nombre: escribirEncendidoRobotFB
+Nombre: escribirEstadoRobotFB
 Entradas: -
 Salida: -
-Proceso: informa en Firebase que el robot se encuentra encendido.
+Proceso: informa en Firebase del valore de batería, químico y que esta encendido 
+el robot
 Fecha Creación: 24/09/2021
 Creador: 
         + Luciano Garcia Panero 
@@ -451,11 +452,24 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
+void escribirEstadoRobotFB(void) {
 
-void escribirEncendidoRobotFB(void) {
+  float nivelQUimico = 100;
+  float nivelBateria = 100;
 
+  // Marcar como encendido el robot
   Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
-  
+
+  // Obtener valores de sensores
+  /*
+  nivelBateria = calcularNivelBateriaPromedio();
+  nivelQUimico = calcularNivelQuimicoPromedio();
+  */
+
+  // Actualizar valor de bateria y nivel quimico
+  Firebase.RTDB.setFloat(&fbWrite, pathHojaBateria.c_str(), nivelBateria);
+  Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), nivelQUimico);
+
 }
 
 /* ------------------ SECCIÓN MOVIMIENTO ------------------ */
