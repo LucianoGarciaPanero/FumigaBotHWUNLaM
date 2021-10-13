@@ -15,14 +15,11 @@
 #define ST_CONECTADO_FB                 150
 
 // Eventos
-#define EVT_CONEXION_EXITOSA_WIFI       1025
 #define EVT_DESCONEXION_WIFI            1050
 #define EVT_CONEXION_RECHAZADA_FB       1075
 #define EVT_CONEXION_EXITOSA_FB         1100
-#define EVT_DESCONEXION_FB              1125
 
 // Funciones
-void doInitMdEConexiones(void);
 void generarEventoMdEConexiones(void);
 void maquinaEstadosConexiones(void);
 void stRealizandoConexionWiFi(void);
@@ -35,48 +32,49 @@ int evtConexiones;
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
 
-// Inicialización estados, variables, etc
-void doInit(void);
-
-// Conexión WiFI
+// WiFI
+void inicializarWifi(void);
 void conectarWifi(void);
 
-// Conexión Firebase
-bool conectarFB(void);
+// Firebase
+void conectarFirebase(void);
 void streamCallback(FirebaseStream);
 void streamTimeoutCallback(bool);
-
-// Actualizacion valores en Firebase
-void escribirEstadoRobotFB(void);
+void escribirEstadoRobotEnFirebase(void);
 
 // Ejecutar tareas en paralelo
 void codigoTaskCero(void*);
+void loopCero(void);
+void setupCero(void);
 
 // Movimiento
 int determinarDireccion(float, float, float);
 
+// Auxiliar
+void reiniciarVariables(void);
+
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
 // Banderas
-bool conectadoFB;
-bool senialFumigar;
-
+bool conectadoFirebase;
+bool escribirEstadoRobot;
+bool escribirEncendidoRobot;
+bool fumigar;
 
 // Movimiento
 int cantGiros;
 bool giro;
 
 // Variables para Firebase
-FirebaseData fbConection;
-FirebaseData fbWrite;
+FirebaseData fbdoSub;
+FirebaseData fbdo;
 FirebaseConfig config;
 FirebaseAuth auth;
 
-const String pathHojaFumigar = String("/robots/0/fumigando");
-const String pathHojaBateria = String("/robots/0/bateria");
-const String pathHojaEncendido = String("/robots/0/encendido");
-const String pathHojaQuimico = String("/robots/0/nivelQuimico");
-const String pathHojaCantidadQuimicoPorArea = String("/robots/0/cantidadQuimicoPorArea");
-
 // Para ejecutar en paralelo
 TaskHandle_t task0;
+
+// WiFi
+int estadoLed;
+unsigned long startTime;
+int contador;

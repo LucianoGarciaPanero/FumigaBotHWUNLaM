@@ -1,7 +1,5 @@
 #include <main.h>
 
-int estadoLedo = LOW;
-
 /* ------------------ CÓDIGO ------------------ */
 
 void setup() {
@@ -9,8 +7,27 @@ void setup() {
   // Borrar
   Serial.begin(VEL_TRANSMISION);
 
-  // Inicialización pines, variables, etc.
-  doInit();
+  // Inicialización pines sensores distancia
+  pinMode(PIN_TRIG_ADELANTE, OUTPUT);
+  pinMode(PIN_ECHO_ADELANTE, INPUT);
+
+  pinMode(PIN_TRIG_DERECHA, OUTPUT);
+  pinMode(PIN_ECHO_DERECHA, INPUT);
+
+  // Inicialización pines motores
+  pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
+  pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT);
+  
+  ledcSetup(PWM_CHANNEL_0, FREQ, RESOLUTION);
+  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_0);
+  
+  pinMode(PIN_MOTOR_DERECHA_IN3, OUTPUT);
+  pinMode(PIN_MOTOR_DERECHA_IN4, OUTPUT);
+  
+  ledcSetup(PWM_CHANNEL_1, FREQ, RESOLUTION);
+  ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_1);
+
+  pinMode(PIN_LED_WIFI, OUTPUT);
 
   // Inicialización de tareas en cada core
   xTaskCreatePinnedToCore(
@@ -30,6 +47,21 @@ void setup() {
 
 void loop() {
 
+  if(escribirEstadoRobot && WiFi.status() == WL_CONNECTED && conectadoFirebase) {
+
+    escribirEstadoRobotEnFirebase();
+    escribirEstadoRobot = false;
+
+  }
+
+  if(escribirEncendidoRobot && WiFi.status() == WL_CONNECTED && conectadoFirebase) {
+
+    Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
+    escribirEncendidoRobot = false;
+
+  }
+
+  /*
   // Declaración e inicialización variables
   cantGiros = 0;
   giro = false;
@@ -40,7 +72,7 @@ void loop() {
   int velocidad = 225;
   float tiempoDelay = 0;
 
-  while(senialFumigar) {
+  while(fumigar) {
 
     distanciaDerechaPrevia = distanciaDerechaActual;
     
@@ -81,22 +113,71 @@ void loop() {
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
     if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-      senialFumigar = false;
+      fumigar = false;
 
       // Si nos encontramos conectados a firebase avisamos que finalizamos
-      if(WiFi.status() == WL_CONNECTED && conectadoFB) {
+      if(WiFi.status() == WL_CONNECTED && conectadoFirebase) {
 
-        Firebase.RTDB.setBool(&fbWrite, pathHojaFumigar.c_str(), false);
+        Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, false);
 
       }
     }
-
-    // Le damos tiempo a las tareas en background a ejecutarse
-    delay(DELAY_TASK_END_MS);
-  } 
+  }
+  */ 
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
+
+/******************************************************************* 
+Nombre: setupCero
+Entradas: -
+Salida: -
+Proceso: inicializa las variables correspondiente con la máquina de estados de
+conexión.
+Fecha Creación: 13/10/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void setupCero(void) {
+
+  // Inicializamos estados generales
+  stConexiones = ST_REALIZANDO_CONEXION_WIFI;
+  evtConexiones = EVT_DESCONEXION_WIFI;
+
+  // Inicialización variables
+  reiniciarVariables();
+  
+  digitalWrite(PIN_LED_WIFI, estadoLed);
+  inicializarWifi();
+
+}
+
+/******************************************************************* 
+Nombre: loopCero
+Entradas: -
+Salida: -
+Proceso: instrucciones a ejecutar en el core cero
+Fecha Creación: 13/10/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void loopCero(void) {
+
+  maquinaEstadosConexiones();
+
+}
 
 /******************************************************************* 
 Nombre: codigoTaskUno
@@ -115,133 +196,40 @@ Referencia: -
 *****************************************************************/
 
 void codigoTaskCero(void *param) {
-
-  /* SETUP */
   
-  doInitMdEConexiones();
-
-  /* LOOP */
+  setupCero();
 
   for(;;) {
     
-    maquinaEstadosConexiones();
+    loopCero();  
+    vTaskDelay(DELAY_TASK_END_MS / portTICK_PERIOD_MS);
 
-    
-    // Le damos tiempo a las tareas en background a ejecutarse
-    delay(DELAY_TASK_END_MS);
   }
 }
 
-/* ------------------ SECCIÓN INIT ------------------ */
-
-/******************************************************************* 
-Nombre: doInit
-Entradas: -
-Salida: -
-Proceso: inicializa las variables globales y los pines
-Fecha Creación: 01/07/2021
-Creador: 
-        + Luciano Garcia Panero 
-        + Tomás Sánchez Grigioni
-—————————————————————– 
-Cambiado Por: Tomás Sánchez Grigioni
-Fecha Cambió: 24/09/2021
-Referencia: Agregamos inicilización de pines encargados del movimiento del
-robot
-*****************************************************************/
-
-void doInit(){
-
-  // Inicialización pines sensores distancia
-  pinMode(PIN_TRIG_ADELANTE, OUTPUT);
-  pinMode(PIN_ECHO_ADELANTE, INPUT);
-
-  pinMode(PIN_TRIG_DERECHA, OUTPUT);
-  pinMode(PIN_ECHO_DERECHA, INPUT);
-
-  // Inicialización pines motores
-  pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
-  pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT);
-  
-  ledcSetup(PWM_CHANNEL_0, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_0);
-  
-  pinMode(PIN_MOTOR_DERECHA_IN3, OUTPUT);
-  pinMode(PIN_MOTOR_DERECHA_IN4, OUTPUT);
-  
-  ledcSetup(PWM_CHANNEL_1, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_1);
-
-  pinMode(PIN_LED_WIFI, OUTPUT);
-
-  // Inicialización variables
-  conectadoFB = false;
-  senialFumigar = false;
-}
-
 /* ------------------ SECCIÓN MdE CONEXIONES ------------------ */
-
-void doInitMdEConexiones(void) {
-  
-  // Inicializamos estados generales
-  stConexiones = ST_REALIZANDO_CONEXION_WIFI;
-  evtConexiones = EVT_DESCONEXION_WIFI;
-
-  // Inicialización variables
-  conectadoFB = false;
-  senialFumigar = false;
-
-  // Apagar LED
-  estadoLedo = LOW;
-  digitalWrite(PIN_LED_WIFI, estadoLedo);
-}
 
 void generarEventoMdEConexiones(void) {
 
   // Verificación de que estemos conectados al WIFI
   if(WiFi.status() != WL_CONNECTED) {
 
-    // Realizamos la conexión a wifi
-    conectarWifi();
-
-    // Verificamos si se logra conectar
-    if(WiFi.status() != WL_CONNECTED) {
-
-      evtConexiones = EVT_DESCONEXION_WIFI;
-      estadoLedo = LOW;
-      digitalWrite(PIN_LED_WIFI, estadoLedo);
-    
-    } else {
-
-      evtConexiones = EVT_CONEXION_EXITOSA_WIFI;
-      estadoLedo = HIGH;
-      digitalWrite(PIN_LED_WIFI, estadoLedo);
-
-    }
+    Serial.println("Conectando Wifi..");
+    evtConexiones = EVT_DESCONEXION_WIFI;
 
   // Verificamos conexión a Firebase
-  } else if(!conectadoFB) {
+  } else if(!conectadoFirebase) {
    
-    // Realizmaos la coneixón al Firebase
-    bool exito = conectarFB();
-  
-    // Verificamos que logro la conexión
-    if(exito) {
-
-      evtConexiones = EVT_CONEXION_EXITOSA_FB;
-      conectadoFB = true;
-
-    } else {
-
-      evtConexiones = EVT_CONEXION_RECHAZADA_FB;
-      conectadoFB = false;
-
-    }
+    Serial.println("Conectando Firebase...");
+    evtConexiones = EVT_CONEXION_RECHAZADA_FB;
 
   // Evento por defecto
   } else {  
     
+    Serial.println("Conexión Exitosa!");
     evtConexiones = EVT_CONEXION_EXITOSA_FB;
+    estadoLed = HIGH;
+    digitalWrite(PIN_LED_WIFI, estadoLed);
 
   }
 } 
@@ -278,10 +266,12 @@ void stRealizandoConexionWiFi(void) {
   switch(evtConexiones){
     
     case EVT_DESCONEXION_WIFI:
+      conectarWifi();
       stConexiones = ST_REALIZANDO_CONEXION_WIFI;
       break;
 
-    case EVT_CONEXION_EXITOSA_WIFI:
+    case EVT_CONEXION_RECHAZADA_FB:
+      conectarFirebase();
       stConexiones = ST_REALIZANDO_CONEXION_FB;
       break;
     
@@ -294,17 +284,21 @@ void stRealizandoConexionFB() {
   switch(evtConexiones){
     
     case EVT_CONEXION_RECHAZADA_FB:
+      conectarFirebase();
       stConexiones = ST_REALIZANDO_CONEXION_FB;
       break;
 
     case EVT_CONEXION_EXITOSA_FB:
+      if(!escribirEstadoRobot) {
 
-      escribirEstadoRobotFB();
+        escribirEstadoRobot = true;
 
+      }      
       stConexiones = ST_CONECTADO_FB;
       break;
 
     case EVT_DESCONEXION_WIFI:
+      conectarWifi();
       stConexiones = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
@@ -316,18 +310,22 @@ void stRealizandoConexionFB() {
 void stConectadoFB() {
   switch(evtConexiones) {
     
-    case EVT_DESCONEXION_FB:
+    case EVT_CONEXION_RECHAZADA_FB:
+      conectarFirebase();
       stConexiones = ST_REALIZANDO_CONEXION_FB;
       break;
 
     case EVT_DESCONEXION_WIFI:
+      conectarWifi();
       stConexiones = ST_REALIZANDO_CONEXION_WIFI;
       break;
     
     case EVT_CONEXION_EXITOSA_FB:
+      if(!escribirEstadoRobot) {
 
-      escribirEstadoRobotFB();
+        escribirEstadoRobot = true;
 
+      }
       stConexiones = ST_CONECTADO_FB;
       break;
     
@@ -336,14 +334,56 @@ void stConectadoFB() {
   }
 }
 
+void reiniciarVariables(void) {
+
+  conectadoFirebase = false;
+  fumigar = false;
+  escribirEstadoRobot = false;
+  escribirEncendidoRobot = false;
+  startTime = millis();
+  contador = 0;
+  estadoLed = LOW;
+
+}
+
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
+
+/******************************************************************* 
+Nombre: inicializarWifi
+Entradas: -
+Salida: -
+Proceso: establece el modo correcto del ESP e inicia la conexió al wifi
+Fecha Creación: 01/07/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void inicializarWifi() {
+
+  // Modo para que el ESP se conecte a una red
+  WiFi.mode(WIFI_STA);
+
+  // Desconectamos por si estuviera previamente conectado a otra red
+  WiFi.disconnect();
+
+  // Comenzamos conexión
+  WiFi.begin(WIFI_RED, WIFI_CONTRASENIA);
+
+}
+
 
 /******************************************************************* 
 Nombre: conectarWifi
 Entradas: -
 Salida: -
-Proceso: conecta al wifi, y lo reintenta durante 20 ms
-Fecha Creación: 01/07/2021
+Proceso: intenta la conexió al wifi, si ocurre un timeout se reconecta a la red
+nuevamente
+Fecha Creación: 13/10/2021
 Creador: 
         + Luciano Garcia Panero 
         + Tomás Sánchez Grigioni
@@ -355,24 +395,20 @@ Referencia: -
 
 void conectarWifi() {
   
-  // Modo para que el ESP se conecte a una red
-  WiFi.mode(WIFI_STA);
+  if(millis() - startTime > WIFI_TIMEOUT_MS) {
 
-  // Desconectamos por si estuviera previamente conectado a otra red
-  WiFi.disconnect();
+    reiniciarVariables();
+    digitalWrite(PIN_LED_WIFI, estadoLed);
+    inicializarWifi();
 
-  // Comenzamos conexión
-  WiFi.begin(WIFI_RED, WIFI_CONTRASENIA);
+  } else {
 
-  // Medimos el tiempo de inicio
-  unsigned long startTime = millis();
-    
-  // Hacemos que intente conectarse durante X ms
-  if(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
-    
-    estadoLedo = !estadoLedo;
-    digitalWrite(PIN_LED_WIFI, estadoLedo);
+    estadoLed = !estadoLed;
+    digitalWrite(PIN_LED_WIFI, estadoLed);
+    delay(WIFI_TIEMPO_ESPERA_MS);
+
   }
+
 }
 
 /* ------------------ SECCIÓN CONEXIÓN FIREBASE ------------------ */
@@ -392,8 +428,14 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-bool conectarFB(void) {
+void conectarFirebase(void) {
 
+  bool resultado;
+  
+  // Parpadeo de LED
+  estadoLed = LOW;
+  digitalWrite(PIN_LED_WIFI, estadoLed);
+  
   // Asignamos los datos de la base de datos en tiempo real
   config.database_url = FIREBASE_URL;
   config.signer.tokens.legacy_token = FIREBASE_SECRETO;
@@ -402,16 +444,20 @@ bool conectarFB(void) {
   Firebase.begin(&config, &auth);
 
   // Nos suscribimos a la hoja de fumigar
-  bool resultado =  Firebase.RTDB.beginStream(&fbConection, pathHojaFumigar.c_str());
-
+  resultado = Firebase.RTDB.beginStream(&fbdoSub, PATH_FUMIGAR);
+  
+  // Si la operación se realizo de forma correcta podemos especificar las acciones
   if(resultado) {
 
-    // Establece las acciones cuando ocurre una actualización
-    Firebase.RTDB.setStreamCallback(&fbConection, streamCallback, streamTimeoutCallback);
-  
-  }
+    Firebase.RTDB.setStreamCallback(&fbdoSub, streamCallback, streamTimeoutCallback);
+    conectadoFirebase = true;
+    escribirEncendidoRobot = true;
 
-  return resultado;
+  } else {
+
+    conectadoFirebase = false;
+
+  }  
 }
 
 /******************************************************************* 
@@ -432,7 +478,7 @@ Referencia: -
 
 void streamCallback(FirebaseStream data) {
   
-  senialFumigar = data.boolData();
+  fumigar = data.boolData();
 
 }
 
@@ -451,7 +497,11 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void streamTimeoutCallback(bool timeout) {}
+void streamTimeoutCallback(bool timeout) {
+
+  conectadoFirebase = false;
+
+}
 
 /* ------------------ SECCIÓN ACTUALIZAR VALORES FIREBASE ------------------ */
 
@@ -471,13 +521,10 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void escribirEstadoRobotFB(void) {
+void escribirEstadoRobotEnFirebase(void) {
 
   float nivelQUimico = 100;
   float nivelBateria = 100;
-
-  // Marcar como encendido el robot
-  Firebase.RTDB.setBool(&fbWrite, pathHojaEncendido.c_str(), true);
 
   // Obtener valores de sensores
   
@@ -487,8 +534,10 @@ void escribirEstadoRobotFB(void) {
   */
 
   // Actualizar valor de bateria y nivel quimico
-  Firebase.RTDB.setFloat(&fbWrite, pathHojaBateria.c_str(), nivelBateria);
-  Firebase.RTDB.setFloat(&fbWrite, pathHojaQuimico.c_str(), nivelQUimico);
+  Firebase.RTDB.setFloat(&fbdo, PATH_BATERIA, nivelBateria);
+  Firebase.RTDB.setFloat(&fbdo, PATH_QUIMICO, nivelQUimico);
+
+  Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
 
 }
 

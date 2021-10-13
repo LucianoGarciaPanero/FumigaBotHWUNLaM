@@ -28,14 +28,20 @@
 #define UMBRAL_MINIMA_DISTANCIA_OBJETO_CM 15
 
 // WiFi
-const char* WIFI_RED = "MICASA";
-const char* WIFI_CONTRASENIA = "99aguaAzul";
-#define WIFI_TIMEOUT_MS 2000
-#define WIFI_TIEMPO_ESPERA_MS 100
+#define WIFI_RED "TOMASSG"
+#define WIFI_CONTRASENIA "HolaMundo"
+#define WIFI_TIMEOUT_MS 5000
+#define WIFI_TIEMPO_ESPERA_MS 10
 
 // FireBase
 #define FIREBASE_URL "fumigabot-default-rtdb.firebaseio.com"
 #define FIREBASE_SECRETO "mWGc6K24cfGsvWsJ73HkFMPrGq852SpK2g3yqMP2"
+const char* PATH_FUMIGAR = "/robots/0/fumigando";
+const char* PATH_BATERIA = "/robots/0/bateria";
+const char* PATH_ENCENDIDO = "/robots/0/encendido";
+const char* PATH_QUIMICO = "/robots/0/nivelQuimico";
+const char* PATH_CANTIDAD_QUIMICO_POR_AREA = "/robots/0/cantidadQuimicoPorArea";
+const char* PATH_CONTADOR = "/robots/0/contador";
 
 // Batería
 #define VOLTAJE_MAX_BATERIA 6
@@ -65,6 +71,6 @@ const char* WIFI_CONTRASENIA = "99aguaAzul";
 // Procesamient en Paralelo
 #define NOMBRE_TASK_CERO "Task0"
 #define TAMANIO_STACK_TASK_CERO 10000
-#define PRIORIDAD_TASK_CERO 1
+#define PRIORIDAD_TASK_CERO 0
 #define PROCESADOR_CERO 0
-#define DELAY_TASK_END_MS 100
+#define DELAY_TASK_END_MS 40
