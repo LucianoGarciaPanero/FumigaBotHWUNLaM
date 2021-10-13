@@ -56,7 +56,6 @@ void reiniciarVariables(void);
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
 // Banderas
-bool conectadoFirebase;
 bool escribirEstadoRobot;
 bool escribirEncendidoRobot;
 bool fumigar;

@@ -47,14 +47,14 @@ void setup() {
 
 void loop() {
 
-  if(escribirEstadoRobot && WiFi.status() == WL_CONNECTED && conectadoFirebase) {
+  if(escribirEstadoRobot && WiFi.status() == WL_CONNECTED && Firebase.ready()) {
 
     escribirEstadoRobotEnFirebase();
     escribirEstadoRobot = false;
 
   }
 
-  if(escribirEncendidoRobot && WiFi.status() == WL_CONNECTED && conectadoFirebase) {
+  if(escribirEncendidoRobot && WiFi.status() == WL_CONNECTED && Firebase.ready()) {
 
     Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
     escribirEncendidoRobot = false;
@@ -214,19 +214,16 @@ void generarEventoMdEConexiones(void) {
   // Verificación de que estemos conectados al WIFI
   if(WiFi.status() != WL_CONNECTED) {
 
-    Serial.println("Conectando Wifi..");
     evtConexiones = EVT_DESCONEXION_WIFI;
 
   // Verificamos conexión a Firebase
-  } else if(!conectadoFirebase) {
+  } else if(!Firebase.ready()) {
    
-    Serial.println("Conectando Firebase...");
     evtConexiones = EVT_CONEXION_RECHAZADA_FB;
-
-  // Evento por defecto
+  
+  // Evento por defecto, se realizaron las conexiones correctamente
   } else {  
     
-    Serial.println("Conexión Exitosa!");
     evtConexiones = EVT_CONEXION_EXITOSA_FB;
     estadoLed = HIGH;
     digitalWrite(PIN_LED_WIFI, estadoLed);
@@ -316,8 +313,7 @@ void stConectadoFB() {
       break;
 
     case EVT_DESCONEXION_WIFI:
-      conectarWifi();
-      stConexiones = ST_REALIZANDO_CONEXION_WIFI;
+      ESP.restart();
       break;
     
     case EVT_CONEXION_EXITOSA_FB:
@@ -336,7 +332,6 @@ void stConectadoFB() {
 
 void reiniciarVariables(void) {
 
-  conectadoFirebase = false;
   fumigar = false;
   escribirEstadoRobot = false;
   escribirEncendidoRobot = false;
@@ -439,25 +434,21 @@ void conectarFirebase(void) {
   // Asignamos los datos de la base de datos en tiempo real
   config.database_url = FIREBASE_URL;
   config.signer.tokens.legacy_token = FIREBASE_SECRETO;
-  
+
   // Hacemos la conexión
   Firebase.begin(&config, &auth);
 
   // Nos suscribimos a la hoja de fumigar
-  resultado = Firebase.RTDB.beginStream(&fbdoSub, PATH_FUMIGAR);
+  //resultado = Firebase.RTDB.beginStream(&fbdoSub, PATH_FUMIGAR);
+  resultado = true;
   
   // Si la operación se realizo de forma correcta podemos especificar las acciones
   if(resultado) {
 
-    Firebase.RTDB.setStreamCallback(&fbdoSub, streamCallback, streamTimeoutCallback);
-    conectadoFirebase = true;
+    //Firebase.RTDB.setStreamCallback(&fbdoSub, streamCallback, streamTimeoutCallback);
     escribirEncendidoRobot = true;
 
-  } else {
-
-    conectadoFirebase = false;
-
-  }  
+  }
 }
 
 /******************************************************************* 
@@ -497,11 +488,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void streamTimeoutCallback(bool timeout) {
-
-  conectadoFirebase = false;
-
-}
+void streamTimeoutCallback(bool timeout) {}
 
 /* ------------------ SECCIÓN ACTUALIZAR VALORES FIREBASE ------------------ */
 
@@ -525,17 +512,14 @@ void escribirEstadoRobotEnFirebase(void) {
 
   float nivelQUimico = 100;
   float nivelBateria = 100;
-
-  // Obtener valores de sensores
-  
   /*
+  // Obtener valores de sensores
   nivelBateria = calcularNivelBateriaPromedio();
   nivelQUimico = calcularNivelQuimicoPromedio();
   */
-
   // Actualizar valor de bateria y nivel quimico
   Firebase.RTDB.setFloat(&fbdo, PATH_BATERIA, nivelBateria);
-  Firebase.RTDB.setFloat(&fbdo, PATH_QUIMICO, nivelQUimico);
+  Firebase.RTDB.setFloat(&fbdo, PATH_QUIMICO, nivelQUimico); 
 
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
 
