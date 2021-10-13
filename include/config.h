@@ -15,19 +15,23 @@
 #define PIN_MOTOR_DERECHA_IN4 26
 #define PIN_MOTOR_DERECHA_EN 14
 
+// LED
+#define PIN_LED_WIFI 2
+
 /* -------- OTROS --------  */
 
 // Comunicacion con el serial
-#define VEL_TRANSMISION 9600
+#define VEL_TRANSMISION 115200
 
 // Dominio del problema
 #define UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM 150
 #define UMBRAL_MINIMA_DISTANCIA_OBJETO_CM 15
 
 // WiFi
-#define WIFI_RED "MICASA"
-#define WIFI_CONTRASENIA "99agua_Azul"
-#define WIFI_TIMEOUT_MS 20000
+const char* WIFI_RED = "MICASA";
+const char* WIFI_CONTRASENIA = "99aguaAzul";
+#define WIFI_TIMEOUT_MS 2000
+#define WIFI_TIEMPO_ESPERA_MS 100
 
 // FireBase
 #define FIREBASE_URL "fumigabot-default-rtdb.firebaseio.com"
@@ -57,3 +61,10 @@
 #define RESOLUTION 8
 #define PWM_CHANNEL_0 0
 #define PWM_CHANNEL_1 1
+
+// Procesamient en Paralelo
+#define NOMBRE_TASK_CERO "Task0"
+#define TAMANIO_STACK_TASK_CERO 10000
+#define PRIORIDAD_TASK_CERO 1
+#define PROCESADOR_CERO 0
+#define DELAY_TASK_END_MS 100

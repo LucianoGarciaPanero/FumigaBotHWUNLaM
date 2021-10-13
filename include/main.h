@@ -50,7 +50,7 @@ void streamTimeoutCallback(bool);
 void escribirEstadoRobotFB(void);
 
 // Ejecutar tareas en paralelo
-void codigoTaskUno(void*);
+void codigoTaskCero(void*);
 
 // Movimiento
 int determinarDireccion(float, float, float);
@@ -72,12 +72,11 @@ FirebaseData fbWrite;
 FirebaseConfig config;
 FirebaseAuth auth;
 
-const String pathHojaFumigar = "/robots/0/fumigando";
-const String pathHojaBateria = "/robots/0/bateria";
-const String pathHojaEncendido = "/robots/0/encendido";
-const String pathHojaQuimico = "/robots/0/nivelQuimico";
-const String pathHojaCantidadQuimicoPorArea = "/robots/0/cantidadQuimicoPorArea";
+const String pathHojaFumigar = String("/robots/0/fumigando");
+const String pathHojaBateria = String("/robots/0/bateria");
+const String pathHojaEncendido = String("/robots/0/encendido");
+const String pathHojaQuimico = String("/robots/0/nivelQuimico");
+const String pathHojaCantidadQuimicoPorArea = String("/robots/0/cantidadQuimicoPorArea");
 
 // Para ejecutar en paralelo
 TaskHandle_t task0;
-TaskHandle_t task1;

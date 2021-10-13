@@ -1,5 +1,7 @@
 #include <main.h>
 
+int estadoLedo = LOW;
+
 /* ------------------ CÓDIGO ------------------ */
 
 void setup() {
@@ -9,21 +11,25 @@ void setup() {
 
   // Inicialización pines, variables, etc.
   doInit();
-  
+
   // Inicialización de tareas en cada core
   xTaskCreatePinnedToCore(
-    codigoTaskUno,  // Código a ejecutar
-    "Task1",        // Un identificador
-    10000,          // Tamaño del stack
-    NULL,           // Parámetros que recibe el código
-    1,              // Prioridad
-    &task1,         // Objeto para manejar la task
-    1               // Número de procesador
-  );            
+    codigoTaskCero,           // Código a ejecutar
+    NOMBRE_TASK_CERO,         // Un identificador
+    TAMANIO_STACK_TASK_CERO,  // Tamaño del stack
+    NULL,                     // Parámetros que recibe el código
+    PRIORIDAD_TASK_CERO,      // Prioridad
+    &task0,                   // Objeto para manejar la task
+    PROCESADOR_CERO           // Número de procesador
+  );  
 }
 
+/*
+* Esta función siempre se ejecuta en el core 1
+*/
+
 void loop() {
-  
+
   // Declaración e inicialización variables
   cantGiros = 0;
   giro = false;
@@ -31,7 +37,7 @@ void loop() {
   float distanciaDerechaPrevia = 0;
   float distanciaAdelante = 0;
   int direccion = 0;
-  int velocidad = 250;
+  int velocidad = 225;
   float tiempoDelay = 0;
 
   while(senialFumigar) {
@@ -40,7 +46,6 @@ void loop() {
     
     // Obtener distancias
     distanciaDerechaActual = calcularDistanciaPromedio(PIN_TRIG_DERECHA, PIN_ECHO_DERECHA);
-    delay(0.1 * 1000);
     distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
       
     // Calcular dirección y tiempo
@@ -87,8 +92,8 @@ void loop() {
     }
 
     // Le damos tiempo a las tareas en background a ejecutarse
-    delay(10);
-  }
+    delay(DELAY_TASK_END_MS);
+  } 
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
@@ -109,21 +114,21 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void codigoTaskUno(void *param) {
-  
+void codigoTaskCero(void *param) {
+
   /* SETUP */
   
-  doInitMdEConexiones()  ;
+  doInitMdEConexiones();
 
   /* LOOP */
 
-  while(true) {
+  for(;;) {
     
     maquinaEstadosConexiones();
 
     
     // Le damos tiempo a las tareas en background a ejecutarse
-    delay(10);
+    delay(DELAY_TASK_END_MS);
   }
 }
 
@@ -167,6 +172,7 @@ void doInit(){
   ledcSetup(PWM_CHANNEL_1, FREQ, RESOLUTION);
   ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_1);
 
+  pinMode(PIN_LED_WIFI, OUTPUT);
 
   // Inicialización variables
   conectadoFB = false;
@@ -185,6 +191,9 @@ void doInitMdEConexiones(void) {
   conectadoFB = false;
   senialFumigar = false;
 
+  // Apagar LED
+  estadoLedo = LOW;
+  digitalWrite(PIN_LED_WIFI, estadoLedo);
 }
 
 void generarEventoMdEConexiones(void) {
@@ -199,10 +208,14 @@ void generarEventoMdEConexiones(void) {
     if(WiFi.status() != WL_CONNECTED) {
 
       evtConexiones = EVT_DESCONEXION_WIFI;
+      estadoLedo = LOW;
+      digitalWrite(PIN_LED_WIFI, estadoLedo);
     
     } else {
 
       evtConexiones = EVT_CONEXION_EXITOSA_WIFI;
+      estadoLedo = HIGH;
+      digitalWrite(PIN_LED_WIFI, estadoLedo);
 
     }
 
@@ -345,15 +358,21 @@ void conectarWifi() {
   // Modo para que el ESP se conecte a una red
   WiFi.mode(WIFI_STA);
 
+  // Desconectamos por si estuviera previamente conectado a otra red
+  WiFi.disconnect();
+
   // Comenzamos conexión
   WiFi.begin(WIFI_RED, WIFI_CONTRASENIA);
 
-  // Medimos el punto de inicio
+  // Medimos el tiempo de inicio
   unsigned long startTime = millis();
     
-  // Hacemos que intente conectarse durante 20 ms
-  while(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {}
-
+  // Hacemos que intente conectarse durante X ms
+  if(WiFi.status() != WL_CONNECTED && millis() - startTime < WIFI_TIMEOUT_MS) {
+    
+    estadoLedo = !estadoLedo;
+    digitalWrite(PIN_LED_WIFI, estadoLedo);
+  }
 }
 
 /* ------------------ SECCIÓN CONEXIÓN FIREBASE ------------------ */
