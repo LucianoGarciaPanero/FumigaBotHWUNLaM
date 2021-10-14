@@ -42,6 +42,7 @@ const char* PATH_ENCENDIDO = "/robots/0/encendido";
 const char* PATH_QUIMICO = "/robots/0/nivelQuimico";
 const char* PATH_CANTIDAD_QUIMICO_POR_AREA = "/robots/0/cantidadQuimicoPorArea";
 const char* PATH_CONTADOR = "/robots/0/contador";
+#define FIREBASE_TIMEOUT_MS 500
 
 // Batería
 #define VOLTAJE_MAX_BATERIA 6

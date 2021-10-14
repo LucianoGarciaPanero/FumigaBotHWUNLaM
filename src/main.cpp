@@ -47,17 +47,33 @@ void setup() {
 
 void loop() {
 
-  if(escribirEstadoRobot && WiFi.status() == WL_CONNECTED && Firebase.ready()) {
+  
+  // Acciones que requieren tener internet y estar conectado a Firebase  
+  
+  if(escribirEstadoRobot && conexionesCorrectas()) {
 
     escribirEstadoRobotEnFirebase();
     escribirEstadoRobot = false;
 
   }
 
-  if(escribirEncendidoRobot && WiFi.status() == WL_CONNECTED && Firebase.ready()) {
+  if(escribirEncendidoRobot && conexionesCorrectas()) {
 
     Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
     escribirEncendidoRobot = false;
+
+  }
+
+  if(millis() - startTimeFirebaseFumigar > FIREBASE_TIMEOUT_MS && conexionesCorrectas()) {
+
+    
+    if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
+
+      fumigar = fbdo.boolData();
+
+    }
+    
+    startTimeFirebaseFumigar = millis();
 
   }
 
@@ -335,9 +351,16 @@ void reiniciarVariables(void) {
   fumigar = false;
   escribirEstadoRobot = false;
   escribirEncendidoRobot = false;
-  startTime = millis();
+  startTimeWifiTimeout = millis();
+  startTimeFirebaseFumigar = millis();
   contador = 0;
   estadoLed = LOW;
+
+}
+
+bool conexionesCorrectas(void) {
+
+  return WiFi.status() == WL_CONNECTED && Firebase.ready();
 
 }
 
@@ -390,7 +413,7 @@ Referencia: -
 
 void conectarWifi() {
   
-  if(millis() - startTime > WIFI_TIMEOUT_MS) {
+  if(millis() - startTimeWifiTimeout > WIFI_TIMEOUT_MS) {
 
     reiniciarVariables();
     digitalWrite(PIN_LED_WIFI, estadoLed);
@@ -425,8 +448,6 @@ Referencia: -
 
 void conectarFirebase(void) {
 
-  bool resultado;
-  
   // Parpadeo de LED
   estadoLed = LOW;
   digitalWrite(PIN_LED_WIFI, estadoLed);
@@ -437,58 +458,7 @@ void conectarFirebase(void) {
 
   // Hacemos la conexión
   Firebase.begin(&config, &auth);
-
-  // Nos suscribimos a la hoja de fumigar
-  //resultado = Firebase.RTDB.beginStream(&fbdoSub, PATH_FUMIGAR);
-  resultado = true;
-  
-  // Si la operación se realizo de forma correcta podemos especificar las acciones
-  if(resultado) {
-
-    //Firebase.RTDB.setStreamCallback(&fbdoSub, streamCallback, streamTimeoutCallback);
-    escribirEncendidoRobot = true;
-
-  }
 }
-
-/******************************************************************* 
-Nombre: streamCallback
-Entradas: -
-Salida: -
-Proceso: se llama a la función en el momento que se detecta un cambio
-en la hoja fumigación. Si el valor es true reinicia la MdE del core cero
-Fecha Creación: 01/07/2021
-Creador: 
-        + Luciano Garcia Panero 
-        + Tomás Sánchez Grigioni
-—————————————————————– 
-Cambiado Por: -
-Fecha Cambió: - 
-Referencia: -
-*****************************************************************/
-
-void streamCallback(FirebaseStream data) {
-  
-  fumigar = data.boolData();
-
-}
-
-/******************************************************************* 
-Nombre: streamTimeoutCallback
-Entradas: -
-Salida: -
-Proceso: se llama a la función en el momento que se detecta un timeout
-Fecha Creación: 01/07/2021
-Creador: 
-        + Luciano Garcia Panero 
-        + Tomás Sánchez Grigioni
-—————————————————————– 
-Cambiado Por: -
-Fecha Cambió: - 
-Referencia: -
-*****************************************************************/
-
-void streamTimeoutCallback(bool timeout) {}
 
 /* ------------------ SECCIÓN ACTUALIZAR VALORES FIREBASE ------------------ */
 

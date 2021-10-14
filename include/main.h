@@ -52,6 +52,7 @@ int determinarDireccion(float, float, float);
 
 // Auxiliar
 void reiniciarVariables(void);
+bool conexionesCorrectas(void);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
@@ -65,7 +66,6 @@ int cantGiros;
 bool giro;
 
 // Variables para Firebase
-FirebaseData fbdoSub;
 FirebaseData fbdo;
 FirebaseConfig config;
 FirebaseAuth auth;
@@ -75,5 +75,6 @@ TaskHandle_t task0;
 
 // WiFi
 int estadoLed;
-unsigned long startTime;
+unsigned long startTimeWifiTimeout;
+unsigned long startTimeFirebaseFumigar;
 int contador;
