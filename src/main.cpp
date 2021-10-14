@@ -346,6 +346,23 @@ void stConectadoFB() {
   }
 }
 
+/* ------------------ SECCIÓN AUXILIARES ------------------ */
+
+/******************************************************************* 
+Nombre: reiniciarVariables
+Entradas: -
+Salida: -
+Proceso: asignar los valores iniciales a las variables
+Fecha Creación: 13/10/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
 void reiniciarVariables(void) {
 
   fumigar = false;
@@ -357,6 +374,23 @@ void reiniciarVariables(void) {
   estadoLed = LOW;
 
 }
+
+/* ------------------ SECCIÓN AUXILIARES ------------------ */
+
+/******************************************************************* 
+Nombre: conexionesCorrectas
+Entradas: -
+Salida: -
+Proceso: validar que el ESP este conectado a internet y Firebase
+Fecha Creación: 13/10/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
 
 bool conexionesCorrectas(void) {
 
