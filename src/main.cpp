@@ -39,6 +39,8 @@ void setup() {
     &task0,                   // Objeto para manejar la task
     PROCESADOR_CERO           // Número de procesador
   );  
+
+  reiniciarVariablesTaskUno();
 }
 
 /*
@@ -77,18 +79,8 @@ void loop() {
 
   }
 
-  /*
-  // Declaración e inicialización variables
-  cantGiros = 0;
-  giro = false;
-  float distanciaDerechaActual = 0;
-  float distanciaDerechaPrevia = 0;
-  float distanciaAdelante = 0;
-  int direccion = 0;
-  int velocidad = 225;
-  float tiempoDelay = 0;
-
-  while(fumigar) {
+  /* ALGORITMO MOVIMIENTO */
+  if(fumigar) {
 
     distanciaDerechaPrevia = distanciaDerechaActual;
     
@@ -130,16 +122,16 @@ void loop() {
     if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
       fumigar = false;
+      reiniciarVariablesTaskUno();
 
       // Si nos encontramos conectados a firebase avisamos que finalizamos
-      if(WiFi.status() == WL_CONNECTED && conectadoFirebase) {
+      if(conexionesCorrectas()) {
 
-        Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, false);
+        Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, fumigar);
 
       }
     }
   }
-  */ 
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
@@ -167,7 +159,7 @@ void setupCero(void) {
   evtConexiones = EVT_DESCONEXION_WIFI;
 
   // Inicialización variables
-  reiniciarVariables();
+  reiniciarVariablesTaskCero();
   
   digitalWrite(PIN_LED_WIFI, estadoLed);
   inicializarWifi();
@@ -349,10 +341,10 @@ void stConectadoFB() {
 /* ------------------ SECCIÓN AUXILIARES ------------------ */
 
 /******************************************************************* 
-Nombre: reiniciarVariables
+Nombre: reiniciarVariablesTaskCero
 Entradas: -
 Salida: -
-Proceso: asignar los valores iniciales a las variables
+Proceso: asignar los valores iniciales a las variables de la task cero.
 Fecha Creación: 13/10/2021
 Creador: 
         + Luciano Garcia Panero 
@@ -363,7 +355,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void reiniciarVariables(void) {
+void reiniciarVariablesTaskCero(void) {
 
   fumigar = false;
   escribirEstadoRobot = false;
@@ -375,7 +367,33 @@ void reiniciarVariables(void) {
 
 }
 
-/* ------------------ SECCIÓN AUXILIARES ------------------ */
+/******************************************************************* 
+Nombre: reiniciarVariablesTaskUno
+Entradas: -
+Salida: -
+Proceso: asignar los valores iniciales a las variables de la task uno.
+Fecha Creación: 13/10/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void reiniciarVariablesTaskUno(void) {
+
+  cantGiros = 0;
+  giro = false;
+  distanciaDerechaActual = 0;
+  distanciaDerechaPrevia = 0;
+  distanciaAdelante = 0;
+  direccion = 0;
+  velocidad = 225;
+  tiempoDelay = 0;
+
+}
 
 /******************************************************************* 
 Nombre: conexionesCorrectas
@@ -449,7 +467,7 @@ void conectarWifi() {
   
   if(millis() - startTimeWifiTimeout > WIFI_TIMEOUT_MS) {
 
-    reiniciarVariables();
+    reiniciarVariablesTaskCero();
     digitalWrite(PIN_LED_WIFI, estadoLed);
     inicializarWifi();
 
@@ -492,6 +510,8 @@ void conectarFirebase(void) {
 
   // Hacemos la conexión
   Firebase.begin(&config, &auth);
+
+  escribirEncendidoRobot = true;
 }
 
 /* ------------------ SECCIÓN ACTUALIZAR VALORES FIREBASE ------------------ */

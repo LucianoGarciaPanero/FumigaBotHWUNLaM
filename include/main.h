@@ -51,7 +51,8 @@ void setupCero(void);
 int determinarDireccion(float, float, float);
 
 // Auxiliar
-void reiniciarVariables(void);
+void reiniciarVariablesTaskCero(void);
+void reiniciarVariablesTaskUno(void);
 bool conexionesCorrectas(void);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
@@ -64,6 +65,12 @@ bool fumigar;
 // Movimiento
 int cantGiros;
 bool giro;
+float distanciaDerechaActual;
+float distanciaDerechaPrevia;
+float distanciaAdelante;
+int direccion;
+int velocidad;
+float tiempoDelay;
 
 // Variables para Firebase
 FirebaseData fbdo;
