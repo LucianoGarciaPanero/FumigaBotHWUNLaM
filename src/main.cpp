@@ -5,7 +5,7 @@
 void setup() {
   
   // Borrar
-  //Serial.begin(VEL_TRANSMISION);
+  Serial.begin(VEL_TRANSMISION);
 
   // Inicialización pines sensores distancia
   pinMode(PIN_TRIG_ADELANTE, OUTPUT);
