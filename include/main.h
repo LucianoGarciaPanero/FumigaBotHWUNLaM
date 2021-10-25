@@ -84,4 +84,5 @@ TaskHandle_t task0;
 int estadoLed;
 unsigned long startTimeWifiTimeout;
 unsigned long startTimeFirebaseFumigar;
+unsigned long startTimeFirebaseEstadoRobot;
 int contador;

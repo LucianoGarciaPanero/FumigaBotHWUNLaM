@@ -5,7 +5,7 @@
 void setup() {
   
   // Borrar
-  Serial.begin(VEL_TRANSMISION);
+  //Serial.begin(VEL_TRANSMISION);
 
   // Inicialización pines sensores distancia
   pinMode(PIN_TRIG_ADELANTE, OUTPUT);
@@ -51,11 +51,11 @@ void loop() {
 
   
   // Acciones que requieren tener internet y estar conectado a Firebase  
-  
-  if(escribirEstadoRobot && conexionesCorrectas()) {
+  if(escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS && conexionesCorrectas()) {
 
     escribirEstadoRobotEnFirebase();
     escribirEstadoRobot = false;
+    startTimeFirebaseEstadoRobot = millis();
 
   }
 
@@ -66,7 +66,7 @@ void loop() {
 
   }
 
-  if(millis() - startTimeFirebaseFumigar > FIREBASE_TIMEOUT_MS && conexionesCorrectas()) {
+  if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS && conexionesCorrectas()) {
 
     
     if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
@@ -362,6 +362,7 @@ void reiniciarVariablesTaskCero(void) {
   escribirEncendidoRobot = false;
   startTimeWifiTimeout = millis();
   startTimeFirebaseFumigar = millis();
+  startTimeFirebaseEstadoRobot = millis();
   contador = 0;
   estadoLed = LOW;
 
