@@ -1,35 +1,49 @@
 #include <main.h>
 
+/* ------------------ VARIABLES GLOBALES ------------------ */
+
+// Banderas
+bool escribirEstadoRobot;
+bool escribirEncendidoRobot;
+bool fumigar;
+
+// Movimiento
+int cantGiros;
+bool giro;
+float distanciaDerechaActual;
+float distanciaDerechaPrevia;
+float distanciaAdelante;
+int direccion;
+int velocidad;
+float tiempoDelay;
+
+// Variables para Firebase
+FirebaseData fbdo;
+FirebaseConfig config;
+FirebaseAuth auth;
+
+// Para ejecutar en paralelo
+TaskHandle_t task0;
+
+// WiFi
+int estadoLed;
+unsigned long startTimeWifiTimeout;
+unsigned long startTimeFirebaseFumigar;
+unsigned long startTimeFirebaseEstadoRobot;
+int contador;
+
 /* ------------------ CÓDIGO ------------------ */
 
 void setup() {
   
   // Borrar
-  Serial.begin(VEL_TRANSMISION);
+  //Serial.begin(VEL_TRANSMISION);
 
-  // Inicialización pines sensores distancia
-  pinMode(PIN_TRIG_ADELANTE, OUTPUT);
-  pinMode(PIN_ECHO_ADELANTE, INPUT);
-
-  pinMode(PIN_TRIG_DERECHA, OUTPUT);
-  pinMode(PIN_ECHO_DERECHA, INPUT);
-
-  // Inicialización pines motores
-  pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
-  pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT);
+  // Setup de cada proceso
+  setupUno();
+  setupCero();  
   
-  ledcSetup(PWM_CHANNEL_0, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_0);
-  
-  pinMode(PIN_MOTOR_DERECHA_IN3, OUTPUT);
-  pinMode(PIN_MOTOR_DERECHA_IN4, OUTPUT);
-  
-  ledcSetup(PWM_CHANNEL_1, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_1);
-
-  pinMode(PIN_LED_WIFI, OUTPUT);
-
-  // Inicialización de tareas en cada core
+  // Inicialización de tareas en core cero
   xTaskCreatePinnedToCore(
     codigoTaskCero,           // Código a ejecutar
     NOMBRE_TASK_CERO,         // Un identificador
@@ -39,8 +53,7 @@ void setup() {
     &task0,                   // Objeto para manejar la task
     PROCESADOR_CERO           // Número de procesador
   );  
-
-  reiniciarVariablesTaskUno();
+  
 }
 
 /*
@@ -51,7 +64,7 @@ void loop() {
 
   
   // Acciones que requieren tener internet y estar conectado a Firebase  
-  if(escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS && conexionesCorrectas()) {
+  if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
 
     escribirEstadoRobotEnFirebase();
     escribirEstadoRobot = false;
@@ -59,14 +72,14 @@ void loop() {
 
   }
 
-  if(escribirEncendidoRobot && conexionesCorrectas()) {
+  if(conexionesCorrectas() && escribirEncendidoRobot) {
 
     Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
     escribirEncendidoRobot = false;
 
   }
 
-  if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS && conexionesCorrectas()) {
+  if(conexionesCorrectas() && millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
 
     
     if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
@@ -80,6 +93,7 @@ void loop() {
   }
 
   /* ALGORITMO MOVIMIENTO */
+  
   if(fumigar) {
 
     distanciaDerechaPrevia = distanciaDerechaActual;
@@ -135,6 +149,50 @@ void loop() {
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
+/******************************************************************* 
+Nombre: setupUno
+Entradas: -
+Salida: -
+Proceso: inicializa las variables correspondiente con el código del proceso
+del core uno.
+Fecha Creación: 26/10/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void setupUno(void) {
+  
+  // Inicialización pines sensores distancia
+  pinMode(PIN_TRIG_ADELANTE, OUTPUT);
+  pinMode(PIN_ECHO_ADELANTE, INPUT);
+
+  pinMode(PIN_TRIG_DERECHA, OUTPUT);
+  pinMode(PIN_ECHO_DERECHA, INPUT);
+
+  // Inicialización pines motores
+  pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
+  pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT);
+  
+  ledcSetup(PWM_CHANNEL_0, FREQ, RESOLUTION);
+  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_0);
+  
+  pinMode(PIN_MOTOR_DERECHA_IN3, OUTPUT);
+  pinMode(PIN_MOTOR_DERECHA_IN4, OUTPUT);
+  
+  ledcSetup(PWM_CHANNEL_1, FREQ, RESOLUTION);
+  ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_1);
+
+  // Inicialización pin WiFi
+  pinMode(PIN_LED_WIFI, OUTPUT);
+
+  reiniciarVariablesTaskUno();
+
+}
 
 /******************************************************************* 
 Nombre: setupCero
@@ -204,8 +262,6 @@ Referencia: -
 *****************************************************************/
 
 void codigoTaskCero(void *param) {
-  
-  setupCero();
 
   for(;;) {
     
@@ -231,7 +287,7 @@ void generarEventoMdEConexiones(void) {
   
   // Evento por defecto, se realizaron las conexiones correctamente
   } else {  
-    
+  
     evtConexiones = EVT_CONEXION_EXITOSA_FB;
     estadoLed = HIGH;
     digitalWrite(PIN_LED_WIFI, estadoLed);
@@ -479,7 +535,6 @@ void conectarWifi() {
     delay(WIFI_TIEMPO_ESPERA_MS);
 
   }
-
 }
 
 /* ------------------ SECCIÓN CONEXIÓN FIREBASE ------------------ */
@@ -513,6 +568,7 @@ void conectarFirebase(void) {
   Firebase.begin(&config, &auth);
 
   escribirEncendidoRobot = true;
+
 }
 
 /* ------------------ SECCIÓN ACTUALIZAR VALORES FIREBASE ------------------ */

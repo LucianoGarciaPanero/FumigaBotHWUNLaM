@@ -46,6 +46,7 @@ void escribirEstadoRobotEnFirebase(void);
 void codigoTaskCero(void*);
 void loopCero(void);
 void setupCero(void);
+void setupUno(void);
 
 // Movimiento
 int determinarDireccion(float, float, float);
@@ -54,35 +55,3 @@ int determinarDireccion(float, float, float);
 void reiniciarVariablesTaskCero(void);
 void reiniciarVariablesTaskUno(void);
 bool conexionesCorrectas(void);
-
-/* ------------------ VARIABLES GLOBALES ------------------ */
-
-// Banderas
-bool escribirEstadoRobot;
-bool escribirEncendidoRobot;
-bool fumigar;
-
-// Movimiento
-int cantGiros;
-bool giro;
-float distanciaDerechaActual;
-float distanciaDerechaPrevia;
-float distanciaAdelante;
-int direccion;
-int velocidad;
-float tiempoDelay;
-
-// Variables para Firebase
-FirebaseData fbdo;
-FirebaseConfig config;
-FirebaseAuth auth;
-
-// Para ejecutar en paralelo
-TaskHandle_t task0;
-
-// WiFi
-int estadoLed;
-unsigned long startTimeWifiTimeout;
-unsigned long startTimeFirebaseFumigar;
-unsigned long startTimeFirebaseEstadoRobot;
-int contador;

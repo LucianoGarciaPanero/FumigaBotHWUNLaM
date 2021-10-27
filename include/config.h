@@ -21,7 +21,7 @@
 /* -------- OTROS --------  */
 
 // Comunicacion con el serial
-#define VEL_TRANSMISION 115200
+#define VEL_TRANSMISION 9600
 
 // Dominio del problema
 #define UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM 150
