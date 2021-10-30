@@ -37,7 +37,7 @@ int contador;
 void setup() {
   
   // Borrar
-  //Serial.begin(VEL_TRANSMISION);
+  Serial.begin(VEL_TRANSMISION);
 
   // Setup de cada proceso
   setupUno();
@@ -63,7 +63,8 @@ void setup() {
 void loop() {
 
   
-  // Acciones que requieren tener internet y estar conectado a Firebase  
+  /* ESCRITURA/LECTURA EN FIREBASE */
+
   if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
 
     escribirEstadoRobotEnFirebase();
@@ -145,6 +146,20 @@ void loop() {
 
       }
     }
+
+  } else { 
+
+    mover(
+      PIN_MOTOR_IZQUIERDA_IN1,
+      PIN_MOTOR_IZQUIERDA_IN2,
+      PIN_MOTOR_DERECHA_IN3,
+      PIN_MOTOR_DERECHA_IN4,
+      PARAR,
+      PWM_CHANNEL_0,
+      PWM_CHANNEL_1,
+      velocidad
+    );
+    
   }
 }
 
@@ -447,7 +462,7 @@ void reiniciarVariablesTaskUno(void) {
   distanciaDerechaPrevia = 0;
   distanciaAdelante = 0;
   direccion = 0;
-  velocidad = 225;
+  velocidad = 240;
   tiempoDelay = 0;
 
 }
