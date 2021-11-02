@@ -63,15 +63,14 @@ Referencia: -
 float calcularDistanciaPromedio(int pinTrig, int pinEcho) {
   
   // Inicializar variables
-  int n = 25;
+  int n = 15;
   float values[n];
 
   // Leer n valores
   for(int i = 0; i < n; i++) {
+    
     values[i]= calcularDistancia(pinTrig, pinEcho);
 
-    // Para que las mediciones no interfieran entre si
-    //delay(30);
   }
   
   // Calcular promedio

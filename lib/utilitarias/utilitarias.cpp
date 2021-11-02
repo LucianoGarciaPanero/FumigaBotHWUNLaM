@@ -41,23 +41,35 @@ Creador:
         + Luciano Garcia Panero 
         + Tomás Sánchez Grigioni
 —————————————————————– 
-Cambiado Por: -
-Fecha Cambió: - 
-Referencia: -
+Cambiado Por: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+Fecha Cambió: 02/11/2021 
+Referencia: Cambiamos algoritmo de burbujeo por uno que busca el mínimo y 
+lo ponga al principio
 *****************************************************************/
 
 void ordenarVector(float *values, int len) {
 
-  // Ordenar vector
-  for(int i = 0; i < len - 1; i++) {
-      for(int j = i + 1; j < len; j++) {
-        if(values[i] > values[j]) {
-          float swap = values[i];
-          values[i] = values[j];
-          values[j] = swap;
-        }
+  int pos = 0;
+
+  for(int i = 0; i < len - 1 ; i ++) {
+
+    int min = 20000;
+      for (int j = i; j < len; j++){
+        
+        if( values[j] < min) {
+              
+              min = values[j];
+              pos = j;
+
+          }
       }
-    }
+
+    int aux = values[i];
+    values[i] = min;
+    values[pos] = aux;
+  }
 }
 
 /******************************************************************* 

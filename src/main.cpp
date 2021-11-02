@@ -37,7 +37,7 @@ int contador;
 void setup() {
   
   // Borrar
-  Serial.begin(VEL_TRANSMISION);
+  //Serial.begin(VEL_TRANSMISION);
 
   // Setup de cada proceso
   setupUno();
@@ -101,8 +101,10 @@ void loop() {
     
     // Obtener distancias
     distanciaDerechaActual = calcularDistanciaPromedio(PIN_TRIG_DERECHA, PIN_ECHO_DERECHA);
+    Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaD", distanciaDerechaActual);
     distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
-      
+    Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaA", distanciaAdelante);
+
     // Calcular dirección y tiempo
     direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
     tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
@@ -144,9 +146,8 @@ void loop() {
 
         Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, fumigar);
 
-      }
+      } 
     }
-
   } else { 
 
     mover(
@@ -159,7 +160,7 @@ void loop() {
       PWM_CHANNEL_1,
       velocidad
     );
-    
+
   }
 }
 
@@ -462,7 +463,7 @@ void reiniciarVariablesTaskUno(void) {
   distanciaDerechaPrevia = 0;
   distanciaAdelante = 0;
   direccion = 0;
-  velocidad = 240;
+  velocidad = 255;
   tiempoDelay = 0;
 
 }
