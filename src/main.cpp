@@ -32,6 +32,9 @@ unsigned long startTimeFirebaseFumigar;
 unsigned long startTimeFirebaseEstadoRobot;
 int contador;
 
+// Quimico
+float nivelQuimicoPrevio;
+
 /* ------------------ CÓDIGO ------------------ */
 
 void setup() {
@@ -108,13 +111,14 @@ void loop() {
     // Calcular dirección y tiempo
     direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
     tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
+    Firebase.RTDB.setInt(&fbdo, "/robots/0/direccion", direccion);
 
     mover(
       PIN_MOTOR_IZQUIERDA_IN1,
       PIN_MOTOR_IZQUIERDA_IN2,
       PIN_MOTOR_DERECHA_IN3,
       PIN_MOTOR_DERECHA_IN4,
-      direccion,
+      IZQUIERDA,
       PWM_CHANNEL_0,
       PWM_CHANNEL_1,
       velocidad
@@ -189,6 +193,9 @@ void setupUno(void) {
 
   pinMode(PIN_TRIG_DERECHA, OUTPUT);
   pinMode(PIN_ECHO_DERECHA, INPUT);
+
+  pinMode(PIN_TRIG_QUIMICO, OUTPUT);
+  pinMode(PIN_ECHO_QUIMICO, INPUT);
 
   // Inicialización pines motores
   pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
@@ -465,7 +472,31 @@ void reiniciarVariablesTaskUno(void) {
   direccion = 0;
   velocidad = 255;
   tiempoDelay = 0;
+  
+  // Para mejorar la primera medición del quimico
+  nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
 
+  if(nivelQuimicoPrevio < 10) {
+
+    nivelQuimicoPrevio = 4;
+
+  } else if(nivelQuimicoPrevio < 20) {
+
+    nivelQuimicoPrevio = 17;
+
+  } else if(nivelQuimicoPrevio < 50) {
+
+    nivelQuimicoPrevio = 43;
+
+  } else if(nivelQuimicoPrevio < 75) {
+
+    nivelQuimicoPrevio = 68;
+
+  } else {
+
+    nivelQuimicoPrevio = 89;
+
+  }
 }
 
 /******************************************************************* 
@@ -607,18 +638,32 @@ Referencia: -
 
 void escribirEstadoRobotEnFirebase(void) {
 
-  float nivelQUimico = 100;
+  float nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
   float nivelBateria = 100;
   /*
   // Obtener valores de sensores
   nivelBateria = calcularNivelBateriaPromedio();
-  nivelQUimico = calcularNivelQuimicoPromedio();
-  */
-  // Actualizar valor de bateria y nivel quimico
-  Firebase.RTDB.setFloat(&fbdo, PATH_BATERIA, nivelBateria);
-  Firebase.RTDB.setFloat(&fbdo, PATH_QUIMICO, nivelQUimico); 
+  */  
 
+  // Para evitar para tener variaciones intensas en el nivel de quimico
+  if(nivelQuimicoActual <= nivelQuimicoPrevio) {
+
+    if(nivelQuimicoPrevio - nivelQuimicoActual > 3) {
+
+      nivelQuimicoActual = nivelQuimicoPrevio - 3;
+
+    }       
+
+    Firebase.RTDB.setFloat(&fbdo, PATH_QUIMICO, nivelQuimicoActual);
+    nivelQuimicoPrevio = nivelQuimicoActual;
+
+  }
+  
+  // Actualizar valor de bateria y nivel quimico
+  Firebase.RTDB.setFloat(&fbdo, PATH_BATERIA, nivelBateria); 
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
+
+
 
 }
 

@@ -7,6 +7,9 @@
 #define PIN_TRIG_DERECHA 23
 #define PIN_ECHO_DERECHA 22
 
+#define PIN_TRIG_QUIMICO 18
+#define PIN_ECHO_QUIMICO 19
+
 // Motores
 #define PIN_MOTOR_IZQUIERDA_EN 32
 #define PIN_MOTOR_IZQUIERDA_IN1 33
@@ -50,11 +53,6 @@ const char* PATH_CONTADOR = "/robots/0/contador";
 #define TIEMPO_VERIFICACION_BATERIA_MS 10000
 #define MAX_VALOR_NIVEL_BAJO 15
 #define MAX_VALOR_NIVEL_MEDIO 40
-
-// Recipiente líquido
-#define DISTANCIA_MAX_CM 7
-#define DISTANCIA_SENSOR_CM 11
-#define LIMITE_INFERIOR_CONTENIDO 0.2
 
 // Bomba de agua
 #define LIBERAR_CANTIDAD_BAJA_QUIMICO 1

@@ -172,6 +172,42 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 }
 
 /******************************************************************* 
+Nombre: 
+Entradas:
+Salida: 
+Proceso:
+Fecha Creación: 06/11/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+float calcularNivelQuimicoPromedio(int pintTrig, int pinEcho) {
+
+  float distancia = calcularDistanciaPromedio(pintTrig, pinEcho);
+  float nivelQuimicoCm = distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;
+  float nivelQuimicoPorcetnaje = nivelQuimicoCm * 100 / ALTURA_RECIPIENTE_LIQUIDO_CM;
+  
+  if(nivelQuimicoPorcetnaje < 0) {
+
+    return 0;
+
+  } else if(nivelQuimicoPorcetnaje > 100) {
+
+    return 100;
+
+  } else {
+
+      return 100 - nivelQuimicoPorcetnaje;
+
+  }
+}
+
+/******************************************************************* 
 Nombre: determinarTiempoDelay
 Entradas:
           + distanciaAdelante: float
@@ -302,7 +338,7 @@ void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion
 
       // Girar
       digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, HIGH);
+      digitalWrite(pinIzqAt, LOW);
       digitalWrite(pinDerAd, HIGH);
       digitalWrite(pinDerAt, LOW);
     

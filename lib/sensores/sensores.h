@@ -33,7 +33,7 @@ float calcularNivelBateriaPromedio(int, float, float, float);
 #define TIEMPO_DELAY_GIRO_MUY_CORTO_MS 0.1 * 1000
 #define TIEMPO_DELAY_GIRO_CORTO_MS 0.2 * 1000
 #define TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS 0.3 * 1000
-#define TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS 0.3 * 1000
+#define TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS 0.6 * 1000
 #define TIEMPO_DELAY_ADELANTE_MS 0.6 * 1000
 #define TIEMPO_DELAY_ADELANTE_GIRO_MS 1 * 1000
 #define TIEMPO_DELAY_RETROCEDER_MS 0.1 * 1000
@@ -51,5 +51,12 @@ float calcularNivelBateriaPromedio(int, float, float, float);
 float determinarTiempoDelay(int, float, float);
 void mover(int, int, int, int, int, int, int, int);
 
-/* -------- LIBERAR QUIMICO --------  */
+/* -------- QUIMICO --------  */
+
+#define DISTANCIA_SENSOR_DESDE_ARRIBA_CM 1
+#define ALTURA_RECIPIENTE_LIQUIDO_CM 10
+#define LIMITE_INFERIOR_CONTENIDO 0.2
+#define DISTANCIA_MAX_CM 7
+
+float calcularNivelQuimicoPromedio(int, int);
 void liberarQuimico(int, float);
