@@ -172,10 +172,13 @@ void liberarQuimico(int pinBomba, float tiempoMs) {
 }
 
 /******************************************************************* 
-Nombre: 
+Nombre: calcularNivelQuimicoPromedio
 Entradas:
-Salida: 
-Proceso:
+          + pinTrig: int
+          + pinEcho: int
+Salida: El nivel de quimico promedio en tanque
+Proceso: Teniendo en cuenta las dimensiones del tanque calcula el porcentaje
+de quimico en el mismo
 Fecha Creación: 06/11/2021
 Creador: 
         + Luciano Garcia Panero 
@@ -188,21 +191,28 @@ Referencia: -
 
 float calcularNivelQuimicoPromedio(int pintTrig, int pinEcho) {
 
+  // Obtener la distancia al quimico desde el sensor
   float distancia = calcularDistanciaPromedio(pintTrig, pinEcho);
-  float nivelQuimicoCm = distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;
-  float nivelQuimicoPorcetnaje = nivelQuimicoCm * 100 / ALTURA_RECIPIENTE_LIQUIDO_CM;
   
-  if(nivelQuimicoPorcetnaje < 0) {
+  // Calcular la distancia del quimico al maximo
+  float nivelQuimicoCm = distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;
+  
+  // Regla de tres para obtener el porcentaje
+  float nivelQuimicoPorcetnaje = 1 - (nivelQuimicoCm * 100 / ALTURA_RECIPIENTE_LIQUIDO_CM);
+  
+  
+  // Verificacion de que el nivel no se encuentra fuera de los limites
+  if(nivelQuimicoPorcetnaje < MIN_NIVEL_QUIMICO_PORCENTAJE) {
 
-    return 0;
+    return MIN_NIVEL_QUIMICO_PORCENTAJE;
 
-  } else if(nivelQuimicoPorcetnaje > 100) {
+  } else if(nivelQuimicoPorcetnaje > MAX_NIVEL_QUIMICO_PORCENTAJE) {
 
-    return 100;
+    return MAX_NIVEL_QUIMICO_PORCENTAJE;
 
   } else {
 
-      return 100 - nivelQuimicoPorcetnaje;
+      return nivelQuimicoPorcetnaje;
 
   }
 }

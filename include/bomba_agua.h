@@ -1,0 +1,23 @@
+// Codificacion niveles
+#define LIBERAR_CANTIDAD_BAJA_QUIMICO 1
+#define LIBERAR_CANTIDAD_MEDIA_QUIMICO 2
+#define LIBERAR_CANTIDAD_ALTA_QUIMICO 3
+
+// Tiempos de liberacion segun codificacion
+#define TIEMPO_LIBERAR_QUIMICO_BAJA_MS 500
+#define TIEMPO_LIBERAR_QUIMICO_MEDIA_MS 1000
+#define TIEMPO_LIBERAR_QUIMICO_ALTA_MS 2000
+
+// Distancias
+#define DISTANCIA_SENSOR_DESDE_ARRIBA_CM 1
+#define ALTURA_RECIPIENTE_LIQUIDO_CM 10
+
+// Resultados
+#define ERROR_NIVEL_QUIMICO -1
+
+// Valores de dominio
+#define MAXIMA_DIFERENCIA_VALORES 3
+
+// Limites del nivel de quimico
+#define MIN_NIVEL_QUIMICO_PORCENTAJE 0
+#define MAX_NIVEL_QUIMICO_PORCENTAJE 100

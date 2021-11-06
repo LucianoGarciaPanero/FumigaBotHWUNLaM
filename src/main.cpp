@@ -1,40 +1,5 @@
 #include <main.h>
 
-/* ------------------ VARIABLES GLOBALES ------------------ */
-
-// Banderas
-bool escribirEstadoRobot;
-bool escribirEncendidoRobot;
-bool fumigar;
-
-// Movimiento
-int cantGiros;
-bool giro;
-float distanciaDerechaActual;
-float distanciaDerechaPrevia;
-float distanciaAdelante;
-int direccion;
-int velocidad;
-float tiempoDelay;
-
-// Variables para Firebase
-FirebaseData fbdo;
-FirebaseConfig config;
-FirebaseAuth auth;
-
-// Para ejecutar en paralelo
-TaskHandle_t task0;
-
-// WiFi
-int estadoLed;
-unsigned long startTimeWifiTimeout;
-unsigned long startTimeFirebaseFumigar;
-unsigned long startTimeFirebaseEstadoRobot;
-int contador;
-
-// Quimico
-float nivelQuimicoPrevio;
-
 /* ------------------ CÓDIGO ------------------ */
 
 void setup() {
@@ -118,7 +83,7 @@ void loop() {
       PIN_MOTOR_IZQUIERDA_IN2,
       PIN_MOTOR_DERECHA_IN3,
       PIN_MOTOR_DERECHA_IN4,
-      IZQUIERDA,
+      direccion,
       PWM_CHANNEL_0,
       PWM_CHANNEL_1,
       velocidad
@@ -648,9 +613,9 @@ void escribirEstadoRobotEnFirebase(void) {
   // Para evitar para tener variaciones intensas en el nivel de quimico
   if(nivelQuimicoActual <= nivelQuimicoPrevio) {
 
-    if(nivelQuimicoPrevio - nivelQuimicoActual > 3) {
+    if(nivelQuimicoPrevio - nivelQuimicoActual > MAXIMA_DIFERENCIA_VALORES) {
 
-      nivelQuimicoActual = nivelQuimicoPrevio - 3;
+      nivelQuimicoActual = nivelQuimicoPrevio - MAXIMA_DIFERENCIA_VALORES;
 
     }       
 

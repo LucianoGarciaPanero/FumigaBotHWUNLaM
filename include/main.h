@@ -1,3 +1,4 @@
+/* ------------------ BIBLIOTECAS ------------------ */
 // Bibliotecas externas
 #include <Arduino.h>
 #include <WiFi.h>
@@ -6,32 +7,18 @@
 // Bibliotecas propias
 #include <sensores.h>
 #include <utilitarias.h>
+
+// Archivos de configuración
+#include <pines.h>
+#include <bateria.h>
+#include <bomba_agua.h>
 #include <config.h>
+#include <firebase_settings.h>
+#include <wifi_settings.h>
+#include <maquina_estados_conexiones.h>
 
-/* ------------------ MdE CONEXIONES ------------------ */
-// Estados
-#define ST_REALIZANDO_CONEXION_WIFI     100
-#define ST_REALIZANDO_CONEXION_FB       125
-#define ST_CONECTADO_FB                 150
-
-// Eventos
-#define EVT_DESCONEXION_WIFI            1050
-#define EVT_CONEXION_RECHAZADA_FB       1075
-#define EVT_CONEXION_EXITOSA_FB         1100
-
-// Funciones
-void generarEventoMdEConexiones(void);
-void maquinaEstadosConexiones(void);
-void stRealizandoConexionWiFi(void);
-void stRealizandoConexionFB(void);
-void stConectadoFB(void);
-
-// Variables globales
-int stConexiones;
-int evtConexiones;
 
 /* ------------------ DECLARACIÓN FUNCIONES GENERALES ------------------ */
-
 // WiFI
 void inicializarWifi(void);
 void conectarWifi(void);
@@ -55,3 +42,38 @@ int determinarDireccion(float, float, float);
 void reiniciarVariablesTaskCero(void);
 void reiniciarVariablesTaskUno(void);
 bool conexionesCorrectas(void);
+
+/* ------------------ VARIABLES GLOBALES ------------------ */
+
+// Banderas
+bool escribirEstadoRobot;
+bool escribirEncendidoRobot;
+bool fumigar;
+
+// Movimiento
+int cantGiros;
+bool giro;
+float distanciaDerechaActual;
+float distanciaDerechaPrevia;
+float distanciaAdelante;
+int direccion;
+int velocidad;
+float tiempoDelay;
+
+// Variables para Firebase
+FirebaseData fbdo;
+FirebaseConfig config;
+FirebaseAuth auth;
+
+// Para ejecutar en paralelo
+TaskHandle_t task0;
+
+// WiFi
+int estadoLed;
+unsigned long startTimeWifiTimeout;
+unsigned long startTimeFirebaseFumigar;
+unsigned long startTimeFirebaseEstadoRobot;
+int contador;
+
+// Quimico
+float nivelQuimicoPrevio;
