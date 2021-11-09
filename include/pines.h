@@ -18,3 +18,6 @@
 
 // LED
 #define PIN_LED_WIFI 2
+
+// Bomba agua
+#define PIN_BOMBA_AGUA 4

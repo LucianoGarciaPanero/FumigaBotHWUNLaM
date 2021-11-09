@@ -348,7 +348,7 @@ void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion
 
       // Girar
       digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
+      digitalWrite(pinIzqAt, HIGH);
       digitalWrite(pinDerAd, HIGH);
       digitalWrite(pinDerAt, LOW);
     

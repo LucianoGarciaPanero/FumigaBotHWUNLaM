@@ -64,7 +64,7 @@ void loop() {
   /* ALGORITMO MOVIMIENTO */
   
   if(fumigar) {
-
+    
     distanciaDerechaPrevia = distanciaDerechaActual;
     
     // Obtener distancias
@@ -177,6 +177,9 @@ void setupUno(void) {
 
   // Inicialización pin WiFi
   pinMode(PIN_LED_WIFI, OUTPUT);
+
+  // Inicialización pin bomba de agua
+  pinMode(PIN_BOMBA_AGUA, OUTPUT);
 
   reiniciarVariablesTaskUno();
 
@@ -661,8 +664,7 @@ int determinarDireccion(float distanciaAdelante, float distanciaDerechaActual, f
     giro = false;
     if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM + 10) {
 
-      // ADELANTE_GIRO realiza 2 veces adelante
-      return ADELANTE_GIRO;
+      return ADELANTE;
 
     } else if(distanciaDerechaActual < DISTANCIA_DERECHA_MINIMA_CM) {
 
