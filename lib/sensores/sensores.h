@@ -21,4 +21,4 @@ void mover(int, int, int, int, int, int, int, int);
 
 /* -------- QUIMICO --------  */
 float calcularNivelQuimicoPromedio(int, int);
-void liberarQuimico(int, float);
+void liberarQuimico(int, long);

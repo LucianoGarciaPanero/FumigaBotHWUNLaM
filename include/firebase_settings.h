@@ -9,7 +9,18 @@ const char* PATH_ENCENDIDO = "/robots/0/encendido";
 const char* PATH_QUIMICO = "/robots/0/nivelQuimico";
 const char* PATH_CANTIDAD_QUIMICO_POR_AREA = "/robots/0/cantidadQuimicoPorArea";
 const char* PATH_CONTADOR = "/robots/0/contador";
+const char* PATH_RAZON_FINALIZACION = "/robots/0/razonFinalizacion";
+const char* PATH_DETENCION_AUTOMATICA = "/robots/0/razonFinalizacion";
 
 // Timeouts
 #define FIREBASE_FUMIGAR_TIMEOUT_MS 500
 #define FIREBASE_ESTADO_ROBOT_TIMEOUT_MS 500 
+
+// Codificacion razon de finalizacion
+#define RAZON_FINALIZACION_OK "OK"
+#define RAZON_FINALIZACION_FALTA_QUIMICO "FDQ"
+#define RAZON_FINALIZACION_FALTA_BATERIA "FDB"
+
+#define NRO_RAZON_FINALIZACION_OK 0
+#define NRO_RAZON_FINALIZACION_FALTA_QUIMICO 1
+#define NRO_RAZON_FINALIZACION_FALTA_BATERIA 2

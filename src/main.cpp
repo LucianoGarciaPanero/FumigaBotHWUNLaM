@@ -73,6 +73,13 @@ void loop() {
     distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
     Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaA", distanciaAdelante);
 
+    // Liberar químico si se cumple con la condición
+    if(estaDentroRango(UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, distanciaDerechaActual)) {
+
+      liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+
+    }
+
     // Calcular dirección y tiempo
     direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
     tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
@@ -108,14 +115,10 @@ void loop() {
     if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
       fumigar = false;
+      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
       reiniciarVariablesTaskUno();
 
-      // Si nos encontramos conectados a firebase avisamos que finalizamos
-      if(conexionesCorrectas()) {
-
-        Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, fumigar);
-
-      } 
+      
     }
   } else { 
 
@@ -488,6 +491,53 @@ bool conexionesCorrectas(void) {
 
 }
 
+/******************************************************************* 
+Nombre: finalizarFumigacion
+Entradas: + nroRazon
+Salida: -
+Proceso: finalizar la fumigacion e informar en firebase su razon
+Fecha Creación: 13/11/2021
+Creador: 
+        + Luciano Garcia Panero 
+        + Tomás Sánchez Grigioni
+—————————————————————– 
+Cambiado Por: -
+Fecha Cambió: - 
+Referencia: -
+*****************************************************************/
+
+void finalizarFumigacion(int nroRazon) {
+
+  String stringRazon;
+  
+  // Informar en Firebase que finalizamos la fumigacion nosotros
+  fumigar = false;
+  Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, fumigar);
+  Firebase.RTDB.setBool(&fbdo, PATH_DETENCION_AUTOMATICA, true);
+
+  // Informar en Firebase la razon de la finalizacion
+  switch (nroRazon) {
+    case NRO_RAZON_FINALIZACION_OK:
+      stringRazon = RAZON_FINALIZACION_OK;
+      break;
+  
+    case NRO_RAZON_FINALIZACION_FALTA_BATERIA:
+      stringRazon = RAZON_FINALIZACION_FALTA_BATERIA;
+      break;
+
+    case NRO_RAZON_FINALIZACION_FALTA_QUIMICO:
+      stringRazon = RAZON_FINALIZACION_FALTA_QUIMICO;
+      break;
+
+    default:
+      stringRazon = RAZON_FINALIZACION_OK;
+      break;
+  }
+
+  Firebase.RTDB.setString(&fbdo, PATH_RAZON_FINALIZACION, stringRazon);
+
+}
+
 /* ------------------ SECCIÓN CONEXIÓN WIFI ------------------ */
 
 /******************************************************************* 
@@ -606,12 +656,10 @@ Referencia: -
 
 void escribirEstadoRobotEnFirebase(void) {
 
+  // Obtener valores de sensores
   float nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
   float nivelBateria = 100;
-  /*
-  // Obtener valores de sensores
-  nivelBateria = calcularNivelBateriaPromedio();
-  */  
+    
 
   // Para evitar para tener variaciones intensas en el nivel de quimico
   if(nivelQuimicoActual <= nivelQuimicoPrevio) {
@@ -622,16 +670,28 @@ void escribirEstadoRobotEnFirebase(void) {
 
     }       
 
-    Firebase.RTDB.setFloat(&fbdo, PATH_QUIMICO, nivelQuimicoActual);
+    Firebase.RTDB.setInt(&fbdo, PATH_QUIMICO, nivelQuimicoActual);
     nivelQuimicoPrevio = nivelQuimicoActual;
 
   }
+
   
+  // Cortar la fumigacion en caso de tener valores muy bajos
+  if(nivelQuimicoActual < UMBRAL_MINIMO_NIVEL_QUIMICO_PORCENTAJE && fumigar) {
+
+    finalizarFumigacion(NRO_RAZON_FINALIZACION_FALTA_QUIMICO);
+
+  }
+  
+  if(nivelBateria < UMBRAL_MINIMO_NIVEL_BATERIA_PORCENTAJE && fumigar) {
+
+      finalizarFumigacion(NRO_RAZON_FINALIZACION_FALTA_BATERIA);
+
+    }
+
   // Actualizar valor de bateria y nivel quimico
-  Firebase.RTDB.setFloat(&fbdo, PATH_BATERIA, nivelBateria); 
+  Firebase.RTDB.setInt(&fbdo, PATH_BATERIA, nivelBateria); 
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
-
-
 
 }
 

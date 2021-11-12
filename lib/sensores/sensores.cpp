@@ -155,7 +155,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void liberarQuimico(int pinBomba, float tiempoMs) {
+void liberarQuimico(int pinBomba, long tiempoMs) {
 
   // Inicializar variable
   long currentTime = 0;
@@ -193,13 +193,12 @@ float calcularNivelQuimicoPromedio(int pintTrig, int pinEcho) {
 
   // Obtener la distancia al quimico desde el sensor
   float distancia = calcularDistanciaPromedio(pintTrig, pinEcho);
-  
+
   // Calcular la distancia del quimico al maximo
   float nivelQuimicoCm = distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;
   
   // Regla de tres para obtener el porcentaje
-  float nivelQuimicoPorcetnaje = 1 - (nivelQuimicoCm * 100 / ALTURA_RECIPIENTE_LIQUIDO_CM);
-  
+  float nivelQuimicoPorcetnaje = 100 - nivelQuimicoCm * 100 / ALTURA_RECIPIENTE_LIQUIDO_CM;
   
   // Verificacion de que el nivel no se encuentra fuera de los limites
   if(nivelQuimicoPorcetnaje < MIN_NIVEL_QUIMICO_PORCENTAJE) {

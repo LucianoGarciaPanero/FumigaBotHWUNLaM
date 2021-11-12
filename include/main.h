@@ -42,6 +42,7 @@ int determinarDireccion(float, float, float);
 void reiniciarVariablesTaskCero(void);
 void reiniciarVariablesTaskUno(void);
 bool conexionesCorrectas(void);
+void finalizarFumigacion(int);
 
 /* ------------------ VARIABLES GLOBALES ------------------ */
 
