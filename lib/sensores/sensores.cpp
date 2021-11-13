@@ -100,23 +100,21 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-float calcularNivelBateriaPromedio(int pin, float vMin, float vMax, float constCorr) {
+int calcularNivelBateriaPromedio(int pin) {
 
   // Inicializar variables
   int n = 100;
   
   float vIn = -1;
-  float porcentaje = -1;
+  int porcentaje = -1;
 
   float values[n];  
 
   // Leer n valores seguidos
   for(int i = 0; i < n; i++) {
 
-    values[i] = analogRead(pin) * constCorr;
-
-    // Para que las mediciones no interfieran entre si
-    delay(30);
+    // Convertimos a valores de tensión
+    values[i] = analogRead(pin) * CONSTANTE_CORRECCION_VOLTAJE_BATERIA;
 
   }
   
@@ -124,18 +122,30 @@ float calcularNivelBateriaPromedio(int pin, float vMin, float vMax, float constC
   vIn =  calcularPromedio(values, n);
 
   // Calcular el porcentaje de la carga
-  porcentaje = 100 * (vIn - vMin) / (vMax - vMin);
+  if(vIn > 1.70) {
 
-  // Verificar que el resultado no tenga errores
-  if(porcentaje < 0 - DELTA_CARGA_BATERIA || porcentaje > 100 + DELTA_CARGA_BATERIA) {
+    porcentaje = PORCENTAJE_MAX_BATERIA;
 
-    return ERROR_BATERIA;
+  } else if(vIn > 1.65) {
+
+    porcentaje = PORCENTAJE_MAX_BATERIA * 3/4;
+
+  } else if(vIn > 1.60) {
+
+    porcentaje = PORCENTAJE_MAX_BATERIA * 1/2;
+
+  } else if(vIn > 1.55) {
+
+    porcentaje = PORCENTAJE_MAX_BATERIA * 1/4;
 
   } else {
 
-    return porcentaje;
+    porcentaje = MIN_NIVEL_QUIMICO_PORCENTAJE;
 
   }
+
+  return porcentaje;
+
 }
 
 /******************************************************************* 
@@ -189,16 +199,17 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-float calcularNivelQuimicoPromedio(int pintTrig, int pinEcho) {
+int calcularNivelQuimicoPromedio(int pintTrig, int pinEcho) {
 
   // Obtener la distancia al quimico desde el sensor
   float distancia = calcularDistanciaPromedio(pintTrig, pinEcho);
 
   // Calcular la distancia del quimico al maximo
-  float nivelQuimicoCm = distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;
+  //float nivelQuimicoCm = distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;
+  float nivelQuimicoCm = MAXIMA_ALTURA_LIQUIDO_CM - distancia - DISTANCIA_SENSOR_DESDE_ARRIBA_CM;  
   
   // Regla de tres para obtener el porcentaje
-  float nivelQuimicoPorcetnaje = 100 - nivelQuimicoCm * 100 / ALTURA_RECIPIENTE_LIQUIDO_CM;
+  int nivelQuimicoPorcetnaje = nivelQuimicoCm * 100 / MAXIMA_ALTURA_LIQUIDO_CM;
   
   // Verificacion de que el nivel no se encuentra fuera de los limites
   if(nivelQuimicoPorcetnaje < MIN_NIVEL_QUIMICO_PORCENTAJE) {

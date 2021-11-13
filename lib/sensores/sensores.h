@@ -13,12 +13,12 @@
 float calcularDistanciaPromedio(int, int);
 
 /* -------- BATERÍA --------  */
-float calcularNivelBateriaPromedio(int, float, float, float);
+int calcularNivelBateriaPromedio(int);
 
 /* -------- MOVIMIENTO --------  */
 float determinarTiempoDelay(int, float, float);
 void mover(int, int, int, int, int, int, int, int);
 
 /* -------- QUIMICO --------  */
-float calcularNivelQuimicoPromedio(int, int);
+int calcularNivelQuimicoPromedio(int, int);
 void liberarQuimico(int, long);

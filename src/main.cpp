@@ -5,7 +5,7 @@
 void setup() {
   
   // Borrar
-  //Serial.begin(VEL_TRANSMISION);
+  Serial.begin(VEL_TRANSMISION);
 
   // Setup de cada proceso
   setupUno();
@@ -33,7 +33,7 @@ void loop() {
   
   /* ESCRITURA/LECTURA EN FIREBASE */
 
-  if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
+  if(!fumigar && conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
 
     escribirEstadoRobotEnFirebase();
     escribirEstadoRobot = false;
@@ -41,7 +41,7 @@ void loop() {
 
   }
 
-  if(conexionesCorrectas() && escribirEncendidoRobot) {
+  if(!fumigar && conexionesCorrectas() && escribirEncendidoRobot) {
 
     Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
     escribirEncendidoRobot = false;
@@ -69,9 +69,9 @@ void loop() {
     
     // Obtener distancias
     distanciaDerechaActual = calcularDistanciaPromedio(PIN_TRIG_DERECHA, PIN_ECHO_DERECHA);
-    Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaD", distanciaDerechaActual);
+    //Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaD", distanciaDerechaActual);
     distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
-    Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaA", distanciaAdelante);
+    //Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaA", distanciaAdelante);
 
     // Liberar químico si se cumple con la condición
     if(estaDentroRango(UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, distanciaDerechaActual)) {
@@ -83,7 +83,7 @@ void loop() {
     // Calcular dirección y tiempo
     direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
     tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
-    Firebase.RTDB.setInt(&fbdo, "/robots/0/direccion", direccion);
+    //Firebase.RTDB.setInt(&fbdo, "/robots/0/direccion", direccion);
 
     mover(
       PIN_MOTOR_IZQUIERDA_IN1,
@@ -114,10 +114,8 @@ void loop() {
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
     if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-      fumigar = false;
       finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
       reiniciarVariablesTaskUno();
-
       
     }
   } else { 
@@ -184,6 +182,10 @@ void setupUno(void) {
   // Inicialización pin bomba de agua
   pinMode(PIN_BOMBA_AGUA, OUTPUT);
 
+  // Inicialización pin bateria
+  pinMode(PIN_BATERIA, INPUT);
+
+  // Inicializacion variables
   reiniciarVariablesTaskUno();
 
 }
@@ -468,6 +470,8 @@ void reiniciarVariablesTaskUno(void) {
     nivelQuimicoPrevio = 89;
 
   }
+
+  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
 }
 
 /******************************************************************* 
@@ -513,7 +517,6 @@ void finalizarFumigacion(int nroRazon) {
   // Informar en Firebase que finalizamos la fumigacion nosotros
   fumigar = false;
   Firebase.RTDB.setBool(&fbdo, PATH_FUMIGAR, fumigar);
-  Firebase.RTDB.setBool(&fbdo, PATH_DETENCION_AUTOMATICA, true);
 
   // Informar en Firebase la razon de la finalizacion
   switch (nroRazon) {
@@ -535,6 +538,7 @@ void finalizarFumigacion(int nroRazon) {
   }
 
   Firebase.RTDB.setString(&fbdo, PATH_RAZON_FINALIZACION, stringRazon);
+  Firebase.RTDB.setBool(&fbdo, PATH_DETENCION_AUTOMATICA, true);
 
 }
 
@@ -657,9 +661,8 @@ Referencia: -
 void escribirEstadoRobotEnFirebase(void) {
 
   // Obtener valores de sensores
-  float nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
-  float nivelBateria = 100;
-    
+  int nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  int nivelBateriaActual = calcularNivelBateriaPromedio(PIN_BATERIA);
 
   // Para evitar para tener variaciones intensas en el nivel de quimico
   if(nivelQuimicoActual <= nivelQuimicoPrevio) {
@@ -676,6 +679,14 @@ void escribirEstadoRobotEnFirebase(void) {
   }
 
   
+  if(nivelBateriaActual <= nivelBateriaPrevio) {
+
+
+    Firebase.RTDB.setInt(&fbdo, PATH_BATERIA, nivelBateriaActual); 
+    nivelBateriaPrevio = nivelBateriaActual;
+
+  }
+  
   // Cortar la fumigacion en caso de tener valores muy bajos
   if(nivelQuimicoActual < UMBRAL_MINIMO_NIVEL_QUIMICO_PORCENTAJE && fumigar) {
 
@@ -683,14 +694,12 @@ void escribirEstadoRobotEnFirebase(void) {
 
   }
   
-  if(nivelBateria < UMBRAL_MINIMO_NIVEL_BATERIA_PORCENTAJE && fumigar) {
+  if(nivelBateriaActual < UMBRAL_MINIMO_NIVEL_BATERIA_PORCENTAJE && fumigar) {
 
       finalizarFumigacion(NRO_RAZON_FINALIZACION_FALTA_BATERIA);
 
     }
-
-  // Actualizar valor de bateria y nivel quimico
-  Firebase.RTDB.setInt(&fbdo, PATH_BATERIA, nivelBateria); 
+  
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
 
 }

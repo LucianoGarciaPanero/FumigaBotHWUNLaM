@@ -1,5 +1,4 @@
 #include "./utilitarias.h"
-#include <stdio.h>
 
 /******************************************************************* 
 Nombre: estaDentroRango
@@ -55,7 +54,7 @@ void ordenarVector(float *values, int len) {
 
   for(int i = 0; i < len - 1 ; i ++) {
 
-    int min = 20000;
+    float min = 20000;
       for (int j = i; j < len; j++){
         
         if( values[j] < min) {
@@ -66,7 +65,7 @@ void ordenarVector(float *values, int len) {
           }
       }
 
-    int aux = values[i];
+    float aux = values[i];
     values[i] = min;
     values[pos] = aux;
   }
@@ -103,6 +102,7 @@ float calcularPromedio(float *values, int len) {
   // Inicializar variables
   float acum = 0;
   float vecAux[len];
+  float promedio;
 
   // Copiar values en aux
   for(int i = 0; i < len; i++) {
@@ -118,5 +118,6 @@ float calcularPromedio(float *values, int len) {
     acum += vecAux[i];
   }
 
-  return acum / (len - 10);
+  promedio = acum / (len - 10);
+  return promedio;
 }

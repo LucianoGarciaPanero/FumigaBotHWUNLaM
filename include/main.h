@@ -77,4 +77,7 @@ unsigned long startTimeFirebaseEstadoRobot;
 int contador;
 
 // Quimico
-float nivelQuimicoPrevio;
+int nivelQuimicoPrevio;
+
+// Bateria
+int nivelBateriaPrevio;

@@ -21,3 +21,6 @@
 
 // Bomba agua
 #define PIN_BOMBA_AGUA 4
+
+// Babtería
+#define PIN_BATERIA 35
