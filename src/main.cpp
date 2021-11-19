@@ -33,7 +33,7 @@ void loop() {
   
   /* ESCRITURA/LECTURA EN FIREBASE */
 
-  if(!fumigar && conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
+  if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
 
     escribirEstadoRobotEnFirebase();
     escribirEstadoRobot = false;
@@ -41,14 +41,14 @@ void loop() {
 
   }
 
-  if(!fumigar && conexionesCorrectas() && escribirEncendidoRobot) {
+  if(conexionesCorrectas() && escribirEncendidoRobot) {
 
     Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
     escribirEncendidoRobot = false;
 
   }
 
-  if(conexionesCorrectas() && millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
+  if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
 
     
     if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
@@ -64,12 +64,23 @@ void loop() {
   /* ALGORITMO MOVIMIENTO */
   
   if(fumigar) {
+
+    mover(
+      PIN_MOTOR_IZQUIERDA_IN1,
+      PIN_MOTOR_IZQUIERDA_IN2,
+      PIN_MOTOR_DERECHA_IN3,
+      PIN_MOTOR_DERECHA_IN4,
+      ADELANTE,
+      PWM_CHANNEL_0,
+      PWM_CHANNEL_1,
+      velocidad
+    );
     
-    distanciaDerechaPrevia = distanciaDerechaActual;
+    /*distanciaDerechaPrevia = distanciaDerechaActual;
     
     // Obtener distancias
     distanciaDerechaActual = calcularDistanciaPromedio(PIN_TRIG_DERECHA, PIN_ECHO_DERECHA);
-    //Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaD", distanciaDerechaActual);
+    Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaD", distanciaDerechaActual);
     distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
     //Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaA", distanciaAdelante);
 
@@ -117,7 +128,7 @@ void loop() {
       finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
       reiniciarVariablesTaskUno();
       
-    }
+    } */
   } else { 
 
     mover(
@@ -447,7 +458,7 @@ void reiniciarVariablesTaskUno(void) {
   tiempoDelay = 0;
   
   // Para mejorar la primera medición del quimico
-  nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  /*nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
 
   if(nivelQuimicoPrevio < 10) {
 
@@ -471,7 +482,7 @@ void reiniciarVariablesTaskUno(void) {
 
   }
 
-  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
+  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);*/
 }
 
 /******************************************************************* 
@@ -661,7 +672,7 @@ Referencia: -
 void escribirEstadoRobotEnFirebase(void) {
 
   // Obtener valores de sensores
-  int nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  /*int nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
   int nivelBateriaActual = calcularNivelBateriaPromedio(PIN_BATERIA);
 
   // Para evitar para tener variaciones intensas en el nivel de quimico
@@ -698,7 +709,7 @@ void escribirEstadoRobotEnFirebase(void) {
 
       finalizarFumigacion(NRO_RAZON_FINALIZACION_FALTA_BATERIA);
 
-    }
+    }*/
   
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
 
