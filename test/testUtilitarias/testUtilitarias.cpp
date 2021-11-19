@@ -154,6 +154,31 @@ void testOrdenarVectorOrdenadoDescendente(void) {
 Nombre: ordenarVector
 Método Prueba: Caja Negra
 Técnica Prueba: AVL
+Proceso: se verifica en el caso que la entrada este desordenada y sean números
+con coma.
+Fecha Creación: 19/11/2021
+Creador:
+        + Luciano Garcia Panero
+        + Tomás Sánchez Grigioni
+*****************************************************************/
+
+void testOrdenarVectorConNumerosConComa(void) {
+    
+    int len = 15;
+    float expectedVec[] = {0, 1, 2, 3, 4, 5, 6.5, 7, 8.1, 9, 10, 11.6, 12, 13.5, 14};
+    float actualVec[] = {14, 13.5, 12, 11.6, 10, 9, 8.1, 7, 6.5, 5, 4, 3, 2, 1, 0};
+    
+    ordenarVector(actualVec, len);
+
+    for(int i = 0; i < len; i++) {
+        TEST_ASSERT_FLOAT_WITHIN(delta, expectedVec[i], actualVec[i]);
+    }
+}
+
+/******************************************************************* 
+Nombre: ordenarVector
+Método Prueba: Caja Negra
+Técnica Prueba: AVL
 Proceso: se verifica en el caso que la entrada sean todos valores iguales
 Fecha Creación: 01/07/2021
 Creador:
@@ -258,6 +283,7 @@ int main(int argc, char **argv) {
 
     RUN_TEST(testOrdenarVectorOrdenadoAscendente);
     RUN_TEST(testOrdenarVectorOrdenadoDescendente);
+    RUN_TEST(testOrdenarVectorConNumerosConComa);
     RUN_TEST(testOrdenarVectorTodosValoresIguales);
 
     RUN_TEST(testCalcularPromedioDiezObservaciones);

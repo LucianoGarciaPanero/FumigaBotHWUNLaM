@@ -307,10 +307,6 @@ Referencia: -
 
 void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion, int canalIzq, int canalDer, int cicloTrabajo) {
 
-  // Ajustamos la velocidad de movimiento
-  ledcWrite(canalIzq, cicloTrabajo);
-  ledcWrite(canalDer, cicloTrabajo);
-
   // Realizamos el movimiento
   switch(direccion) {
 
