@@ -65,24 +65,11 @@ void loop() {
   
   if(fumigar) {
 
-    mover(
-      PIN_MOTOR_IZQUIERDA_IN1,
-      PIN_MOTOR_IZQUIERDA_IN2,
-      PIN_MOTOR_DERECHA_IN3,
-      PIN_MOTOR_DERECHA_IN4,
-      ADELANTE,
-      PWM_CHANNEL_0,
-      PWM_CHANNEL_1,
-      velocidad
-    );
-    
-    /*distanciaDerechaPrevia = distanciaDerechaActual;
+    distanciaDerechaPrevia = distanciaDerechaActual;
     
     // Obtener distancias
-    distanciaDerechaActual = calcularDistanciaPromedio(PIN_TRIG_DERECHA, PIN_ECHO_DERECHA);
-    Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaD", distanciaDerechaActual);
-    distanciaAdelante = calcularDistanciaPromedio(PIN_TRIG_ADELANTE, PIN_ECHO_ADELANTE);
-    //Firebase.RTDB.setFloat(&fbdo, "/robots/0/distanciaA", distanciaAdelante);
+    distanciaDerechaActual = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
+    distanciaAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
 
     // Liberar químico si se cumple con la condición
     if(estaDentroRango(UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, distanciaDerechaActual)) {
@@ -94,33 +81,14 @@ void loop() {
     // Calcular dirección y tiempo
     direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
     tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
-    //Firebase.RTDB.setInt(&fbdo, "/robots/0/direccion", direccion);
 
-    mover(
-      PIN_MOTOR_IZQUIERDA_IN1,
-      PIN_MOTOR_IZQUIERDA_IN2,
-      PIN_MOTOR_DERECHA_IN3,
-      PIN_MOTOR_DERECHA_IN4,
-      direccion,
-      PWM_CHANNEL_0,
-      PWM_CHANNEL_1,
-      velocidad
-    );
+    mover(direccion);
 
     // Para darle tiempo al robot a que realice la acción
     delay(tiempoDelay);
 
     // Parar el movimiento para que no moleste en la siguiente acción
-    mover(
-      PIN_MOTOR_IZQUIERDA_IN1,
-      PIN_MOTOR_IZQUIERDA_IN2,
-      PIN_MOTOR_DERECHA_IN3,
-      PIN_MOTOR_DERECHA_IN4,
-      PARAR,
-      PWM_CHANNEL_0,
-      PWM_CHANNEL_1,
-      velocidad
-    );
+    mover(PARAR);
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
     if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
@@ -128,19 +96,10 @@ void loop() {
       finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
       reiniciarVariablesTaskUno();
       
-    } */
+    } 
   } else { 
 
-    mover(
-      PIN_MOTOR_IZQUIERDA_IN1,
-      PIN_MOTOR_IZQUIERDA_IN2,
-      PIN_MOTOR_DERECHA_IN3,
-      PIN_MOTOR_DERECHA_IN4,
-      PARAR,
-      PWM_CHANNEL_0,
-      PWM_CHANNEL_1,
-      velocidad
-    );
+    mover(PARAR);
 
   }
 }
@@ -165,11 +124,9 @@ Referencia: -
 void setupUno(void) {
   
   // Inicialización pines sensores distancia
-  pinMode(PIN_TRIG_ADELANTE, OUTPUT);
-  pinMode(PIN_ECHO_ADELANTE, INPUT);
-
-  pinMode(PIN_TRIG_DERECHA, OUTPUT);
-  pinMode(PIN_ECHO_DERECHA, INPUT);
+  pinMode(PIN_SENSOR_DISTANCIA_DERECHA, INPUT);
+  pinMode(PIN_SENSOR_DISTANCIA_IZQUIERDA, INPUT);
+  pinMode(PIN_SENSOR_DISTANCIA_ADELANTE, INPUT);
 
   pinMode(PIN_TRIG_QUIMICO, OUTPUT);
   pinMode(PIN_ECHO_QUIMICO, INPUT);
@@ -454,11 +411,10 @@ void reiniciarVariablesTaskUno(void) {
   distanciaDerechaPrevia = 0;
   distanciaAdelante = 0;
   direccion = 0;
-  velocidad = 255;
   tiempoDelay = 0;
   
   // Para mejorar la primera medición del quimico
-  /*nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
 
   if(nivelQuimicoPrevio < 10) {
 
@@ -482,7 +438,7 @@ void reiniciarVariablesTaskUno(void) {
 
   }
 
-  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);*/
+  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
 }
 
 /******************************************************************* 
@@ -672,7 +628,7 @@ Referencia: -
 void escribirEstadoRobotEnFirebase(void) {
 
   // Obtener valores de sensores
-  /*int nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  int nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
   int nivelBateriaActual = calcularNivelBateriaPromedio(PIN_BATERIA);
 
   // Para evitar para tener variaciones intensas en el nivel de quimico
@@ -709,7 +665,7 @@ void escribirEstadoRobotEnFirebase(void) {
 
       finalizarFumigacion(NRO_RAZON_FINALIZACION_FALTA_BATERIA);
 
-    }*/
+    }
   
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
 
@@ -736,7 +692,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-int determinarDireccion(float distanciaAdelante, float distanciaDerechaActual, float ditanciaDerechaPrevia) {
+int determinarDireccion(int distanciaAdelante, int distanciaDerechaActual, int ditanciaDerechaPrevia) {
 
   // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
   if(giro) {

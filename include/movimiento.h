@@ -1,3 +1,9 @@
+// Configurar el PWM
+#define FREQ 3000
+#define RESOLUTION 8
+#define PWM_CHANNEL_0 0
+#define PWM_CHANNEL_1 1
+
 // Umbral
 #define UMBRAL_CM 0.5
 
@@ -18,9 +24,7 @@
 #define TIEMPO_DELAY_PARAR_MS 0.5 * 1000
 
 // Velocidades
-#define VELOCIDAD_ALTA 240
-#define VELOCIDAD_MEDIA 255
-#define VELOCIDAD_BAJA 220
+#define VELOCIDAD_ROBOT 200
 
 // Codificacion direccion
 #define PARAR 0

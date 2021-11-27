@@ -2,6 +2,7 @@
 
 // Propias
 #include <utilitarias.h>
+#include <pines.h>
 
 // Archivos de configuración
 #include "../../include/bomba_agua.h"
@@ -17,7 +18,7 @@ int calcularNivelBateriaPromedio(int);
 
 /* -------- MOVIMIENTO --------  */
 float determinarTiempoDelay(int, float, float);
-void mover(int, int, int, int, int, int, int, int);
+void mover(int);
 
 /* -------- QUIMICO --------  */
 int calcularNivelQuimicoPromedio(int, int);

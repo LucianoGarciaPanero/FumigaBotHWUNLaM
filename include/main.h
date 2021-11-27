@@ -36,7 +36,7 @@ void setupCero(void);
 void setupUno(void);
 
 // Movimiento
-int determinarDireccion(float, float, float);
+int determinarDireccion(int, int, int);
 
 // Auxiliar
 void reiniciarVariablesTaskCero(void);
@@ -54,11 +54,10 @@ bool fumigar;
 // Movimiento
 int cantGiros;
 bool giro;
-float distanciaDerechaActual;
-float distanciaDerechaPrevia;
-float distanciaAdelante;
+int distanciaDerechaActual;
+int distanciaDerechaPrevia;
+int distanciaAdelante;
 int direccion;
-int velocidad;
 float tiempoDelay;
 
 // Variables para Firebase

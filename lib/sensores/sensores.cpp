@@ -284,10 +284,10 @@ float determinarTiempoDelay(int direccion, float distanciaAdelante, float distan
 /******************************************************************* 
 Nombre: mover
 Entradas:
-          + pinIzqAd: float
-          + pinIzqAt: float
-          + pinDerAd: int
-          + pinDerAt: int
+          + pIN_MOTOR_IZQUIERDA_IN1: float
+          + pIN_MOTOR_IZQUIERDA_IN2: float
+          + pIN_MOTOR_DERECHA_IN3: int
+          + pIN_MOTOR_DERECHA_IN4: int
           + direccion: int
           + canalIzq: int
           + canalDer: int
@@ -305,58 +305,62 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion, int canalIzq, int canalDer, int cicloTrabajo) {
+void mover(int direccion) {
 
+  // Setear la velocidad de movimiento
+  ledcWrite(PWM_CHANNEL_1, VELOCIDAD_ROBOT);
+  ledcWrite(PWM_CHANNEL_0, VELOCIDAD_ROBOT);
+  
   // Realizamos el movimiento
   switch(direccion) {
 
     case ADELANTE:
-      digitalWrite(pinIzqAd, HIGH);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, HIGH);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       break;
 
     case ATRAS:
       
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, HIGH);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
 
       break;
     
     case PARAR:
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, LOW);  
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);  
       break;
 
     case IZQUIERDA:
 
       // Parar
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       delay(TIEMPO_DELAY_PARAR_MS);
 
       // Retroceder
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, HIGH);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
 
       delay(TIEMPO_DELAY_RETROCEDER_MS);
 
       // Girar
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, HIGH);
-      digitalWrite(pinDerAd, HIGH);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
     
       delay(TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS);
 
@@ -365,26 +369,26 @@ void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion
     case DERECHA:
 
       // Parar
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       delay(TIEMPO_DELAY_PARAR_MS);
       
       // Retroceder
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, HIGH);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
 
       delay(TIEMPO_DELAY_RETROCEDER_MS);
 
       // Girar
-      digitalWrite(pinIzqAd, HIGH);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
     
       delay(TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS);
 
@@ -393,10 +397,10 @@ void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion
     case ADELANTE_GIRO:
 
       // ADELANTE_GIRO realiza 2 adelantes
-      digitalWrite(pinIzqAd, HIGH);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, HIGH);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       delay(TIEMPO_DELAY_ADELANTE_GIRO_MS);
       
@@ -405,60 +409,60 @@ void mover(int pinIzqAd, int pinIzqAt, int pinDerAd, int pinDerAt, int direccion
     case ADELANTE_DERECHA:
 
       // Parar
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       delay(TIEMPO_DELAY_PARAR_MS);
       
       // Girar a la derecha muy poco
-      digitalWrite(pinIzqAd, HIGH);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
 
       delay(TIEMPO_DELAY_GIRO_MUY_CORTO_MS);
 
       //Avanzar
-      digitalWrite(pinIzqAd, HIGH);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, HIGH);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
       
       break;
 
     case ADELANTE_IZQUIERDA:
 
       // Parar
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       delay(TIEMPO_DELAY_PARAR_MS);
       
       // Girar a la izquierda muy poco
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, HIGH);
-      digitalWrite(pinDerAd, HIGH);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
       delay(TIEMPO_DELAY_GIRO_MUY_CORTO_MS);
 
       //Avanzar
-      digitalWrite(pinIzqAd, HIGH);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, HIGH);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
       
       break;
     
     default:
-      digitalWrite(pinIzqAd, LOW);
-      digitalWrite(pinIzqAt, LOW);
-      digitalWrite(pinDerAd, LOW);
-      digitalWrite(pinDerAt, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
       break;
   }
 }

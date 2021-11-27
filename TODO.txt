@@ -1,0 +1,3 @@
+1) Cambiar función determinarDireccion
+2) Elegir un valor para la velocidad
+3) Ver que la función mover este bien
