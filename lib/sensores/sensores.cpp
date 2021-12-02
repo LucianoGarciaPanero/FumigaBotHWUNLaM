@@ -246,28 +246,18 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-float determinarTiempoDelay(int direccion, float distanciaAdelante, float distanciaDerecha) {
+float determinarTiempoDelay(int direccion, int objetoDerecha) {
 
-  int diferenciaDerecha = 0;
 
   if(direccion == DERECHA) {
-
-    diferenciaDerecha = distanciaDerecha - DISTANCIA_DERECHA_MAXIMA_CM;
-    
-    if(diferenciaDerecha < 30) {
-
-      return TIEMPO_DELAY_GIRO_CORTO_MS;
-
-    } else {
       
-      return TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS;
+    return TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS;
 
-    }
   }
 
   if(direccion == IZQUIERDA) {
 
-    if(distanciaDerecha < DISTANCIA_DERECHA_MINIMA_CM) {
+    if(objetoDerecha == HIGH) {
 
       return TIEMPO_DELAY_GIRO_CORTO_MS;
 

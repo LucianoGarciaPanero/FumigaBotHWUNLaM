@@ -30,7 +30,6 @@ void setup() {
 
 void loop() {
 
-  
   /* ESCRITURA/LECTURA EN FIREBASE */
 
   if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
@@ -64,23 +63,30 @@ void loop() {
   /* ALGORITMO MOVIMIENTO */
   
   if(fumigar) {
-
-    distanciaDerechaPrevia = distanciaDerechaActual;
     
-    // Obtener distancias
-    distanciaDerechaActual = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
-    distanciaAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
+    // Medir sensores
+    objetoDerecha = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
+    objetoAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
+    objetoIzquierda = !digitalRead(PIN_SENSOR_DISTANCIA_IZQUIERDA);
 
     // Liberar químico si se cumple con la condición
-    if(estaDentroRango(UMBRAL_MINIMA_DISTANCIA_OBJETO_CM, UMBRAL_MAXIMA_DISTANCIA_OBJETO_CM, distanciaDerechaActual)) {
+    if(objetoDerecha == HIGH) {
 
+      servo.write(180);
+      liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+
+    }
+
+    if(objetoDerecha == HIGH) {
+
+      servo.write(0);
       liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
     }
 
     // Calcular dirección y tiempo
-    direccion = determinarDireccion(distanciaAdelante, distanciaDerechaActual, distanciaDerechaPrevia);
-    tiempoDelay = determinarTiempoDelay(direccion, distanciaAdelante, distanciaDerechaActual);
+    direccion = determinarDireccion(objetoAdelante, objetoDerecha);
+    tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
 
     mover(direccion);
 
@@ -152,6 +158,9 @@ void setupUno(void) {
 
   // Inicialización pin bateria
   pinMode(PIN_BATERIA, INPUT);
+
+  // Inicialización Servomotor
+  servo.attach(PIN_SERVOMOTOR);
 
   // Inicializacion variables
   reiniciarVariablesTaskUno();
@@ -407,14 +416,14 @@ void reiniciarVariablesTaskUno(void) {
 
   cantGiros = 0;
   giro = false;
-  distanciaDerechaActual = 0;
-  distanciaDerechaPrevia = 0;
-  distanciaAdelante = 0;
+  objetoAdelante = LOW;
+  objetoDerecha = LOW;
+  objetoIzquierda = LOW;
   direccion = 0;
   tiempoDelay = 0;
   
   // Para mejorar la primera medición del quimico
-  nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  // nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
 
   if(nivelQuimicoPrevio < 10) {
 
@@ -438,7 +447,7 @@ void reiniciarVariablesTaskUno(void) {
 
   }
 
-  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
+  // nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
 }
 
 /******************************************************************* 
@@ -628,8 +637,8 @@ Referencia: -
 void escribirEstadoRobotEnFirebase(void) {
 
   // Obtener valores de sensores
-  int nivelQuimicoActual = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
-  int nivelBateriaActual = calcularNivelBateriaPromedio(PIN_BATERIA);
+  int nivelQuimicoActual = 100;//calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  int nivelBateriaActual = 100;//calcularNivelBateriaPromedio(PIN_BATERIA);
 
   // Para evitar para tener variaciones intensas en el nivel de quimico
   if(nivelQuimicoActual <= nivelQuimicoPrevio) {
@@ -692,17 +701,17 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-int determinarDireccion(int distanciaAdelante, int distanciaDerechaActual, int ditanciaDerechaPrevia) {
+int determinarDireccion(int objetoAdelante, int objetoDerecha) {
 
   // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
   if(giro) {
 
     giro = false;
-    if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM + 10) {
+    if(objetoAdelante == LOW) {
 
       return ADELANTE;
 
-    } else if(distanciaDerechaActual < DISTANCIA_DERECHA_MINIMA_CM) {
+    } else if(objetoDerecha == HIGH) {
 
       return IZQUIERDA;
 
@@ -715,7 +724,7 @@ int determinarDireccion(int distanciaAdelante, int distanciaDerechaActual, int d
   }
   
   // Caso que nos encontremos muy pegado a la pared derecha
-  if(distanciaDerechaActual <  DISTANCIA_DERECHA_MINIMA_CM) {
+  if(objetoDerecha == HIGH) {
     
     giro = true;
     return IZQUIERDA;
@@ -723,7 +732,7 @@ int determinarDireccion(int distanciaAdelante, int distanciaDerechaActual, int d
   }
   
   // Caso que estemos muy cerca de una pared en frente
-  if(distanciaAdelante < DISTANCIA_ADELANTE_MINIMA_CM) {
+  if(objetoAdelante == HIGH) {
 
     giro = true;
     cantGiros++;
@@ -733,7 +742,7 @@ int determinarDireccion(int distanciaAdelante, int distanciaDerechaActual, int d
   } 
   
   // Caso que nos encontremos muy lejos de una pared derecha
-  if(distanciaDerechaActual > DISTANCIA_DERECHA_MAXIMA_CM) {
+  if(objetoDerecha == LOW) {
     
     giro = true;
     cantGiros--;
@@ -741,27 +750,7 @@ int determinarDireccion(int distanciaAdelante, int distanciaDerechaActual, int d
 
   } 
   
-  
-  // Caso que nos encontremos con suficiente espacio como para avanzar
-  if(distanciaAdelante > DISTANCIA_ADELANTE_MINIMA_CM) {
-
-    // Verificamos si el robot se encuentra en dirección diagonal derecha o 
-    // izquierda y corregimos
-    if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia > UMBRAL_CM) {
-
-      return ADELANTE_DERECHA;
- 
-    } else if(ditanciaDerechaPrevia != 0 && distanciaDerechaActual - ditanciaDerechaPrevia < -UMBRAL_CM) {
-
-      return ADELANTE_IZQUIERDA;
-
-    }
-
-    // Caso que este avanzando perfectamente paralelo a la pared
-    return ADELANTE;
-
-  } 
 
   // Caso por defecto
-  return PARAR;
+  return ADELANTE;
 }

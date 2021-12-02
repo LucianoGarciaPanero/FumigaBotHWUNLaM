@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
+#include <Servo.h>
 
 // Bibliotecas propias
 #include <sensores.h>
@@ -36,7 +37,7 @@ void setupCero(void);
 void setupUno(void);
 
 // Movimiento
-int determinarDireccion(int, int, int);
+int determinarDireccion(int, int);
 
 // Auxiliar
 void reiniciarVariablesTaskCero(void);
@@ -54,9 +55,9 @@ bool fumigar;
 // Movimiento
 int cantGiros;
 bool giro;
-int distanciaDerechaActual;
-int distanciaDerechaPrevia;
-int distanciaAdelante;
+int objetoDerecha;
+int objetoIzquierda;
+int objetoAdelante;
 int direccion;
 float tiempoDelay;
 
@@ -80,3 +81,6 @@ int nivelQuimicoPrevio;
 
 // Bateria
 int nivelBateriaPrevio;
+
+// Servomotor
+Servo servo;

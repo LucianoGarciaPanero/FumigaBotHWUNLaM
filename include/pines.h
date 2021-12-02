@@ -20,5 +20,8 @@
 // Bomba agua
 #define PIN_BOMBA_AGUA 4
 
-// Babtería
+// Batería
 #define PIN_BATERIA 35
+
+// Servo motor
+#define PIN_SERVOMOTOR 13

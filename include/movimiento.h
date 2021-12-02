@@ -24,7 +24,7 @@
 #define TIEMPO_DELAY_PARAR_MS 0.5 * 1000
 
 // Velocidades
-#define VELOCIDAD_ROBOT 200
+#define VELOCIDAD_ROBOT 150
 
 // Codificacion direccion
 #define PARAR 0
