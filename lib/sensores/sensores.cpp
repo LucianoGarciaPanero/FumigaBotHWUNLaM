@@ -249,23 +249,10 @@ Referencia: -
 float determinarTiempoDelay(int direccion, int objetoDerecha) {
 
 
-  if(direccion == DERECHA) {
+  if(direccion == DERECHA || direccion == IZQUIERDA) {
       
-    return TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS;
+    return TIEMPO_DELAY_GIRO_MS;
 
-  }
-
-  if(direccion == IZQUIERDA) {
-
-    if(objetoDerecha == HIGH) {
-
-      return TIEMPO_DELAY_GIRO_CORTO_MS;
-
-    } else {
-
-      return TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS;
-
-    }
   }
 
   return TIEMPO_DELAY_ADELANTE_MS;
@@ -298,13 +285,14 @@ Referencia: -
 void mover(int direccion) {
 
   // Setear la velocidad de movimiento
-  ledcWrite(PWM_CHANNEL_1, VELOCIDAD_ROBOT);
-  ledcWrite(PWM_CHANNEL_0, VELOCIDAD_ROBOT);
+  ledcWrite(PWM_CHANNEL_CERO, VELOCIDAD_ROBOT);
+  // ledcWrite(PWM_CHANNEL_UNO, VELOCIDAD_ROBOT);
   
   // Realizamos el movimiento
   switch(direccion) {
 
     case ADELANTE:
+    
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);

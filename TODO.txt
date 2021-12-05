@@ -1,3 +1,4 @@
 1) Cambiar función determinarDireccion
 2) Elegir un valor para la velocidad
 3) Descomentar medir bateria y quimico
+4) Verificar que esten bien los ángulos del servo

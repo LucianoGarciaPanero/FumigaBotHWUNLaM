@@ -30,84 +30,87 @@ void setup() {
 
 void loop() {
 
-  /* ESCRITURA/LECTURA EN FIREBASE */
+  mover(ADELANTE);
+  delay(500);
 
-  if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
+  // /* ESCRITURA/LECTURA EN FIREBASE */
 
-    escribirEstadoRobotEnFirebase();
-    escribirEstadoRobot = false;
-    startTimeFirebaseEstadoRobot = millis();
+  // if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
 
-  }
+  //   escribirEstadoRobotEnFirebase();
+  //   escribirEstadoRobot = false;
+  //   startTimeFirebaseEstadoRobot = millis();
 
-  if(conexionesCorrectas() && escribirEncendidoRobot) {
+  // }
 
-    Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
-    escribirEncendidoRobot = false;
+  // if(conexionesCorrectas() && escribirEncendidoRobot) {
 
-  }
+  //   Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
+  //   escribirEncendidoRobot = false;
 
-  if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
+  // }
+
+  // if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
 
     
-    if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
+  //   if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
 
-      fumigar = fbdo.boolData();
+  //     fumigar = fbdo.boolData();
 
-    }
+  //   }
     
-    startTimeFirebaseFumigar = millis();
+  //   startTimeFirebaseFumigar = millis();
 
-  }
+  // }
 
-  /* ALGORITMO MOVIMIENTO */
+  // /* ALGORITMO MOVIMIENTO */
   
-  if(fumigar) {
+  // if(fumigar) {
     
-    // Medir sensores
-    objetoDerecha = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
-    objetoAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
-    objetoIzquierda = !digitalRead(PIN_SENSOR_DISTANCIA_IZQUIERDA);
+  //   // Medir sensores
+  //   objetoDerecha = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
+  //   objetoAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
+  //   objetoIzquierda = !digitalRead(PIN_SENSOR_DISTANCIA_IZQUIERDA);
 
-    // Liberar químico si se cumple con la condición
-    if(objetoDerecha == HIGH) {
+  //   // Liberar químico si se cumple con la condición
+  //   if(objetoDerecha == HIGH) {
 
-      servo.write(180);
-      liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+  //     servo.write(180);
+  //     //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
-    }
+  //   }
 
-    if(objetoDerecha == HIGH) {
+  //   if(objetoDerecha == HIGH) {
 
-      servo.write(0);
-      liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+  //     servo.write(0);
+  //     //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
-    }
+  //   }
 
-    // Calcular dirección y tiempo
-    direccion = determinarDireccion(objetoAdelante, objetoDerecha);
-    tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
+  //   // Calcular dirección y tiempo
+  //   direccion = determinarDireccion(objetoAdelante, objetoDerecha);
+  //   tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
 
-    mover(direccion);
+  //   mover(direccion);
 
-    // Para darle tiempo al robot a que realice la acción
-    delay(tiempoDelay);
+  //   // Para darle tiempo al robot a que realice la acción
+  //   delay(tiempoDelay);
 
-    // Parar el movimiento para que no moleste en la siguiente acción
-    mover(PARAR);
+  //   // Parar el movimiento para que no moleste en la siguiente acción
+  //   mover(PARAR);
 
-    // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+  //   // Si superamos la maxima cantidad de giros significa que termino la fumigacion
+  //   if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-      reiniciarVariablesTaskUno();
+  //     finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+  //     reiniciarVariablesTaskUno();
       
-    } 
-  } else { 
+  //   } 
+  // } else { 
 
-    mover(PARAR);
+  //   mover(PARAR);
 
-  }
+  // }
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
@@ -139,16 +142,15 @@ void setupUno(void) {
 
   // Inicialización pines motores
   pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
-  pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT);
-  
-  ledcSetup(PWM_CHANNEL_0, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_0);
-  
+  pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT); 
   pinMode(PIN_MOTOR_DERECHA_IN3, OUTPUT);
   pinMode(PIN_MOTOR_DERECHA_IN4, OUTPUT);
+
+  ledcSetup(PWM_CHANNEL_CERO, FREQ, RESOLUTION);
+  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_CERO);
   
-  ledcSetup(PWM_CHANNEL_1, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_1);
+  // ledcSetup(PWM_CHANNEL_UNO, FREQ, RESOLUTION);
+  // ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_UNO);
 
   // Inicialización pin WiFi
   pinMode(PIN_LED_WIFI, OUTPUT);
@@ -724,12 +726,12 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
   }
   
   // Caso que nos encontremos muy pegado a la pared derecha
-  if(objetoDerecha == HIGH) {
+  // if(objetoDerecha == HIGH) {
     
-    giro = true;
-    return IZQUIERDA;
+  //   giro = true;
+  //   return IZQUIERDA;
 
-  }
+  // }
   
   // Caso que estemos muy cerca de una pared en frente
   if(objetoAdelante == HIGH) {
