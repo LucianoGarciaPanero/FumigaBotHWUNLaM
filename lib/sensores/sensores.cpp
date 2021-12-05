@@ -255,6 +255,12 @@ float determinarTiempoDelay(int direccion, int objetoDerecha) {
 
   }
 
+  if(direccion == ADELANTE_IZQUIERDA) {
+
+    return TIEMPO_DELAY_GIRO_CORTO_MS;
+
+  }
+
   return TIEMPO_DELAY_ADELANTE_MS;
 }
 
@@ -340,8 +346,6 @@ void mover(int direccion) {
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
       digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-    
-      delay(TIEMPO_DELAY_GIRO_LARGO_IZQUIERDA_MS);
 
       break;
 
@@ -368,47 +372,7 @@ void mover(int direccion) {
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
-    
-      delay(TIEMPO_DELAY_GIRO_LARGO_DERECHA_MS);
 
-      break;
-
-    case ADELANTE_GIRO:
-
-      // ADELANTE_GIRO realiza 2 adelantes
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-
-      delay(TIEMPO_DELAY_ADELANTE_GIRO_MS);
-      
-      break;
-
-    case ADELANTE_DERECHA:
-
-      // Parar
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-
-      delay(TIEMPO_DELAY_PARAR_MS);
-      
-      // Girar a la derecha muy poco
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
-
-      delay(TIEMPO_DELAY_GIRO_MUY_CORTO_MS);
-
-      //Avanzar
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-      
       break;
 
     case ADELANTE_IZQUIERDA:
@@ -427,7 +391,7 @@ void mover(int direccion) {
       digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
-      delay(TIEMPO_DELAY_GIRO_MUY_CORTO_MS);
+      delay(TIEMPO_DELAY_GIRO_CORTO_MS);
 
       //Avanzar
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);

@@ -10,7 +10,7 @@ const char* PATH_QUIMICO = "/robots/0/nivelQuimico";
 const char* PATH_CANTIDAD_QUIMICO_POR_AREA = "/robots/0/fumigacionActual/cantidadQuimicoPorArea";
 const char* PATH_CONTADOR = "/robots/0/contador";
 const char* PATH_RAZON_FINALIZACION = "/robots/0/razonFinalizacion";
-const char* PATH_DETENCION_AUTOMATICA = "/robots/0/razonFinalizacion";
+const char* PATH_DETENCION_AUTOMATICA = "/robots/0/detencionAutomatica";
 
 // Timeouts
 #define FIREBASE_FUMIGAR_TIMEOUT_MS 500

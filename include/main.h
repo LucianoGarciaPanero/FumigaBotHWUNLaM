@@ -37,7 +37,7 @@ void setupCero(void);
 void setupUno(void);
 
 // Movimiento
-int determinarDireccion(int, int);
+int determinarDireccion(int, int, int);
 
 // Auxiliar
 void reiniciarVariablesTaskCero(void);
@@ -60,6 +60,7 @@ int objetoIzquierda;
 int objetoAdelante;
 int direccion;
 float tiempoDelay;
+int direccionPrevia;
 
 // Variables para Firebase
 FirebaseData fbdo;

@@ -30,87 +30,89 @@ void setup() {
 
 void loop() {
 
-  mover(ADELANTE);
-  delay(500);
+  /* ESCRITURA/LECTURA EN FIREBASE */
 
-  // /* ESCRITURA/LECTURA EN FIREBASE */
+  if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
 
-  // if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
+    escribirEstadoRobotEnFirebase();
+    escribirEstadoRobot = false;
+    startTimeFirebaseEstadoRobot = millis();
 
-  //   escribirEstadoRobotEnFirebase();
-  //   escribirEstadoRobot = false;
-  //   startTimeFirebaseEstadoRobot = millis();
+  }
 
-  // }
+  if(conexionesCorrectas() && escribirEncendidoRobot) {
 
-  // if(conexionesCorrectas() && escribirEncendidoRobot) {
+    Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
+    escribirEncendidoRobot = false;
 
-  //   Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
-  //   escribirEncendidoRobot = false;
+  }
 
-  // }
-
-  // if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
+  if(millis() - startTimeFirebaseFumigar > FIREBASE_FUMIGAR_TIMEOUT_MS) {
 
     
-  //   if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
+    if(Firebase.RTDB.getBool(&fbdo, PATH_FUMIGAR)) {
 
-  //     fumigar = fbdo.boolData();
+      fumigar = fbdo.boolData();
 
-  //   }
+    }
     
-  //   startTimeFirebaseFumigar = millis();
+    startTimeFirebaseFumigar = millis();
 
-  // }
+  }
 
-  // /* ALGORITMO MOVIMIENTO */
+  /* ALGORITMO MOVIMIENTO */
   
-  // if(fumigar) {
+  if(fumigar) {
     
-  //   // Medir sensores
-  //   objetoDerecha = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
-  //   objetoAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
-  //   objetoIzquierda = !digitalRead(PIN_SENSOR_DISTANCIA_IZQUIERDA);
+    // Medir sensores
+    objetoDerecha = !digitalRead(PIN_SENSOR_DISTANCIA_DERECHA);
+    objetoAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
+    objetoIzquierda = !digitalRead(PIN_SENSOR_DISTANCIA_IZQUIERDA);
 
-  //   // Liberar químico si se cumple con la condición
-  //   if(objetoDerecha == HIGH) {
+    // Liberar químico si se cumple con la condición
+    if(objetoDerecha == HIGH) {
 
-  //     servo.write(180);
-  //     //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+      servo.write(180);
+      delay(100);
+      //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
-  //   }
+    }
 
-  //   if(objetoDerecha == HIGH) {
+    if(objetoIzquierda == HIGH) {
 
-  //     servo.write(0);
-  //     //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+      servo.write(0);
+      delay(100);
+      //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
-  //   }
+    }
 
-  //   // Calcular dirección y tiempo
-  //   direccion = determinarDireccion(objetoAdelante, objetoDerecha);
-  //   tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
+    // Calcular dirección y tiempo
+    direccion = determinarDireccion(objetoAdelante, objetoDerecha, direccionPrevia);
+    tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
 
-  //   mover(direccion);
+    mover(direccion);
 
-  //   // Para darle tiempo al robot a que realice la acción
-  //   delay(tiempoDelay);
+    // Para darle tiempo al robot a que realice la acción
+    delay(tiempoDelay);
 
-  //   // Parar el movimiento para que no moleste en la siguiente acción
-  //   mover(PARAR);
+    // Parar el movimiento para que no moleste en la siguiente acción
+    mover(PARAR);
 
-  //   // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-  //   if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+    // Guardamos la ultima direccion
+    direccionPrevia = direccion;
 
-  //     finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-  //     reiniciarVariablesTaskUno();
+    // Si superamos la maxima cantidad de giros significa que termino la fumigacion
+    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+
+      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+      reiniciarVariablesTaskUno();
       
-  //   } 
-  // } else { 
+    } 
+  } else { 
 
-  //   mover(PARAR);
+    mover(PARAR);
 
-  // }
+  }
 }
 
 /* ------------------ SECCIÓN TAREAS ------------------ */
@@ -426,6 +428,7 @@ void reiniciarVariablesTaskUno(void) {
   objetoIzquierda = LOW;
   direccion = 0;
   tiempoDelay = 0;
+  direccionPrevia = PARAR;
   
   // Para mejorar la primera medición del quimico
   // nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
@@ -706,7 +709,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-int determinarDireccion(int objetoAdelante, int objetoDerecha) {
+int determinarDireccion(int objetoAdelante, int objetoDerecha, int direccionPrevia) {
 
   // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
   if(giro) {
@@ -728,14 +731,6 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
 
   }
   
-  // Caso que nos encontremos muy pegado a la pared derecha
-  // if(objetoDerecha == HIGH) {
-    
-  //   giro = true;
-  //   return IZQUIERDA;
-
-  // }
-  
   // Caso que estemos muy cerca de una pared en frente
   if(objetoAdelante == HIGH) {
 
@@ -755,6 +750,11 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
 
   } 
   
+  if(direccionPrevia == ADELANTE) {
+
+    return ADELANTE_IZQUIERDA;
+
+  }
 
   // Caso por defecto
   return ADELANTE;
