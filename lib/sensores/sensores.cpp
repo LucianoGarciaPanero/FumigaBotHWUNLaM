@@ -285,8 +285,7 @@ Referencia: -
 void mover(int direccion) {
 
   // Setear la velocidad de movimiento
-  ledcWrite(PWM_CHANNEL_CERO, VELOCIDAD_ROBOT);
-  // ledcWrite(PWM_CHANNEL_UNO, VELOCIDAD_ROBOT);
+  ledcWrite(PWM_CHANNEL_MOTOR, VELOCIDAD_ROBOT);
   
   // Realizamos el movimiento
   switch(direccion) {
@@ -310,10 +309,12 @@ void mover(int direccion) {
       break;
     
     case PARAR:
+
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);  
+
       break;
 
     case IZQUIERDA:
@@ -437,10 +438,12 @@ void mover(int direccion) {
       break;
     
     default:
+
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
+
       break;
   }
 }

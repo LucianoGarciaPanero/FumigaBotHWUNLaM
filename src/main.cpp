@@ -140,17 +140,20 @@ void setupUno(void) {
   pinMode(PIN_TRIG_QUIMICO, OUTPUT);
   pinMode(PIN_ECHO_QUIMICO, INPUT);
 
-  // Inicialización pines motores
+  // Inicialización pines de dirección motores
   pinMode(PIN_MOTOR_IZQUIERDA_IN1, OUTPUT);
   pinMode(PIN_MOTOR_IZQUIERDA_IN2, OUTPUT); 
   pinMode(PIN_MOTOR_DERECHA_IN3, OUTPUT);
   pinMode(PIN_MOTOR_DERECHA_IN4, OUTPUT);
 
-  ledcSetup(PWM_CHANNEL_CERO, FREQ, RESOLUTION);
-  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_CERO);
-  
-  // ledcSetup(PWM_CHANNEL_UNO, FREQ, RESOLUTION);
-  // ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_UNO);
+  // Inicialización pines de control velocidad motores
+  pinMode(PIN_MOTOR_IZQUIERDA_EN, OUTPUT);
+  pinMode(PIN_MOTOR_DERECHA_EN, OUTPUT);
+
+  // Inicialización canal para controlar velocidad motores mediante PWM
+  ledcSetup(PWM_CHANNEL_MOTOR, FREQ, RESOLUTION);
+  ledcAttachPin(PIN_MOTOR_IZQUIERDA_EN, PWM_CHANNEL_MOTOR);
+  ledcAttachPin(PIN_MOTOR_DERECHA_EN, PWM_CHANNEL_MOTOR);
 
   // Inicialización pin WiFi
   pinMode(PIN_LED_WIFI, OUTPUT);
