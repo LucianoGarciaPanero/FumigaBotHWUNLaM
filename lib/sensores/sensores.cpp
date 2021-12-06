@@ -254,13 +254,7 @@ float determinarTiempoDelay(int direccion, int objetoDerecha) {
     return TIEMPO_DELAY_GIRO_MS;
 
   }
-
-  if(direccion == ADELANTE_IZQUIERDA) {
-
-    return TIEMPO_DELAY_GIRO_CORTO_MS;
-
-  }
-
+  
   return TIEMPO_DELAY_ADELANTE_MS;
 }
 
@@ -298,6 +292,22 @@ void mover(int direccion) {
 
     case ADELANTE:
     
+      // Parar
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
+
+      delay(TIEMPO_DELAY_PARAR_MS);
+      
+      // Girar a la izquierda muy poco
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
+      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
+      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
+
+      delay(TIEMPO_DELAY_GIRO_CORTO_MS);
+      
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
@@ -373,32 +383,6 @@ void mover(int direccion) {
       digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
 
-      break;
-
-    case ADELANTE_IZQUIERDA:
-
-      // Parar
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-
-      delay(TIEMPO_DELAY_PARAR_MS);
-      
-      // Girar a la izquierda muy poco
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-
-      delay(TIEMPO_DELAY_GIRO_CORTO_MS);
-
-      //Avanzar
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, HIGH);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-      
       break;
     
     default:

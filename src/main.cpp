@@ -87,7 +87,7 @@ void loop() {
     }
 
     // Calcular dirección y tiempo
-    direccion = determinarDireccion(objetoAdelante, objetoDerecha, direccionPrevia);
+    direccion = determinarDireccion(objetoAdelante, objetoDerecha);
     tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
 
     mover(direccion);
@@ -97,9 +97,6 @@ void loop() {
 
     // Parar el movimiento para que no moleste en la siguiente acción
     mover(PARAR);
-
-    // Guardamos la ultima direccion
-    direccionPrevia = direccion;
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
     if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
@@ -428,7 +425,6 @@ void reiniciarVariablesTaskUno(void) {
   objetoIzquierda = LOW;
   direccion = 0;
   tiempoDelay = 0;
-  direccionPrevia = PARAR;
   
   // Para mejorar la primera medición del quimico
   // nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
@@ -709,7 +705,7 @@ Fecha Cambió: -
 Referencia: -
 *****************************************************************/
 
-int determinarDireccion(int objetoAdelante, int objetoDerecha, int direccionPrevia) {
+int determinarDireccion(int objetoAdelante, int objetoDerecha) {
 
   // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
   if(giro) {
@@ -749,12 +745,6 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha, int direccionPrev
     return DERECHA;
 
   } 
-  
-  if(direccionPrevia == ADELANTE) {
-
-    return ADELANTE_IZQUIERDA;
-
-  }
 
   // Caso por defecto
   return ADELANTE;
