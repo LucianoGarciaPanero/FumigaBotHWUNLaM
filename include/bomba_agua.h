@@ -21,3 +21,7 @@
 // Limites del nivel de quimico
 #define MIN_NIVEL_QUIMICO_PORCENTAJE 0
 #define MAX_NIVEL_QUIMICO_PORCENTAJE 100
+
+// Posición en el servomotor
+#define ANGULO_SERVO_DERECHA 180
+#define ANGULO_SERVO_IZQUIERDA 0

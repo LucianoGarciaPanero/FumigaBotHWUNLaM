@@ -72,16 +72,14 @@ void loop() {
     // Liberar químico si se cumple con la condición
     if(objetoDerecha == HIGH) {
 
-      servo.write(180);
-      delay(100);
+      servo.write(ANGULO_SERVO_DERECHA);
       //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
     }
 
     if(objetoIzquierda == HIGH) {
 
-      servo.write(0);
-      delay(100);
+      servo.write(ANGULO_SERVO_IZQUIERDA);
       //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
 
     }
@@ -91,20 +89,20 @@ void loop() {
     tiempoDelay = determinarTiempoDelay(direccion, objetoDerecha);
 
     mover(direccion);
-
-    // Para darle tiempo al robot a que realice la acción
     delay(tiempoDelay);
 
     // Parar el movimiento para que no moleste en la siguiente acción
     mover(PARAR);
+    delay(TIEMPO_DELAY_PARAR_MS);
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+    // if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-      reiniciarVariablesTaskUno();
+    //   finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+    //   reiniciarVariablesTaskUno();
       
-    } 
+    // } 
+
   } else { 
 
     mover(PARAR);
@@ -711,6 +709,7 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
   if(giro) {
 
     giro = false;
+
     if(objetoAdelante == LOW) {
 
       return ADELANTE;
@@ -724,7 +723,6 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
       return ATRAS;
 
     }
-
   }
   
   // Caso que estemos muy cerca de una pared en frente
@@ -733,7 +731,6 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
     giro = true;
     cantGiros++;
     return IZQUIERDA;
-    
     
   } 
   
