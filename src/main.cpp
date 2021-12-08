@@ -32,7 +32,6 @@ void loop() {
 
   // if(!digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE)) { Serial.println("SI"); } else {Serial.println("NO");}
   
-  
   /* ESCRITURA/LECTURA EN FIREBASE */
 
   if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
@@ -99,12 +98,12 @@ void loop() {
     delay(TIEMPO_DELAY_PARAR_MS);
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+    // if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-      reiniciarVariablesTaskUno();
+    //   finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+    //   reiniciarVariablesTaskUno();
       
-    } 
+    // } 
 
   } else { 
 
@@ -748,7 +747,7 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
 
       giro = true;
       cantGiros--;
-      sinGiroDerecha = 5;
+      sinGiroDerecha = 6;
       return DERECHA;
     
     }     

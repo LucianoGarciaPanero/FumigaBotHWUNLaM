@@ -352,23 +352,6 @@ void mover(int direccion) {
 
       delay(TIEMPO_DELAY_PARAR_MS);
 
-      // Retroceder
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, HIGH);
-
-      delay(TIEMPO_DELAY_RETROCEDER_MS);
-
-      // Parar
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
-      digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN3, LOW);
-      digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
-
-      delay(TIEMPO_DELAY_PARAR_MS);
-      
-
       // Girar
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN2, HIGH);
@@ -393,7 +376,7 @@ void mover(int direccion) {
       digitalWrite(PIN_MOTOR_DERECHA_IN3, HIGH);
       digitalWrite(PIN_MOTOR_DERECHA_IN4, LOW);
 
-      delay(TIEMPO_DELAY_ADELANTE_MS);
+      delay(TIEMPO_DELAY_ADELANTE_MS * 3);
 
       // Parar
       digitalWrite(PIN_MOTOR_IZQUIERDA_IN1, LOW);
