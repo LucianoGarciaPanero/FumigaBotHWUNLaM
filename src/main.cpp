@@ -30,6 +30,9 @@ void setup() {
 
 void loop() {
 
+  // if(!digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE)) { Serial.println("SI"); } else {Serial.println("NO");}
+  
+  
   /* ESCRITURA/LECTURA EN FIREBASE */
 
   if(conexionesCorrectas() && escribirEstadoRobot && millis() - startTimeFirebaseEstadoRobot > FIREBASE_ESTADO_ROBOT_TIMEOUT_MS) {
@@ -96,12 +99,12 @@ void loop() {
     delay(TIEMPO_DELAY_PARAR_MS);
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-    // if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-    //   finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-    //   reiniciarVariablesTaskUno();
+      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+      reiniciarVariablesTaskUno();
       
-    // } 
+    } 
 
   } else { 
 
@@ -423,6 +426,7 @@ void reiniciarVariablesTaskUno(void) {
   objetoIzquierda = LOW;
   direccion = 0;
   tiempoDelay = 0;
+  sinGiroDerecha = 0;
   
   // Para mejorar la primera medición del quimico
   // nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
@@ -705,6 +709,9 @@ Referencia: -
 
 int determinarDireccion(int objetoAdelante, int objetoDerecha) {
 
+  // Para detectar los loops posteriores a un giro a la derecha  
+  sinGiroDerecha --;  
+  
   // Caso inmediatamente despues de realizar un giro, para que solo avance si hay espacio
   if(giro) {
 
@@ -737,10 +744,14 @@ int determinarDireccion(int objetoAdelante, int objetoDerecha) {
   // Caso que nos encontremos muy lejos de una pared derecha
   if(objetoDerecha == LOW) {
     
-    giro = true;
-    cantGiros--;
-    return DERECHA;
+    if(sinGiroDerecha <= 0) {
 
+      giro = true;
+      cantGiros--;
+      sinGiroDerecha = 5;
+      return DERECHA;
+    
+    }     
   } 
 
   // Caso por defecto

@@ -60,6 +60,7 @@ int objetoIzquierda;
 int objetoAdelante;
 int direccion;
 float tiempoDelay;
+int sinGiroDerecha;
 
 // Variables para Firebase
 FirebaseData fbdo;
