@@ -4,7 +4,7 @@
 #define PWM_CHANNEL_MOTOR 14
 
 // Valores de dominio
-#define MAXIMA_CANTIDAD_GIROS 4
+#define MAXIMA_CANTIDAD_GIROS 6
 
 // Tiempos delays
 #define TIEMPO_DELAY_PARAR_MS 250

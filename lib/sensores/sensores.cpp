@@ -122,22 +122,37 @@ int calcularNivelBateriaPromedio(int pin) {
   vIn =  calcularPromedio(values, n);
 
   // Calcular el porcentaje de la carga
-  if(vIn > 1.70) {
+  if(vIn > 2.9) {
 
     porcentaje = PORCENTAJE_MAX_BATERIA;
+  } else if(vIn > 2.75) {
 
-  } else if(vIn > 1.65) {
+    porcentaje = 85;
 
-    porcentaje = PORCENTAJE_MAX_BATERIA * 3/4;
+  } else if(vIn > 2.5) {
 
-  } else if(vIn > 1.60) {
+    porcentaje = 75;
 
-    porcentaje = PORCENTAJE_MAX_BATERIA * 1/2;
+  } else if(vIn > 2.3) {
 
-  } else if(vIn > 1.55) {
+    porcentaje = 50;
 
-    porcentaje = PORCENTAJE_MAX_BATERIA * 1/4;
+  } else if(vIn > 2.1) {
 
+    porcentaje = 35;
+
+  } else if(vIn > 1.75) {
+
+    porcentaje = 25;
+
+  } else if(vIn > 1.5) {
+
+    porcentaje = 10;
+
+  } else if(vIn > 1.25) {
+
+    porcentaje = 5; 
+  
   } else {
 
     porcentaje = MIN_NIVEL_QUIMICO_PORCENTAJE;

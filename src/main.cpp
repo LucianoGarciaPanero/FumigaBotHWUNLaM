@@ -29,8 +29,6 @@ void setup() {
 */
 
 void loop() {
-
-  // if(!digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE)) { Serial.println("SI"); } else {Serial.println("NO");}
   
   /* ESCRITURA/LECTURA EN FIREBASE */
 
@@ -98,12 +96,12 @@ void loop() {
     delay(TIEMPO_DELAY_PARAR_MS);
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-    // if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-    //   finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-    //   reiniciarVariablesTaskUno();
+      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+      reiniciarVariablesTaskUno();
       
-    // } 
+    } 
 
   } else { 
 
@@ -452,7 +450,7 @@ void reiniciarVariablesTaskUno(void) {
 
   }
 
-  // nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
+  nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
 }
 
 /******************************************************************* 
@@ -641,11 +639,9 @@ Referencia: -
 
 void escribirEstadoRobotEnFirebase(void) {
 
-  // Obtener valores de sensores
+  // Obtener nivel quimico actual
   int nivelQuimicoActual = 100;//calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
-  int nivelBateriaActual = 100;//calcularNivelBateriaPromedio(PIN_BATERIA);
 
-  // Para evitar para tener variaciones intensas en el nivel de quimico
   if(nivelQuimicoActual <= nivelQuimicoPrevio) {
 
     if(nivelQuimicoPrevio - nivelQuimicoActual > MAXIMA_DIFERENCIA_VALORES) {
@@ -659,9 +655,10 @@ void escribirEstadoRobotEnFirebase(void) {
 
   }
 
+  // Obtener nivel bateria actual
+  int nivelBateriaActual = calcularNivelBateriaPromedio(PIN_BATERIA);
   
   if(nivelBateriaActual <= nivelBateriaPrevio) {
-
 
     Firebase.RTDB.setInt(&fbdo, PATH_BATERIA, nivelBateriaActual); 
     nivelBateriaPrevio = nivelBateriaActual;
