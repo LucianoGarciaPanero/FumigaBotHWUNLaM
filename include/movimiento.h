@@ -14,7 +14,7 @@
 #define TIEMPO_DELAY_ADELANTE_MS 200
 
 // Velocidades
-#define VELOCIDAD_ROBOT 175
+#define VELOCIDAD_ROBOT 180
 
 // Codificacion direccion
 #define PARAR 0

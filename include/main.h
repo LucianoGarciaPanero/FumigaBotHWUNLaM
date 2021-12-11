@@ -79,6 +79,7 @@ int contador;
 
 // Quimico
 int nivelQuimicoPrevio;
+long cantidadQuimico;
 
 // Bateria
 int nivelBateriaPrevio;

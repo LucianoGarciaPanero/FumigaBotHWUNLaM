@@ -55,6 +55,36 @@ void loop() {
       fumigar = fbdo.boolData();
 
     }
+
+    if(fumigar && Firebase.RTDB.getInt(&fbdo, PATH_CANTIDAD_QUIMICO_POR_AREA)) {
+
+      switch(fbdo.intData()) {
+
+          case LIBERAR_CANTIDAD_BAJA_QUIMICO:
+
+            cantidadQuimico = TIEMPO_LIBERAR_QUIMICO_BAJA_MS;
+            break;
+          
+          case LIBERAR_CANTIDAD_MEDIA_QUIMICO:
+
+            cantidadQuimico = TIEMPO_LIBERAR_QUIMICO_MEDIA_MS;
+            break;
+
+
+          case LIBERAR_CANTIDAD_ALTA_QUIMICO:
+
+            cantidadQuimico = TIEMPO_LIBERAR_QUIMICO_ALTA_MS;
+            break;
+
+
+          default:
+
+            cantidadQuimico = TIEMPO_LIBERAR_QUIMICO_BAJA_MS;
+            break;
+
+      }
+
+    }
     
     startTimeFirebaseFumigar = millis();
 
@@ -69,18 +99,20 @@ void loop() {
     objetoAdelante = !digitalRead(PIN_SENSOR_DISTANCIA_ADELANTE);
     objetoIzquierda = !digitalRead(PIN_SENSOR_DISTANCIA_IZQUIERDA);
 
-    // Liberar químico si se cumple con la condición
+    // Liberar químico
     if(objetoDerecha == HIGH) {
 
       servo.write(ANGULO_SERVO_DERECHA);
-      //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+      delay(500);
+      liberarQuimico(PIN_BOMBA_AGUA, cantidadQuimico);
 
     }
 
     if(objetoIzquierda == HIGH) {
 
       servo.write(ANGULO_SERVO_IZQUIERDA);
-      //liberarQuimico(PIN_BOMBA_AGUA, TIEMPO_LIBERAR_QUIMICO_ALTA_MS);
+      delay(500);
+      liberarQuimico(PIN_BOMBA_AGUA, cantidadQuimico);
 
     }
 
@@ -96,12 +128,12 @@ void loop() {
     delay(TIEMPO_DELAY_PARAR_MS);
 
     // Si superamos la maxima cantidad de giros significa que termino la fumigacion
-    if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
+    // if(cantGiros >= MAXIMA_CANTIDAD_GIROS) {
 
-      finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
-      reiniciarVariablesTaskUno();
+    //   finalizarFumigacion(NRO_RAZON_FINALIZACION_OK);
+    //   reiniciarVariablesTaskUno();
       
-    } 
+    // } 
 
   } else { 
 
@@ -424,31 +456,32 @@ void reiniciarVariablesTaskUno(void) {
   direccion = 0;
   tiempoDelay = 0;
   sinGiroDerecha = 0;
+  cantidadQuimico = TIEMPO_LIBERAR_QUIMICO_BAJA_MS;
   
   // Para mejorar la primera medición del quimico
-  // nivelQuimicoPrevio = calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  nivelQuimicoPrevio = 100; //calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
 
-  if(nivelQuimicoPrevio < 10) {
+  // if(nivelQuimicoPrevio < 10) {
 
-    nivelQuimicoPrevio = 4;
+  //   nivelQuimicoPrevio = 4;
 
-  } else if(nivelQuimicoPrevio < 20) {
+  // } else if(nivelQuimicoPrevio < 20) {
 
-    nivelQuimicoPrevio = 17;
+  //   nivelQuimicoPrevio = 17;
 
-  } else if(nivelQuimicoPrevio < 50) {
+  // } else if(nivelQuimicoPrevio < 50) {
 
-    nivelQuimicoPrevio = 43;
+  //   nivelQuimicoPrevio = 43;
 
-  } else if(nivelQuimicoPrevio < 75) {
+  // } else if(nivelQuimicoPrevio < 75) {
 
-    nivelQuimicoPrevio = 68;
+  //   nivelQuimicoPrevio = 68;
 
-  } else {
+  // } else {
 
-    nivelQuimicoPrevio = 89;
+  //   nivelQuimicoPrevio = 89;
 
-  }
+  // }
 
   nivelBateriaPrevio = calcularNivelBateriaPromedio(PIN_BATERIA);
 }
@@ -640,7 +673,7 @@ Referencia: -
 void escribirEstadoRobotEnFirebase(void) {
 
   // Obtener nivel quimico actual
-  int nivelQuimicoActual = 100;//calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
+  int nivelQuimicoActual = 100; //calcularNivelQuimicoPromedio(PIN_TRIG_QUIMICO, PIN_ECHO_QUIMICO);
 
   if(nivelQuimicoActual <= nivelQuimicoPrevio) {
 
@@ -650,7 +683,7 @@ void escribirEstadoRobotEnFirebase(void) {
 
     }       
 
-    Firebase.RTDB.setInt(&fbdo, PATH_QUIMICO, nivelQuimicoActual);
+    // Firebase.RTDB.setInt(&fbdo, PATH_QUIMICO, nivelQuimicoActual);
     nivelQuimicoPrevio = nivelQuimicoActual;
 
   }
@@ -679,6 +712,7 @@ void escribirEstadoRobotEnFirebase(void) {
     }
   
   Firebase.RTDB.setInt(&fbdo, PATH_CONTADOR, ++contador);
+  Firebase.RTDB.setBool(&fbdo, PATH_ENCENDIDO, true);
 
 }
 
